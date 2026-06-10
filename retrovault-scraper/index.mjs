@@ -331,8 +331,8 @@ function parseListPage(html) {
   let totalPages = 1;
   const tpMatch = rsc.match(/"totalPages"\s*:\s*(\d+)/);
   if (tpMatch) {
-		// totalPages = parseInt(tpMatch[1]);
-		totalPages = 1
+		totalPages = parseInt(tpMatch[1]);
+		// totalPages = 1
 	}
   if (totalPages === 1) {
     const htmlTp = html.match(/\d+\s*\/\s*(\d+)/);
@@ -554,11 +554,7 @@ function parseDetail(html, slug) {
   const rscData = parseDetailFromRSC(html);
     const jsonLdData = parseDetailFromJsonLd(html);
     const htmlData = parseDetailFromHTML(html, slug);
-		console.info(htmlData)
-
     const merged = mergeGameData(rscData, jsonLdData, htmlData);
-		console.info(merged)
-
     // 如果合并后仍然是空对象，返回 null
     return Object.keys(merged).length > 0 ? merged : null;
 }
