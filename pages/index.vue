@@ -1,71 +1,179 @@
 <template>
   <div>
-    <!-- Hero -->
-    <section class="pt-12 pb-10">
-      <div class="hero-tag">Starter Template</div>
-      <h1 class="hero-title">Nuxt Cloudflare <em>Starter</em></h1>
-      <p class="hero-sub">
-        Production-ready boilerplate with Nuxt 4, Tailwind CSS v4, dark/light theme,
-        UI components, SEO, OG images, and Cloudflare deployment.
-      </p>
-      <div class="flex gap-2 flex-wrap">
-        <a href="https://nuxt.com" target="_blank" rel="noopener noreferrer" class="btn-primary">Nuxt Docs</a>
-        <a href="https://tailwindcss.com" target="_blank" rel="noopener noreferrer" class="btn-secondary">Tailwind Docs</a>
-        <a href="https://developers.cloudflare.com" target="_blank" rel="noopener noreferrer" class="btn-secondary">Cloudflare Docs</a>
-      </div>
-    </section>
+    <!-- Hero enter block -->
+    <div class="hero-enter" @click="navigateTo('/games')">
+      <span class="hero-icon">🕹️</span>
+      <div class="hero-title">Explore All Games</div>
+      <div class="hero-sub">— Tap to enter the pixel vault —</div>
+      <div class="hero-count">📦 <span>{{ totalAll }}</span> games</div>
+    </div>
 
-    <!-- Feature grid -->
-    <section class="pt-4 pb-8">
-      <h2 class="font-sans font-bold text-[15px] mb-5" style="color: var(--color-text-primary)">What's Included</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        <div class="card">
-          <div class="text-lg mb-1">🎨</div>
-          <div class="font-sans font-semibold text-[13px] mb-1" style="color: var(--color-text-primary)">Design System</div>
-          <div class="font-body text-[11px]" style="color: var(--color-text-secondary)">CSS variables, dark/light mode, Inter + JetBrains Mono fonts, Indigo accent</div>
+    <!-- Loading skeleton -->
+    <template v-if="pending">
+      <div v-for="n in 3" :key="n" class="home-section">
+        <div class="section-header">
+          <div class="skeleton" style="width:120px;height:16px" />
         </div>
-        <div class="card">
-          <div class="text-lg mb-1">🧩</div>
-          <div class="font-sans font-semibold text-[13px] mb-1" style="color: var(--color-text-primary)">UI Components</div>
-          <div class="font-body text-[11px]" style="color: var(--color-text-secondary)">Button, Input, Select, Badge, Tag, Toast, Skeleton — all theme-aware</div>
-        </div>
-        <div class="card">
-          <div class="text-lg mb-1">📐</div>
-          <div class="font-sans font-semibold text-[13px] mb-1" style="color: var(--color-text-primary)">Layout System</div>
-          <div class="font-body text-[11px]" style="color: var(--color-text-secondary)">Responsive header, sidebar, footer, mobile tab bar, dark/light toggle</div>
-        </div>
-        <div class="card">
-          <div class="text-lg mb-1">🔍</div>
-          <div class="font-sans font-semibold text-[13px] mb-1" style="color: var(--color-text-primary)">SEO Ready</div>
-          <div class="font-body text-[11px]" style="color: var(--color-text-secondary)">usePageSeo composable, OG image generation, sitemap, robots.txt</div>
-        </div>
-        <div class="card">
-          <div class="text-lg mb-1">☁️</div>
-          <div class="font-sans font-semibold text-[13px] mb-1" style="color: var(--color-text-primary)">Cloudflare Native</div>
-          <div class="font-body text-[11px]" style="color: var(--color-text-secondary)">Pages deployment, Workers via Nitro, D1/KV/R2 bindings template</div>
-        </div>
-        <div class="card">
-          <div class="text-lg mb-1">📝</div>
-          <div class="font-sans font-semibold text-[13px] mb-1" style="color: var(--color-text-primary)">Nuxt Content v3</div>
-          <div class="font-body text-[11px]" style="color: var(--color-text-secondary)">Markdown-based content management, queryCollection API, ISR ready</div>
+        <div class="scroll-row">
+          <div v-for="m in 4" :key="m" class="game-card-mini" style="border:none;background:transparent;padding:0">
+            <div class="skeleton" style="width:100%;aspect-ratio:1/1;border-radius:var(--radius-sm);margin-bottom:8px" />
+            <div class="skeleton" style="width:80%;height:10px;margin:0 auto" />
+          </div>
         </div>
       </div>
-    </section>
+    </template>
 
-    <!-- Getting started -->
-    <section class="py-8">
-      <h2 class="font-sans font-bold text-[15px] mb-5" style="color: var(--color-text-primary)">Getting Started</h2>
-      <div class="card !cursor-default space-y-3 font-body text-[12px]" style="color: var(--color-text-secondary); font-family: var(--font-mono)">
-        <div><span style="color: var(--color-accent)">1.</span> Edit <code style="background:var(--color-bg-elevated);border:1px solid var(--color-border);border-radius:3px;padding:1px 6px;font-size:11px">pages/index.vue</code> to customize this page</div>
-        <div><span style="color: var(--color-accent)">2.</span> Update <code style="background:var(--color-bg-elevated);border:1px solid var(--color-border);border-radius:3px;padding:1px 6px;font-size:11px">assets/css/main.css</code> to change theme colors</div>
-        <div><span style="color: var(--color-accent)">3.</span> Add your routes in <code style="background:var(--color-bg-elevated);border:1px solid var(--color-border);border-radius:3px;padding:1px 6px;font-size:11px">pages/</code> and components in <code style="background:var(--color-bg-elevated);border:1px solid var(--color-border);border-radius:3px;padding:1px 6px;font-size:11px">components/</code></div>
-        <div><span style="color: var(--color-accent)">4.</span> Configure site info in <code style="background:var(--color-bg-elevated);border:1px solid var(--color-border);border-radius:3px;padding:1px 6px;font-size:11px">nuxt.config.ts</code> and <code style="background:var(--color-bg-elevated);border:1px solid var(--color-border);border-radius:3px;padding:1px 6px;font-size:11px">composables/usePageSeo.ts</code></div>
-        <div><span style="color: var(--color-accent)">5.</span> Deploy: <code style="background:var(--color-bg-elevated);border:1px solid var(--color-border);border-radius:3px;padding:1px 6px;font-size:11px">pnpm build && wrangler deploy</code></div>
+    <template v-else>
+      <!-- Recent games -->
+      <div class="home-section">
+        <div class="section-header">
+          <div class="sec-title">🔄 Recent <span class="count-badge">{{ recent.length }}</span></div>
+          <button class="sec-more" @click="navigateTo('/games')">View all →</button>
+        </div>
+        <div class="scroll-row">
+          <GameCard
+            v-for="g in recent"
+            :key="g.slug"
+            :game="g"
+            tag="Updated"
+            @click="navigateTo(`/games/${g.slug}`)"
+            @play="navigateTo(`/games/${g.slug}`)"
+          />
+        </div>
       </div>
-    </section>
+
+      <!-- Featured -->
+      <div class="home-section">
+        <div class="section-header">
+          <div class="sec-title">⭐ Featured <span class="count-badge">{{ featured.length }}</span></div>
+          <button class="sec-more" @click="navigateTo('/games')">View all →</button>
+        </div>
+        <div class="scroll-row">
+          <GameCard
+            v-for="g in featured"
+            :key="g.slug"
+            :game="g"
+            tag="Featured"
+            @click="navigateTo(`/games/${g.slug}`)"
+            @play="navigateTo(`/games/${g.slug}`)"
+          />
+        </div>
+      </div>
+
+      <!-- Emulators (by platform) -->
+      <div class="home-section">
+        <div class="section-header">
+          <div class="sec-title">🖥️ Emulators <span class="count-badge">{{ platformStats.length }}</span></div>
+          <button class="sec-more" @click="navigateTo('/games')">View all →</button>
+        </div>
+        <div class="scroll-row">
+          <div
+            v-for="p in platformStats"
+            :key="p.name"
+            class="game-card-mini"
+            @click="navigateTo(`/${slugFor(p.name)}-games`)"
+          >
+            <div class="mini-cover" style="font-size:28px">{{ emojiFor(p.name) }}</div>
+            <div class="mini-title">{{ p.name }}<small>{{ p.count }} games</small></div>
+          </div>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-usePageSeo({})
+import type { GameListResponse, GameSummary } from '~/types/games'
+
+// Fetch games for homepage sections
+const { data, pending } = useFetch<GameListResponse>('/api/games', {
+  query: { limit: 200 },
+  key: 'homepage',
+})
+
+const allGames = computed(() => data.value?.games || [])
+const totalAll = computed(() => data.value?.totalAll || 0)
+const platforms = computed(() => data.value?.platforms || [])
+
+// Recent games (reversed)
+const recent = computed(() => [...allGames.value].reverse().slice(0, 12))
+
+// Featured games (first 12)
+const featured = computed(() => allGames.value.slice(0, 12))
+
+// Platform stats (sorted by game count)
+const platformStats = computed(() => {
+  const counts: Record<string, number> = {}
+  allGames.value.forEach((g: GameSummary) => {
+    counts[g.platform] = (counts[g.platform] || 0) + 1
+  })
+  return Object.entries(counts)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 12)
+})
+
+// Emoji for platform
+function emojiFor(platform: string): string {
+  const map: Record<string, string> = {
+    'Arcade': '🕹️',
+    'NES': '🎮',
+    'SNES': '🎮',
+    'Game Boy Advance': '📱',
+    'Game Boy': '📱',
+    'Nintendo 64': '🎮',
+    'PlayStation': '🎮',
+    'Sega Genesis': '🎮',
+    'Nintendo DS': '📱',
+    'Sega Master System': '🎮',
+    'PC Engine CD': '💿',
+    'Sega Game Gear': '📱',
+    'Atari Jaguar': '🖥️',
+    'Sega CD': '💿',
+    'Bandai WonderSwan': '📱',
+    'NeoGeo Pocket': '📱',
+    'Virtual Boy': '🥽',
+    'Sega Saturn': '🎮',
+    'Sega 32X': '🎮',
+    'Commodore 64': '🖥️',
+    'ColecoVision': '🕹️',
+    'MSX2': '🖥️',
+    'Nintendo Famicom Disk System': '💾',
+  }
+  return map[platform] || '🖥️'
+}
+
+// Platform slug for URLs
+function slugFor(platform: string): string {
+  const map: Record<string, string> = {
+    'NES': 'nes',
+    'SNES': 'snes',
+    'Nintendo 64': 'n64',
+    'Game Boy Advance': 'gba',
+    'Game Boy': 'gb',
+    'Nintendo DS': 'nds',
+    'PlayStation': 'ps',
+    'Sega Genesis': 'genesis',
+    'Sega Saturn': 'saturn',
+    'Sega 32X': 'sega-32x',
+    'Sega CD': 'sega-cd',
+    'Sega Game Gear': 'sega-game-gear',
+    'Sega Master System': 'sega-master-system',
+    'Virtual Boy': 'virtual-boy',
+    'Atari Jaguar': 'atari-jaguar',
+    'Bandai WonderSwan': 'bandai-wonderswan',
+    'NeoGeo Pocket': 'neogeo-pocket',
+    'PC Engine CD': 'pc-engine-cd',
+    'Commodore 64': 'commodore-64',
+    'ColecoVision': 'colecovision',
+    'Nintendo Famicom Disk System': 'nintendo-famicom',
+    'MSX2': 'msx2',
+  }
+  return map[platform] || platform.toLowerCase().replace(/\s+/g, '-')
+}
+
+usePageSeo({
+  title: 'RetroVault — 2000+ Free Retro Games Online',
+  description: 'Play 2000+ classic retro games in your browser. NES, SNES, GBA, Arcade, and more. No download, no signup required.',
+})
 </script>

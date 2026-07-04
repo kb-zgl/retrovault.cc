@@ -2,8 +2,8 @@ export default defineNuxtConfig({
   modules: ['@nuxt/content', '@nuxtjs/seo'],
 
   site: {
-    url: 'https://example.com',
-    name: 'Nuxt Starter',
+    url: 'https://retrovault.cc',
+    name: 'RetroVault',
   },
 
   css: ['~/assets/css/main.css', '~/assets/css/markdown.css'],

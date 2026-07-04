@@ -1,7 +1,7 @@
 import type { MaybeRefOrGetter } from 'vue'
 
-const SITE_NAME = 'My App'
-const TAGLINE = 'Build something great'
+const SITE_NAME = 'RetroVault'
+const TAGLINE = '2000+ Free Retro Games Online'
 const DESC_SEPARATOR = ' — '
 const TITLE_SEPARATOR = ' | '
 
