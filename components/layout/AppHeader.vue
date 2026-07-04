@@ -43,7 +43,9 @@
         <button class="link-btn" @click="authAction; mobileMenuOpen = false">
           {{ isLoggedIn ? '👤 ' + user?.username : '🔑 Login' }}
         </button>
-        <div class="flex items-center justify-center py-1"><ThemeToggle /></div>
+        <button class="link-btn" @click="toggleTheme">
+          {{ theme === 'dark' ? '☀️ Light' : '🌙 Dark' }}
+        </button>
         <button class="link-btn" @click="alert('📖 Guestbook coming soon!'); mobileMenuOpen = false">💬 Guestbook</button>
       </div>
     </div>
@@ -55,6 +57,7 @@ const route = useRoute()
 const mobileMenuOpen = ref(false)
 
 const { isLoggedIn, user, login, logout } = useAuth()
+const { theme, toggle: toggleTheme } = useTheme()
 
 function authAction() {
   if (isLoggedIn.value) logout()
