@@ -47,7 +47,6 @@
             v-if="coverLoaded"
             :src="`/${game.localCover}`"
             :alt="game.title"
-            style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm)"
             @error="coverLoaded = false"
           />
           <span v-else>🎮</span>
@@ -57,10 +56,17 @@
           <h1 class="detail-title">{{ game.title }}</h1>
 
           <div class="detail-meta">
-            <span>{{ game.genre }}</span>
+            <NuxtLink
+              :to="{ path: '/games', query: { genre: game.genre } }"
+              class="detail-meta-link"
+            >🏷️ {{ game.genre }}</NuxtLink>
             <span>📅 {{ game.year }}</span>
             <span v-if="game.developer">🏢 {{ game.developer }}</span>
-            <span v-if="game.platform">{{ game.platform }}</span>
+            <NuxtLink
+              v-if="game.platform"
+              :to="{ path: '/games', query: { platform: game.platform } }"
+              class="detail-meta-link"
+            >🖥️ {{ game.platform }}</NuxtLink>
           </div>
 
           <div class="detail-desc">{{ game.description }}</div>
