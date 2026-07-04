@@ -1,42 +1,62 @@
 <template>
-  <header class="fixed top-0 left-0 right-0 z-50 h-[52px]"
-    :style="{ background: 'var(--color-header-bg)', backdropFilter: 'blur(20px)', borderBottom: '1px solid var(--color-border)' }">
-    <div class="mx-auto flex h-full items-center gap-3 sm:gap-4 px-4 lg:px-6 max-w-[1400px] w-full">
-      <!-- Left: Logo -->
-      <NuxtLink to="/" class="flex items-center gap-2 shrink-0">
-        <div class="logo-icon">N</div>
-        <span class="logo-text">Nuxt<span class="org">Starter</span></span>
-      </NuxtLink>
-
-      <!-- Center: Search (desktop only) -->
-      <div class="flex-1 hidden sm:flex justify-center max-w-[420px] mx-auto">
-        <div class="header-search" @click="console.log('search')">
-          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <span class="placeholder">Search...</span>
-          <span class="kbd">⌘K</span>
-        </div>
+  <!-- Header: Marquee + Nav (right) + Hamburger (mobile) -->
+  <div class="cabinet-header">
+    <!-- Marquee -->
+    <div class="cabinet-marquee">
+      <div class="marquee-lamp">
+        <span class="lamp"></span><span class="lamp"></span><span class="lamp"></span><span class="lamp"></span><span class="lamp"></span>
       </div>
+      <div class="marquee-title">🕹️ <span>RETRO</span> VAULT</div>
+    </div>
 
-      <!-- Right: Actions -->
-      <div class="flex items-center gap-1 sm:gap-1.5 shrink-0 ml-auto">
-        <!-- Desktop: Submit + Auth -->
-        <NuxtLink to="/" class="btn-header-submit hidden sm:inline-flex">
-          CTA
-        </NuxtLink>
-        <div class="hidden sm:flex"><AuthButton /></div>
-        <ThemeToggle />
-        <!-- Mobile hamburger -->
-        <button class="lg:hidden flex items-center justify-center w-7 h-7 rounded-md shrink-0"
-          style="color: var(--color-text-secondary)" @click="isMobileMenuOpen = !isMobileMenuOpen" aria-label="Toggle menu">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 12h18M3 6h18M3 18h18" />
-          </svg>
+    <!-- Desktop nav -->
+    <nav class="pixel-nav desktop-nav">
+      <NuxtLink class="nav-btn" :class="{ active: route.path === '/' }" to="/">Home</NuxtLink>
+      <NuxtLink class="nav-btn" :class="{ active: route.path.startsWith('/games') }" to="/games">Games</NuxtLink>
+      <NuxtLink class="nav-btn" :class="{ active: route.path === '/tags' }" to="/tags">Tags</NuxtLink>
+      <NuxtLink class="nav-btn" :class="{ active: route.path === '/news' }" to="/news">News</NuxtLink>
+      <NuxtLink class="nav-btn" :class="{ active: route.path === '/about' }" to="/about">About</NuxtLink>
+    </nav>
+
+    <ThemeToggle />
+
+    <!-- Mobile hamburger -->
+    <button class="hamburger-btn" @click="mobileMenuOpen = true" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 12h18M3 6h18M3 18h18" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile Nav Overlay -->
+  <Teleport to="body">
+    <div class="nav-overlay" :class="{ open: mobileMenuOpen }" @click.self="mobileMenuOpen = false">
+      <button class="nav-close-btn" @click="mobileMenuOpen = false" aria-label="Close menu">✕</button>
+      <div class="nav-overlay-items">
+        <NuxtLink class="nav-overlay-btn" :class="{ active: route.path === '/' }" to="/" @click="mobileMenuOpen = false">🏠 Home</NuxtLink>
+        <NuxtLink class="nav-overlay-btn" :class="{ active: route.path.startsWith('/games') }" to="/games" @click="mobileMenuOpen = false">🎮 Games</NuxtLink>
+        <NuxtLink class="nav-overlay-btn" :class="{ active: route.path === '/tags' }" to="/tags" @click="mobileMenuOpen = false">🏷️ Tags</NuxtLink>
+        <NuxtLink class="nav-overlay-btn" :class="{ active: route.path === '/news' }" to="/news" @click="mobileMenuOpen = false">📰 News</NuxtLink>
+        <NuxtLink class="nav-overlay-btn" :class="{ active: route.path === '/about' }" to="/about" @click="mobileMenuOpen = false">ℹ️ About</NuxtLink>
+      </div>
+      <div class="nav-overlay-footer">
+        <button class="link-btn" @click="authAction; mobileMenuOpen = false">
+          {{ isLoggedIn ? '👤 ' + user?.username : '🔑 Login' }}
         </button>
+        <button class="link-btn" @click="alert('📖 Guestbook coming soon!'); mobileMenuOpen = false">💬 Guestbook</button>
       </div>
     </div>
-  </header>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
-const isMobileMenuOpen = useState('mobileMenuOpen', () => false)
+const route = useRoute()
+const mobileMenuOpen = ref(false)
+
+const { isLoggedIn, user, login, logout } = useAuth()
+
+function authAction() {
+  if (isLoggedIn.value) logout()
+  else login()
+}
 </script>
