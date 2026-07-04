@@ -31,7 +31,8 @@ const emit = defineEmits<{
 const containerRef = ref<HTMLElement | null>(null)
 const loading = ref(true)
 const ejsInited = ref(false)
-const isClosing = ref(false)  // 防止重复关闭
+const isClosing = ref(false)
+const saves = useGameSaves()
 
 // Esc key to close
 function onKeydown(e: KeyboardEvent) {
@@ -86,12 +87,11 @@ function initEmulator() {
   w.EJS_startOnLoaded = false  // 改为 false，等我们手动恢复状态后再启动
   w.EJS_fullscreenOnLoaded = false
 
-  // ✅ 关键：ready 回调中手动恢复状态
+  // ✅ 关键：ready 回调中从 IndexedDB 恢复状态
   w.EJS_ready = () => {
     loading.value = false
-    // 延迟一小段确保模拟器内部初始化完成
-    setTimeout(() => {
-      tryRestoreState()
+    setTimeout(async () => {
+      await tryRestoreState()
     }, 200)
   }
 
@@ -104,24 +104,28 @@ function initEmulator() {
   document.body.appendChild(script)
 }
 
-// ✅ 尝试从 localStorage 恢复状态
-function tryRestoreState() {
+// ✅ 从 IndexedDB 读取存档并恢复
+async function tryRestoreState() {
   const emu = (window as any).EJS_emulator
   if (!emu) return
 
-  const storageKey = `EJS_state_${props.game?.slug}`
-  try {
-    const saved = localStorage.getItem(storageKey)
-    if (saved && typeof emu.loadState === 'function') {
-      emu.loadState()
-    } else {
-      // 没有保存的状态，直接启动
-      if (typeof emu.resume === 'function') {
-        emu.resume()
-      }
+  // 检查 gameManager API 是否可用
+  if (typeof emu.gameManager?.loadState !== 'function') {
+    // 不支持快照的核心（如 Arcade），正常启动
+    try { emu.resume?.() } catch { /* ignore */ }
+    return
+  }
+
+  const saved = await saves.loadState(props.game.slug)
+  if (saved) {
+    try {
+      emu.gameManager.loadState(saved)
+    } catch {
+      // 存档损坏，正常启动
+      try { emu.resume?.() } catch { /* ignore */ }
     }
-  } catch {
-    // 恢复失败，正常启动
+  } else {
+    // 没有存档，正常启动
     try { emu.resume?.() } catch { /* ignore */ }
   }
 }
@@ -139,39 +143,36 @@ async function close() {
 
 async function saveAndDestroy(): Promise<void> {
   const emu = (window as any).EJS_emulator
+  const slug = props.game?.slug  // capture before async
 
   if (emu) {
-    // 1. 先保存状态
-    if (typeof emu.saveState === 'function') {
+    // 1. 通过 gameManager API 获取快照并存入 IndexedDB
+    if (slug && typeof emu.gameManager?.getState === 'function') {
       try {
-        emu.saveState()
-        // 给模拟器一点时间完成保存（localStorage 写入通常是同步的，但多一重保险）
-        await new Promise(resolve => setTimeout(resolve, 100))
+        const state = emu.gameManager.getState()
+        if (state) {
+          await saves.saveState(slug, state)
+        }
       } catch { /* ignore */ }
     }
 
-    // 2. 暂停模拟器
-    if (typeof emu.pause === 'function') {
-      try { emu.pause() } catch { /* ignore */ }
-    }
-
-    // 3. 关闭 AudioContext
+    // 2. 关闭 AudioContext
     killResidualAudio(emu)
 
-    // 4. 销毁模拟器实例
+    // 3. 销毁模拟器实例
     if (typeof emu.destroy === 'function') {
       try { emu.destroy() } catch { /* ignore */ }
     }
   }
 
-  // 5. 清理 DOM 和全局变量
+  // 4. 清理 DOM 和全局变量
   cleanupEJS()
   ejsInited.value = false
   loading.value = true
 }
 
-function destroyEmulator() {
-  saveAndDestroy()
+async function destroyEmulator() {
+  await saveAndDestroy()
 }
 
 // ==================== 清理 ====================
