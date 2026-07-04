@@ -30,13 +30,12 @@
             :class="{ active: selectedPlatform === plat }"
             @click="togglePlatform(plat)"
           >{{ plat }}</button>
+          <button
+            v-if="selectedPlatform || selectedGenre"
+            class="filter-btn clear-btn"
+            @click="clearFilters"
+          >✕ Clear</button>
         </div>
-        <button
-          v-if="selectedPlatform || selectedGenre"
-          class="filter-btn clear-btn"
-          @click="clearFilters"
-          style="margin-top:8px"
-        >✕ Clear filters</button>
       </div>
 
       <!-- Result info -->
