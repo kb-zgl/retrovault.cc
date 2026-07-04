@@ -1,66 +1,59 @@
-# Nuxt Cloudflare Starter
+# RetroVault · Claude Code Guide
 
-Production-ready Nuxt 4 boilerplate with Cloudflare deployment.
+Classic retro game emulator platform. Nuxt 4, Tailwind CSS v4, Cloudflare.
 
-## Stack
+## Quick Links
 
-| Layer | Tech |
-|-------|------|
-| Framework | Nuxt 4 (SSG + ISR) |
-| Styling | Tailwind CSS v4 |
-| Content | Nuxt Content v3 |
-| SEO | @nuxtjs/seo (sitemap, robots, OG image) |
-| Deployment | Cloudflare Pages + Workers (Nitro) |
-| Theme | CSS variables, dark/light mode |
+- **Stack** → @.claude/rules/00-stack.md
+- **Directory + Naming** → @.claude/rules/01-structure.md
+- **Design System** → @.claude/rules/02-design-system.md
+- **API & Data Model** → @.claude/rules/03-api-data.md
+- **Tasks & Phases** → @.claude/rules/04-tasks.md
 
-## Directory Structure
-
-```
-├── pages/              # File-based routes
-├── components/
-│   ├── layout/         # AppHeader, AppSidebar, AppFooter, ThemeToggle, MobileTabBar
-│   ├── ui/             # BaseButton, BaseInput, BaseSelect, BaseBadge, BaseTag, BaseToast, BaseSkeleton
-│   └── og/             # AppOgImage (OG image template)
-├── composables/        # useTheme, usePageSeo, useApi, useAuth, useToast, useKeyboardShortcuts
-├── assets/css/         # main.css (design tokens), markdown.css
-├── types/              # TypeScript type definitions
-├── content/            # Nuxt Content markdown files
-├── public/             # Static assets (favicon, manifest)
-├── nuxt.config.ts
-├── wrangler.toml       # Cloudflare deployment template
-└── package.json
-```
-
-## Quick Start
+## Core Commands
 
 ```bash
 pnpm dev          # Start dev server
-pnpm build        # Build for production
+pnpm build        # Build for Cloudflare
 pnpm typecheck    # Type check
 ```
 
-## Customization
+## Key Files
 
-1. Update `nuxt.config.ts` — site name, URL
-2. Update `composables/usePageSeo.ts` — SITE_NAME, TAGLINE
-3. Modify `assets/css/main.css` — colors, fonts, design tokens
-4. Replace `pages/index.vue` with your own content
+| What | Where |
+|------|-------|
+| PRD | `docs/sub/PRD.md` |
+| Style guide | `docs/pixel-arcade-ui-style-guide.md` |
+| Visual demo | `docs/pixel-arcade-v3.html` |
+| Task phases | `docs/tasks/README.md` |
+| Main CSS | `assets/css/main.css` |
+| Nuxt config | `nuxt.config.ts` |
+| Scraper data | `retrovault-scraper/data/` |
 
-## Design System
+## Design Philosophy
 
-The `assets/css/main.css` defines design tokens matching `docs/pixel-arcade-v3.html`:
+- Retro-modern fusion: pixel accents on clean dark layout
+- Mobile-first, touch-native (min 44px targets)
+- Dark immersive theme (like dimly lit arcade)
+- Pink (#e02d7a) accent on deep purple-black (#0d0b12) bg
+- CRT scanline overlay via `body::after`
+- Cards use borders not shadows; hover = pink border tint
 
-- **Dark mode (default)**: deep purple-black bg (#0d0b12), light text (#ede8f5)
-- **Accent**: Pink (#e02d7a) — primary CTA, active states, highlights
-- **Green (success)**: #2dd97a — play buttons, running indicators
-- **Yellow (warning)**: #f0b028 — queue buttons, paused state
-- **Cyan (secondary)**: #2db8d9 — secondary CTA
-- **Fonts**: Inter (body/headings), JetBrains Mono (code), Press Start 2P (pixel/titles)
-- **Radius**: Extra large (10/16/24/30px) for retro feel
-- **Cards**: bg-elevated (#221f2c), border, hover = pink border tint, active = scale(0.95)
-- **CRT overlay**: `body::after` scanline pattern (mix-blend-mode: overlay)
-- **Theme**: persisted in localStorage (`app-theme`). Toggle via `useTheme()` composable. Light mode minimal.
+## Data Flow
 
-## Cloudflare
+```
+retrovault-scraper/data/games/*.json
+  → server/api/games/[slug].get.ts
+    → pages/games/[slug].vue
+      → GameEmulator.vue (EmulatorJS CDN + ROM from /roms/)
+```
 
-The `wrangler.toml` is pre-configured for Cloudflare Pages deployment with Nitro preset `cloudflare_module`. Uncomment D1/KV/R2 sections as needed.
+All 2324 games available via `GET /api/games` and `GET /api/games/:slug`.
+
+## Development Pattern
+
+1. Start with `pnpm dev`
+2. Check `@.claude/rules/02-design-system.md` for component classes
+3. All styles in `assets/css/main.css` — no inline Tailwind unless necessary
+4. Use existing composables (`useApi`, `useToast`, `useTheme`) before creating new ones
+5. Game-specific components go in `components/game/`

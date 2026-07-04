@@ -1,0 +1,210 @@
+<template>
+  <div>
+    <!-- Emulator overlay -->
+    <GameEmulator
+      v-if="game"
+      :game="game"
+      :visible="emulatorVisible"
+      @close="emulatorVisible = false"
+    />
+
+    <!-- TODO loading -->
+    <div v-if="pending" class="pt-6">
+      <div class="skeleton" style="width:120px;height:34px;margin-bottom:16px;" />
+      <div class="detail-header">
+        <div class="skeleton" style="width:120px;height:120px;border-radius:var(--radius-sm);flex-shrink:0" />
+        <div class="detail-info">
+          <div class="skeleton" style="width:70%;height:22px;margin-bottom:8px" />
+          <div class="skeleton" style="width:50%;height:16px;margin-bottom:10px" />
+          <div class="skeleton" style="width:100%;height:60px;margin-bottom:14px;border-radius:var(--radius-sm)" />
+          <div class="flex gap-2">
+            <div class="skeleton" style="width:120px;height:40px;border-radius:var(--radius-lg)" />
+            <div class="skeleton" style="width:120px;height:40px;border-radius:var(--radius-lg)" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TODO 404 -->
+    <div v-else-if="error" class="pt-10 text-center">
+      <div style="font-size:clamp(3rem,12vw,5rem);margin-bottom:12px">🕹️</div>
+      <h1 class="font-pixel text-[clamp(0.8rem,3vw,1.2rem)]" style="color:var(--color-text-primary);margin-bottom:8px">
+        Game Not Found
+      </h1>
+      <p class="font-body text-[clamp(0.6rem,1.5vw,0.7rem)]" style="color:var(--color-text-muted)">
+        The game "{{ $route.params.slug }}" doesn't exist in our vault.
+      </p>
+    </div>
+
+    <!-- TODO content -->
+    <div v-else-if="game" class="pt-6">
+      <!-- TODO Back -->
+      <button class="detail-back" @click="$router.back()">
+        ← Back to games
+      </button>
+
+      <!-- TODO Header -->
+      <div class="detail-header">
+        <div class="detail-icon">
+          <img
+            v-if="coverLoaded"
+            :src="`/${game.localCover}`"
+            :alt="game.title"
+            style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm)"
+            @error="coverLoaded = false"
+          />
+          <span v-else>🎮</span>
+        </div>
+
+        <div class="detail-info">
+          <h1 class="detail-title">{{ game.title }}</h1>
+
+          <div class="detail-meta">
+            <span>{{ game.genre }}</span>
+            <span>📅 {{ game.year }}</span>
+            <span v-if="game.developer">🏢 {{ game.developer }}</span>
+            <span v-if="game.platform">{{ game.platform }}</span>
+          </div>
+
+          <div class="detail-desc">{{ game.description }}</div>
+
+          <div class="detail-actions">
+            <button class="btn-pixel btn-pixel-green" @click="emulatorVisible = true">
+              🕹️ Play Now
+            </button>
+            <!-- TODO Queue -->
+            <button
+              class="btn-pixel"
+              :class="inQueue ? 'btn-pixel-yellow in-queue' : 'btn-pixel-yellow'"
+              @click="toggleQueue"
+            >
+              {{ inQueue ? '✅ In Queue' : '➕ Queue' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TODO Comments -->
+      <div class="comment-section">
+        <div class="cmt-title">
+          💬 Comments
+          <span class="cmt-count">({{ comments.length }})</span>
+        </div>
+
+        <div class="cmt-form">
+          <input
+            v-model="cmtName"
+            type="text"
+            placeholder="Your name"
+          />
+          <textarea
+            v-model="cmtContent"
+            placeholder="Write a comment…"
+          ></textarea>
+          <button class="cmt-submit" @click="postComment">
+            ✏️ Post
+          </button>
+        </div>
+
+        <div v-if="comments.length === 0" class="cmt-empty">
+          No comments yet
+        </div>
+
+        <div v-else class="cmt-list">
+          <div
+            v-for="c in reversedComments"
+            :key="c.id"
+            class="cmt-item"
+          >
+            <div class="cmt-header">
+              <span class="cmt-user">{{ c.avatar || '👤' }} {{ c.username }}</span>
+              <span class="cmt-time">{{ formatTime(c.time) }}</span>
+              <button class="cmt-del" @click="deleteComment(c.id)">🗑️</button>
+            </div>
+            <div class="cmt-content">{{ c.content }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import type { GameData, GameComment } from '~/types/games'
+
+const route = useRoute()
+const slug = computed(() => route.params.slug as string)
+
+// Fetch game data
+const { data: game, pending, error } = useFetch<GameData>(`/api/games/${slug.value}`, {
+  key: `game-${slug.value}`,
+})
+
+// Cover fallback
+const coverLoaded = ref(true)
+
+// Queue
+const queue = useQueue()
+const inQueue = computed(() => queue.value.includes(slug.value))
+
+function toggleQueue() {
+  if (inQueue.value) {
+    queue.value = queue.value.filter((s: string) => s !== slug.value)
+  } else {
+    queue.value.push(slug.value)
+  }
+  localStorage.setItem('playQueue', JSON.stringify(queue.value))
+}
+
+// Emulator visibility
+const emulatorVisible = ref(false)
+
+// Comments (localStorage)
+const STORAGE_KEY = computed(() => `gameComments_${slug.value}`)
+const cmtName = ref('')
+const cmtContent = ref('')
+
+const comments = ref<GameComment[]>([])
+
+onMounted(() => {
+  const raw = localStorage.getItem(STORAGE_KEY.value)
+  if (raw) {
+    try { comments.value = JSON.parse(raw) } catch { comments.value = [] }
+  }
+})
+
+const reversedComments = computed(() => [...comments.value].reverse())
+
+function postComment() {
+  const name = cmtName.value.trim() || 'Anonymous'
+  const content = cmtContent.value.trim()
+  if (!content) return
+
+  const avatar = getAvatar()
+  comments.value.push({ id: Date.now(), username: name, content, time: Date.now(), avatar })
+  localStorage.setItem(STORAGE_KEY.value, JSON.stringify(comments.value))
+  cmtContent.value = ''
+  cmtName.value = ''
+}
+
+function deleteComment(id: number) {
+  comments.value = comments.value.filter(c => c.id !== id)
+  localStorage.setItem(STORAGE_KEY.value, JSON.stringify(comments.value))
+}
+
+function formatTime(ts: number) {
+  const d = new Date(ts)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+function getAvatar() {
+  const avatars = ['👾','🐱','🐶','🦊','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🐔','🐧','🐦','🐤','🐣','🐥','🐺','🐗','🐴','🦄','🐝','🐞','🦋','🐙','🦑','🐬','🐳','🐊','🦕','🦖','🐉','🌵','🎮','🕹️','💎','🌈','⭐','🌙','☀️','⚡','🔥','💧','🍄','🌻','🌸','🌺']
+  return avatars[Math.floor(Math.random() * avatars.length)]
+}
+
+// Queue composable helper
+function useQueue() {
+  const raw = typeof window !== 'undefined' ? localStorage.getItem('playQueue') : '[]'
+  try { return ref<string[]>(JSON.parse(raw || '[]')) } catch { return ref<string[]>([]) }
+}
+</script>
