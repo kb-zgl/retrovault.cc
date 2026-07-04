@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Pixel Arcade · Retro Gaming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        :root {
+            --font-pixel: 'Press Start 2P', monospace;
+            --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, Helvetica, Arial, sans-serif;
+            --bg-deep: #0d0b12;
+            --bg-card: #1a1722;
+            --bg-surface: #221f2c;
+            --border-subtle: #2e2a38;
+            --text-primary: #ede8f5;
+            --text-secondary: #9e97ad;
+            --text-muted: #6e687a;
+            --accent-pink: #e02d7a;
+            --accent-green: #2dd97a;
+            --accent-yellow: #f0b028;
+            --accent-cyan: #2db8d9;
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --cover-size: 90px;
+            --cover-size-lg: 120px;
+        }
+
+        html { font-size: 16px; }
+
+        body {
+            background: var(--bg-deep);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            font-family: var(--font-pixel);
+            padding: 12px 12px 40px 12px;
+            position: relative;
+            overflow-x: hidden;
+            color: var(--text-primary);
+            letter-spacing: 0.02em;
+        }
+
+        body::after {
+            content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.04) 0px, rgba(0,0,0,0.04) 1px, transparent 1px, transparent 3px);
+            z-index: 9999; mix-blend-mode: overlay;
+        }
+
+        .arcade-cabinet {
+            max-width: 100%; width: 100%;
+            background: var(--bg-card);
+            padding: 18px 16px 32px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+            margin-top: 6px;
+        }
+
+        .cabinet-marquee { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
+        .marquee-lamp { display: flex; gap: 6px; }
+        .lamp { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-pink); box-shadow: 0 0 8px var(--accent-pink); animation: blink 1.2s infinite alternate; }
+        .lamp:nth-child(2) { background: var(--accent-yellow); box-shadow: 0 0 8px var(--accent-yellow); animation-delay: 0.3s; }
+        .lamp:nth-child(3) { background: var(--accent-cyan); box-shadow: 0 0 8px var(--accent-cyan); animation-delay: 0.6s; }
+        .lamp:nth-child(4) { background: #c840e0; box-shadow: 0 0 8px #c840e0; animation-delay: 0.9s; }
+        .lamp:nth-child(5) { background: var(--accent-yellow); box-shadow: 0 0 8px var(--accent-yellow); animation-delay: 0.2s; }
+        @keyframes blink { 0% { opacity: 0.3; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.1); } }
+
+        .marquee-title {
+            font-size: clamp(0.85rem, 3.5vw, 1.3rem); letter-spacing: 2px;
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.03); padding: 5px 18px; border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle); white-space: nowrap;
+        }
+        .marquee-title span { color: var(--accent-yellow); }
+
+        /* Nav */
+        .pixel-nav { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 20px; padding: 8px 8px; background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); justify-content: center; }
+        .pixel-nav .nav-btn {
+            font-family: var(--font-pixel); font-size: clamp(0.62rem, 2.2vw, 0.75rem);
+            padding: 10px 14px; border: none; border-radius: var(--radius-lg);
+            background: transparent; color: var(--text-secondary); cursor: pointer;
+            transition: all 0.1s ease; min-height: 42px; min-width: 48px;
+            display: flex; align-items: center; justify-content: center; flex: 0 1 auto;
+        }
+        .pixel-nav .nav-btn:hover { color: var(--text-primary); background: rgba(255,255,255,0.04); }
+        .pixel-nav .nav-btn.active { color: #fff; background: var(--accent-pink); box-shadow: 0 0 16px rgba(224,45,122,0.3); }
+        .pixel-nav .nav-btn:active { transform: scale(0.96); }
+
+        .page-panel { display: none; animation: fadeIn 0.2s ease; }
+        .page-panel.active { display: block; }
+        @keyframes fadeIn { 0% { opacity: 0; transform: translateY(6px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        .section-title { font-family: var(--font-pixel); font-size: clamp(0.7rem, 2.5vw, 0.95rem); color: var(--text-primary); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .badge { font-family: var(--font-body); font-size: clamp(0.6rem, 1.5vw, 0.7rem); font-weight: 600; padding: 3px 12px; border-radius: var(--radius-lg); letter-spacing: 0; }
+        .badge.pink { background: rgba(224,45,122,0.2); color: #f080a8; }
+        .badge.blue { background: rgba(45,184,217,0.2); color: #6ed0e8; }
+        .badge.yellow { background: rgba(240,176,40,0.2); color: #f0c860; }
+        .badge.green { background: rgba(45,217,122,0.2); color: #60e898; }
+        .badge.purple { background: rgba(180,120,240,0.2); color: #c0a0f0; }
+
+        /* Home */
+        .hero-enter { background: linear-gradient(135deg, var(--bg-surface) 0%, #2a1f30 100%); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 28px 18px 32px; text-align: center; margin-bottom: 24px; cursor: pointer; transition: all 0.15s ease; }
+        .hero-enter:hover { border-color: var(--accent-pink); }
+        .hero-enter:active { transform: scale(0.97); }
+        .hero-enter .hero-icon { font-size: clamp(2.8rem, 12vw, 4rem); display: block; margin-bottom: 8px; animation: float 2s ease-in-out infinite; }
+        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        .hero-enter .hero-title { font-family: var(--font-pixel); font-size: clamp(0.9rem, 4vw, 1.5rem); color: #fff; letter-spacing: 1px; }
+        .hero-enter .hero-sub { font-family: var(--font-body); font-size: clamp(0.7rem, 2vw, 0.9rem); color: var(--text-secondary); margin-top: 6px; letter-spacing: 0; }
+        .hero-enter .hero-count { display: inline-block; font-family: var(--font-pixel); background: var(--accent-pink); color: #fff; padding: 6px 18px; border-radius: var(--radius-lg); font-size: clamp(0.65rem, 2vw, 0.8rem); margin-top: 12px; }
+        .hero-enter .hero-count span { color: var(--accent-yellow); font-size: clamp(0.8rem, 3vw, 1.1rem); }
+
+        .home-section { margin-bottom: 24px; }
+        .home-section .section-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px 12px; margin-bottom: 12px; }
+        .home-section .section-header .sec-title { font-family: var(--font-pixel); font-size: clamp(0.6rem, 2.2vw, 0.8rem); color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        .home-section .section-header .sec-title .count-badge { font-family: var(--font-body); font-size: clamp(0.55rem, 1.5vw, 0.65rem); background: var(--bg-surface); color: var(--text-muted); padding: 2px 12px; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); letter-spacing: 0; }
+        .home-section .section-header .sec-more { font-family: var(--font-body); font-size: clamp(0.6rem, 1.6vw, 0.7rem); color: var(--text-muted); cursor: pointer; background: none; border: none; padding: 6px 12px; border-radius: var(--radius-lg); letter-spacing: 0; }
+        .home-section .section-header .sec-more:hover { color: var(--text-primary); background: rgba(255,255,255,0.03); }
+
+        .scroll-row { display: flex; gap: 16px; overflow-x: auto; padding: 4px 2px 14px 2px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+        .scroll-row::-webkit-scrollbar { height: 4px; }
+        .scroll-row::-webkit-scrollbar-track { background: var(--bg-surface); border-radius: 4px; }
+        .scroll-row::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 4px; }
+
+        .scroll-row .game-card-mini {
+            flex: 0 0 160px; scroll-snap-align: start;
+            background: var(--bg-surface); border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md); padding: 14px 10px 18px; text-align: center;
+            cursor: pointer; transition: all 0.1s ease; min-width: 140px; position: relative;
+        }
+        .scroll-row .game-card-mini:hover { border-color: var(--accent-pink); }
+        .scroll-row .game-card-mini:active { transform: scale(0.95); }
+        .scroll-row .game-card-mini .mini-cover {
+            width: 100%; aspect-ratio: 1/1;
+            background: #1e1b26; border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;
+            font-size: clamp(2.2rem, 9vw, 3rem); margin-bottom: 10px;
+        }
+        .scroll-row .game-card-mini .mini-play-btn {
+            position: absolute; top: 18px; right: 14px;
+            width: 34px; height: 34px; border-radius: 50%;
+            background: var(--accent-green); color: #0b0a0c; border: none;
+            font-family: var(--font-pixel); font-size: 16px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 12px rgba(45,217,122,0.3);
+            transition: all 0.1s ease; z-index: 2;
+        }
+        .scroll-row .game-card-mini .mini-play-btn:hover { transform: scale(1.1); }
+        .scroll-row .game-card-mini .mini-play-btn:active { transform: scale(0.9); }
+
+        .scroll-row .game-card-mini .mini-title { font-family: var(--font-pixel); font-size: clamp(0.55rem, 2vw, 0.7rem); color: var(--text-primary); line-height: 1.4; }
+        .scroll-row .game-card-mini .mini-title small { font-family: var(--font-body); font-size: clamp(0.5rem, 1.4vw, 0.6rem); color: var(--text-muted); display: block; margin-top: 3px; letter-spacing: 0; }
+        .mini-tag { display: inline-block; font-family: var(--font-body); font-size: clamp(0.5rem, 1.2vw, 0.6rem); font-weight: 600; padding: 3px 10px; border-radius: var(--radius-lg); margin-top: 6px; letter-spacing: 0; }
+        .mini-tag.gold { background: rgba(240,176,40,0.2); color: #f0c860; }
+        .mini-tag.green { background: rgba(45,217,122,0.2); color: #60e898; }
+
+        /* Category Grid */
+        .category-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+        .category-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 24px 14px; text-align: center; transition: all 0.1s ease; cursor: pointer; }
+        .category-card:hover { border-color: var(--accent-pink); }
+        .category-card:active { transform: scale(0.95); }
+        .category-card .emoji-big { font-size: clamp(2.2rem, 9vw, 3.2rem); display: block; margin-bottom: 10px; }
+        .category-card .cat-name { font-family: var(--font-pixel); font-size: clamp(0.65rem, 2.5vw, 0.9rem); color: var(--text-primary); }
+        .category-card .cat-count { font-family: var(--font-body); font-size: clamp(0.55rem, 1.5vw, 0.65rem); color: var(--text-muted); margin-top: 6px; display: block; letter-spacing: 0; }
+
+        /* Game List */
+        .game-list-full { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+        .game-list-full .game-card {
+            background: var(--bg-surface); border: 1px solid var(--border-subtle);
+            padding: 14px 12px 18px; border-radius: var(--radius-md); text-align: center;
+            transition: all 0.1s ease; cursor: pointer; position: relative;
+        }
+        .game-list-full .game-card:hover { border-color: var(--accent-pink); }
+        .game-list-full .game-card:active { transform: scale(0.95); }
+        .game-list-full .game-card .pixel-icon {
+            width: 100%; aspect-ratio: 1/1;
+            margin: 0 auto 12px;
+            background: #1e1b26; border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            font-size: clamp(2.4rem, 10vw, 3.4rem);
+            max-width: var(--cover-size);
+        }
+        .game-list-full .game-card .card-play-btn {
+            position: absolute; top: 18px; right: 16px;
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--accent-green); color: #0b0a0c; border: none;
+            font-family: var(--font-pixel); font-size: 18px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 14px rgba(45,217,122,0.3);
+            transition: all 0.1s ease; z-index: 2;
+        }
+        .game-list-full .game-card .card-play-btn:hover { transform: scale(1.1); }
+        .game-list-full .game-card .card-play-btn:active { transform: scale(0.9); }
+
+        .game-list-full .game-card .game-title { font-family: var(--font-pixel); font-size: clamp(0.58rem, 2vw, 0.75rem); color: var(--text-primary); line-height: 1.4; }
+        .game-list-full .game-card .game-title small { font-family: var(--font-body); font-size: clamp(0.5rem, 1.4vw, 0.6rem); color: var(--text-muted); display: block; margin-top: 3px; letter-spacing: 0; }
+        .game-tag-sm { display: inline-block; font-family: var(--font-body); font-size: clamp(0.5rem, 1.2vw, 0.6rem); font-weight: 600; padding: 3px 12px; background: rgba(255,255,255,0.04); color: var(--text-secondary); border-radius: var(--radius-lg); margin-top: 6px; border: 1px solid var(--border-subtle); letter-spacing: 0; }
+
+        /* Filter */
+        .filter-bar { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 18px; }
+        .filter-group { margin-bottom: 10px; }
+        .filter-group:last-child { margin-bottom: 0; }
+        .filter-group .filter-label { font-family: var(--font-body); font-size: clamp(0.6rem, 1.6vw, 0.7rem); font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 8px; letter-spacing: 0; }
+        .filter-group .filter-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+        .filter-btn { font-family: var(--font-body); font-size: clamp(0.6rem, 1.5vw, 0.7rem); font-weight: 600; padding: 6px 14px; background: transparent; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); color: var(--text-secondary); cursor: pointer; transition: all 0.1s ease; min-height: 34px; display: flex; align-items: center; letter-spacing: 0; }
+        .filter-btn:hover { border-color: var(--accent-pink); color: var(--text-primary); }
+        .filter-btn.active { background: var(--accent-pink); color: #fff; border-color: var(--accent-pink); }
+        .filter-btn .count { opacity: 0.7; margin-left: 4px; }
+        .filter-btn.clear-btn { background: var(--bg-surface); border-color: var(--border-subtle); color: var(--text-muted); }
+        .filter-result-info { font-family: var(--font-body); font-size: clamp(0.6rem, 1.6vw, 0.7rem); color: var(--text-muted); margin-bottom: 14px; padding: 6px 14px; background: var(--bg-surface); border-radius: var(--radius-lg); display: inline-block; border: 1px solid var(--border-subtle); letter-spacing: 0; }
+
+        /* Articles, Guestbook, About */
+        .article-list { display: flex; flex-direction: column; gap: 14px; }
+        .article-item { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 16px 18px; cursor: pointer; transition: all 0.1s ease; }
+        .article-item:hover { border-color: var(--accent-pink); }
+        .article-item .article-title { font-family: var(--font-pixel); font-size: clamp(0.62rem, 2.2vw, 0.8rem); color: var(--text-primary); margin-bottom: 6px; }
+        .article-item .article-meta { font-family: var(--font-body); font-size: clamp(0.55rem, 1.4vw, 0.65rem); color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 6px; letter-spacing: 0; }
+        .article-item .article-meta .author { color: var(--text-secondary); }
+        .article-item .article-meta .art-tag { background: rgba(255,255,255,0.03); padding: 2px 12px; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); font-size: clamp(0.5rem, 1.2vw, 0.6rem); letter-spacing: 0; }
+        .article-item .article-excerpt { font-family: var(--font-body); font-size: clamp(0.6rem, 1.5vw, 0.7rem); color: var(--text-secondary); line-height: 1.7; letter-spacing: 0; }
+
+        .guestbook-area { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 18px 18px; }
+        .guestbook-area .gb-form { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+        .guestbook-area .gb-form input, .guestbook-area .gb-form textarea { font-family: var(--font-body); background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-primary); padding: 10px 14px; font-size: clamp(0.65rem, 1.6vw, 0.75rem); outline: none; width: 100%; letter-spacing: 0; }
+        .guestbook-area .gb-form input:focus, .guestbook-area .gb-form textarea:focus { border-color: var(--accent-pink); }
+        .guestbook-area .gb-form textarea { min-height: 70px; resize: vertical; }
+        .guestbook-area .gb-form .gb-submit { font-family: var(--font-pixel); font-size: clamp(0.55rem, 1.8vw, 0.65rem); padding: 10px 24px; background: var(--accent-green); border: none; border-radius: var(--radius-lg); color: #0b0a0c; cursor: pointer; width: 100%; }
+        .gb-submit:active { transform: scale(0.96); }
+
+        .gb-messages { display: flex; flex-direction: column; gap: 12px; max-height: 420px; overflow-y: auto; }
+        .gb-messages .gb-msg { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px 18px; }
+        .gb-messages .gb-msg .gb-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+        .gb-messages .gb-msg .gb-user { font-family: var(--font-pixel); font-size: clamp(0.55rem, 1.6vw, 0.65rem); color: var(--accent-green); }
+        .gb-messages .gb-msg .gb-time { font-family: var(--font-body); font-size: clamp(0.5rem, 1.2vw, 0.6rem); color: var(--text-muted); letter-spacing: 0; }
+        .gb-messages .gb-msg .gb-content { font-family: var(--font-body); font-size: clamp(0.62rem, 1.5vw, 0.7rem); color: var(--text-secondary); line-height: 1.7; word-break: break-word; letter-spacing: 0; }
+        .gb-messages .gb-msg .gb-del { font-family: var(--font-body); font-size: clamp(0.5rem, 1.2vw, 0.6rem); color: var(--accent-pink); cursor: pointer; background: none; border: none; padding: 4px 10px; border-radius: var(--radius-lg); letter-spacing: 0; }
+        .gb-empty { text-align: center; font-family: var(--font-body); color: var(--text-muted); font-size: clamp(0.65rem, 1.8vw, 0.75rem); padding: 24px 0; letter-spacing: 0; }
+
+        .about-content { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 20px 20px; line-height: 1.8; }
+        .about-content p { font-family: var(--font-body); font-size: clamp(0.65rem, 1.6vw, 0.75rem); color: var(--text-secondary); margin-bottom: 12px; letter-spacing: 0; }
+        .about-content .highlight { color: var(--accent-pink); }
+        .about-content .team { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; }
+        .about-content .team-member { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px 18px; flex: 1 0 120px; text-align: center; }
+        .about-content .team-member .avatar { font-size: clamp(1.6rem, 6vw, 2.2rem); display: block; margin-bottom: 6px; }
+        .about-content .team-member .name { font-family: var(--font-pixel); font-size: clamp(0.55rem, 1.6vw, 0.65rem); color: var(--text-primary); }
+        .about-content .team-member .role { font-family: var(--font-body); font-size: clamp(0.5rem, 1.3vw, 0.6rem); color: var(--text-muted); letter-spacing: 0; }
+
+        /* Detail */
+        #page-detail { padding: 6px 0; }
+        .detail-back { display: inline-block; font-family: var(--font-body); font-size: clamp(0.62rem, 1.8vw, 0.7rem); font-weight: 600; background: var(--bg-surface); color: var(--text-secondary); padding: 8px 18px; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); cursor: pointer; margin-bottom: 16px; letter-spacing: 0; }
+        .detail-back:hover { border-color: var(--accent-pink); }
+
+        .detail-header { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; margin-bottom: 20px; }
+        .detail-icon {
+            width: var(--cover-size-lg); height: var(--cover-size-lg);
+            background: #1e1b26; border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            font-size: clamp(3.2rem, 12vw, 4.8rem);
+            flex-shrink: 0;
+        }
+        .detail-info { flex: 1; min-width: 0; }
+        .detail-info .detail-title { font-family: var(--font-pixel); font-size: clamp(0.9rem, 3.8vw, 1.3rem); color: var(--text-primary); margin-bottom: 8px; }
+        .detail-info .detail-meta { font-family: var(--font-body); font-size: clamp(0.58rem, 1.5vw, 0.68rem); color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; letter-spacing: 0; }
+        .detail-info .detail-meta span { background: var(--bg-surface); padding: 3px 12px; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); }
+        .detail-info .detail-desc { font-family: var(--font-body); font-size: clamp(0.65rem, 1.6vw, 0.75rem); color: var(--text-secondary); line-height: 1.8; background: var(--bg-surface); padding: 14px 16px; border-radius: var(--radius-sm); border-left: 3px solid var(--accent-pink); margin: 10px 0 14px 0; letter-spacing: 0; }
+
+        .detail-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+        .detail-actions .btn-arcade { font-family: var(--font-pixel); font-size: clamp(0.52rem, 1.6vw, 0.62rem); padding: 12px 20px; border: none; border-radius: var(--radius-lg); color: #fff; cursor: pointer; transition: all 0.1s ease; flex: 1; min-width: 100px; text-align: center; }
+        .detail-actions .btn-arcade:active { transform: scale(0.95); }
+        .detail-actions .btn-arcade.btn-play { background: var(--accent-green); color: #0b0a0c; }
+        .detail-actions .btn-arcade.btn-queue { background: var(--accent-yellow); color: #0b0a0c; }
+        .detail-actions .btn-arcade.btn-queue.in-queue { background: var(--accent-green); color: #0b0a0c; }
+
+        .comment-section { margin-top: 20px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 18px 18px; }
+        .comment-section .cmt-title { font-family: var(--font-pixel); font-size: clamp(0.58rem, 1.8vw, 0.7rem); color: var(--text-primary); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+        .comment-section .cmt-title .cmt-count { font-family: var(--font-body); font-size: clamp(0.5rem, 1.3vw, 0.6rem); color: var(--text-muted); letter-spacing: 0; }
+        .comment-section .cmt-form { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+        .comment-section .cmt-form input, .comment-section .cmt-form textarea { font-family: var(--font-body); background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-primary); padding: 8px 14px; font-size: clamp(0.62rem, 1.5vw, 0.7rem); outline: none; width: 100%; letter-spacing: 0; }
+        .comment-section .cmt-form input:focus, .comment-section .cmt-form textarea:focus { border-color: var(--accent-pink); }
+        .comment-section .cmt-form textarea { min-height: 60px; resize: vertical; }
+        .comment-section .cmt-form .cmt-submit { font-family: var(--font-pixel); font-size: clamp(0.48rem, 1.4vw, 0.58rem); padding: 8px 20px; background: var(--accent-pink); border: none; border-radius: var(--radius-lg); color: #fff; cursor: pointer; width: 100%; }
+        .cmt-submit:active { transform: scale(0.96); }
+
+        .cmt-list { display: flex; flex-direction: column; gap: 12px; max-height: 380px; overflow-y: auto; }
+        .cmt-list .cmt-item { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px 18px; }
+        .cmt-list .cmt-item .cmt-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+        .cmt-list .cmt-item .cmt-user { font-family: var(--font-pixel); font-size: clamp(0.5rem, 1.4vw, 0.6rem); color: var(--accent-yellow); }
+        .cmt-list .cmt-item .cmt-time { font-family: var(--font-body); font-size: clamp(0.48rem, 1.2vw, 0.55rem); color: var(--text-muted); letter-spacing: 0; }
+        .cmt-list .cmt-item .cmt-content { font-family: var(--font-body); font-size: clamp(0.62rem, 1.5vw, 0.7rem); color: var(--text-secondary); line-height: 1.7; word-break: break-word; letter-spacing: 0; }
+        .cmt-list .cmt-item .cmt-del { font-family: var(--font-body); font-size: clamp(0.48rem, 1.2vw, 0.55rem); color: var(--accent-pink); cursor: pointer; background: none; border: none; padding: 4px 10px; border-radius: var(--radius-lg); letter-spacing: 0; }
+        .cmt-empty { text-align: center; font-family: var(--font-body); color: var(--text-muted); font-size: clamp(0.6rem, 1.5vw, 0.7rem); padding: 18px 0; letter-spacing: 0; }
+
+        /* Tag Cloud */
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 10px; padding: 8px 0; }
+        .tag-cloud .tag-item { font-family: var(--font-body); font-size: clamp(0.58rem, 1.5vw, 0.68rem); font-weight: 600; background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 8px 18px; border-radius: var(--radius-lg); color: var(--text-secondary); cursor: pointer; transition: all 0.1s ease; letter-spacing: 0; }
+        .tag-cloud .tag-item:hover { border-color: var(--accent-pink); color: var(--text-primary); }
+        .tag-cloud .tag-item .count { color: var(--text-muted); font-size: 0.9em; margin-left: 6px; }
+        .tag-cloud .tag-item.large { font-size: clamp(0.7rem, 2vw, 0.85rem); padding: 10px 22px; }
+        .tag-cloud .tag-item.medium { font-size: clamp(0.62rem, 1.7vw, 0.75rem); padding: 8px 18px; }
+
+        /* Floating Game Window */
+        .game-float-window {
+            position: fixed; bottom: 90px; right: 12px; z-index: 1000;
+            width: 220px; max-width: 45vw;
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6); overflow: hidden;
+        }
+        .game-float-window.minimized { width: 130px; border-radius: var(--radius-lg); }
+        .game-float-window.minimized .game-float-body { display: none; }
+        .game-float-window.minimized .game-float-header .window-title { font-size: clamp(0.45rem, 1.4vw, 0.55rem); }
+        .game-float-window.minimized .game-float-header .window-actions .minimize-btn { transform: rotate(180deg); }
+
+        .game-float-header { display: flex; justify-content: space-between; align-items: center; padding: 6px 12px 6px 16px; background: var(--bg-surface); border-bottom: 1px solid var(--border-subtle); cursor: grab; user-select: none; }
+        .game-float-header .window-title { font-family: var(--font-pixel); font-size: clamp(0.45rem, 1.4vw, 0.55rem); color: var(--text-primary); display: flex; align-items: center; gap: 6px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .game-float-header .window-title .game-name { color: var(--accent-green); }
+        .game-float-header .window-actions { display: flex; gap: 4px; flex-shrink: 0; }
+        .game-float-header .window-actions button { background: none; border: 1px solid var(--border-subtle); border-radius: 50%; color: var(--text-muted); cursor: pointer; font-size: clamp(0.6rem, 2vw, 0.8rem); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; transition: all 0.1s ease; font-family: var(--font-body); padding: 0; }
+        .game-float-header .window-actions button:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); border-color: var(--accent-pink); }
+        .game-float-header .window-actions .close-btn { color: var(--accent-pink); }
+        .game-float-header .window-actions .close-btn:hover { background: rgba(224,45,122,0.15); border-color: var(--accent-pink); }
+
+        .game-float-body { padding: 8px; background: var(--bg-deep); }
+        .game-float-body canvas { display: block; width: 100%; height: auto; aspect-ratio: 1/1; image-rendering: pixelated; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); touch-action: none; }
+        .game-float-body .float-game-info { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-family: var(--font-body); font-size: clamp(0.45rem, 1.2vw, 0.55rem); color: var(--text-muted); letter-spacing: 0; }
+        .game-float-body .float-game-info .float-score { color: var(--accent-green); }
+        .game-float-body .float-game-info .float-status { color: var(--accent-yellow); display: flex; align-items: center; gap: 4px; }
+        .game-float-body .float-game-info .float-status .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+        .status-dot.running { background: var(--accent-green); animation: blink 0.8s infinite alternate; }
+        .status-dot.paused { background: var(--accent-yellow); }
+        .status-dot.stopped { background: var(--text-muted); }
+
+        /* ============================================================
+           FAB - Floating Action Button
+           ============================================================ */
+        .fab-container { position: fixed; bottom: 24px; right: 16px; z-index: 1001; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+        .fab-menu { display: none; flex-direction: column; gap: 8px; align-items: flex-end; }
+        .fab-menu.open { display: flex; }
+        .fab-menu-item {
+            font-family: var(--font-body); font-size: clamp(0.55rem, 1.4vw, 0.62rem); font-weight: 600;
+            background: var(--bg-surface); color: var(--text-primary);
+            border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);
+            padding: 8px 16px; cursor: pointer; white-space: nowrap;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.4); letter-spacing: 0;
+            transition: all 0.1s ease;
+        }
+        .fab-menu-item:hover { border-color: var(--accent-pink); background: var(--bg-card); }
+        .fab-menu-item:active { transform: scale(0.95); }
+
+        .fab-btn {
+            width: 54px; height: 54px; border-radius: 50%;
+            border: none; cursor: pointer;
+            font-family: var(--font-pixel); font-size: 24px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+            transition: all 0.12s ease;
+            position: relative;
+        }
+        .fab-btn.idle { background: var(--accent-pink); color: #fff; }
+        .fab-btn.playing { background: var(--accent-green); color: #0b0a0c; }
+        .fab-btn.paused-state { background: var(--accent-yellow); color: #0b0a0c; }
+        .fab-btn:active { transform: scale(0.9); }
+        .fab-btn .fab-score {
+            position: absolute; top: -8px; right: -8px;
+            background: var(--bg-deep); color: var(--accent-green);
+            font-family: var(--font-pixel); font-size: 10px;
+            padding: 2px 8px; border-radius: var(--radius-lg);
+            border: 1px solid var(--accent-green);
+            white-space: nowrap;
+        }
+
+        .fab-backdrop {
+            display: none; position: fixed; inset: 0; z-index: 1000;
+            background: rgba(13,11,18,0.5);
+        }
+        .fab-backdrop.open { display: block; }
+
+        /* Footer */
+        .footer { margin-top: 20px; border-top: 1px solid var(--border-subtle); padding-top: 16px; }
+        .footer-top { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 12px; font-family: var(--font-body); font-size: clamp(0.55rem, 1.4vw, 0.65rem); color: var(--text-muted); letter-spacing: 0; }
+        .footer-top .pixel-counter { display: flex; gap: 6px; align-items: center; }
+        .footer-top .pixel-counter .dot { display: inline-block; width: 8px; height: 8px; background: var(--accent-green); border-radius: 2px; animation: blink 1.8s infinite alternate; }
+        .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 20px; margin-top: 12px; font-family: var(--font-body); font-size: clamp(0.55rem, 1.4vw, 0.65rem); color: var(--text-muted); letter-spacing: 0; }
+        .footer-links a, .footer-links .link-btn { color: var(--text-muted); text-decoration: none; cursor: pointer; background: none; border: none; font-family: var(--font-body); font-size: inherit; padding: 6px 0; letter-spacing: 0; }
+        .footer-links a:hover, .footer-links .link-btn:hover { color: var(--text-primary); }
+        .footer-links .login-status { color: var(--accent-green); }
+
+        /* Login Modal */
+        .login-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(13,11,18,0.9); z-index: 10000; justify-content: center; align-items: center; }
+        .login-overlay.active { display: flex; }
+        .login-modal { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 28px 24px; max-width: 380px; width: 92%; text-align: center; }
+        .login-modal .modal-title { font-family: var(--font-pixel); font-size: clamp(0.75rem, 3vw, 1rem); color: var(--text-primary); margin-bottom: 18px; }
+        .login-modal .input-group { margin-bottom: 14px; text-align: left; }
+        .login-modal .input-group label { font-family: var(--font-body); font-size: clamp(0.55rem, 1.3vw, 0.62rem); font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px; letter-spacing: 0; }
+        .login-modal .input-group input { width: 100%; padding: 10px 14px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-primary); font-family: var(--font-body); font-size: clamp(0.62rem, 1.5vw, 0.7rem); outline: none; letter-spacing: 0; }
+        .login-modal .input-group input:focus { border-color: var(--accent-pink); }
+        .login-modal .login-actions { display: flex; gap: 12px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
+        .login-modal .login-actions button { font-family: var(--font-pixel); font-size: clamp(0.5rem, 1.5vw, 0.6rem); padding: 10px 24px; border: none; border-radius: var(--radius-lg); cursor: pointer; flex: 1; min-width: 90px; }
+        .login-modal .login-actions .login-btn { background: var(--accent-green); color: #0b0a0c; }
+        .login-modal .login-actions .cancel-btn { background: var(--bg-surface); color: var(--text-secondary); border: 1px solid var(--border-subtle); }
+        .login-modal .error-msg { font-family: var(--font-body); font-size: clamp(0.52rem, 1.2vw, 0.6rem); color: var(--accent-pink); margin-top: 10px; min-height: 20px; letter-spacing: 0; }
+
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: var(--bg-surface); }
+        ::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 4px; }
+
+        @media (min-width: 600px) {
+            :root { --cover-size: 110px; --cover-size-lg: 140px; }
+            .arcade-cabinet { padding: 24px 28px 36px; }
+            .category-grid, .game-list-full { grid-template-columns: repeat(3, 1fr); gap: 18px; }
+            .game-float-window { width: 280px; max-width: 30vw; bottom: 100px; right: 20px; }
+            .game-float-window.minimized { width: 160px; }
+            .scroll-row .game-card-mini { flex: 0 0 190px; min-width: 170px; }
+            .pixel-nav .nav-btn { font-size: clamp(0.65rem, 1.8vw, 0.8rem); padding: 12px 20px; }
+            .fab-btn { width: 60px; height: 60px; font-size: 28px; }
+            .detail-icon { width: var(--cover-size-lg); height: var(--cover-size-lg); }
+        }
+
+        @media (min-width: 1024px) {
+            :root { --cover-size: 140px; --cover-size-lg: 170px; }
+            .arcade-cabinet { max-width: 1200px; margin: 0 auto; padding: 32px 36px 44px; }
+            .category-grid, .game-list-full { grid-template-columns: repeat(4, 1fr); gap: 22px; }
+            .game-float-window { width: 320px; max-width: 22vw; bottom: 110px; right: 28px; }
+            .game-float-window.minimized { width: 190px; }
+            .scroll-row .game-card-mini { flex: 0 0 220px; min-width: 200px; }
+            .pixel-nav .nav-btn { font-size: 0.8rem; padding: 14px 26px; }
+            .fab-btn { width: 66px; height: 66px; font-size: 30px; }
+            .detail-icon { width: var(--cover-size-lg); height: var(--cover-size-lg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="arcade-cabinet">
+        <div class="cabinet-marquee">
+            <div class="marquee-lamp"><span class="lamp"></span><span class="lamp"></span><span class="lamp"></span><span class="lamp"></span><span class="lamp"></span></div>
+            <div class="marquee-title">🕹️ <span>PIXEL</span> ARCADE</div>
+            <div style="width:30px;"></div>
+        </div>
+
+        <nav class="pixel-nav">
+            <button class="nav-btn active" data-page="home">Home</button>
+            <button class="nav-btn" data-page="categories">Games</button>
+            <button class="nav-btn" data-page="tags">Tags</button>
+            <button class="nav-btn" data-page="articles">News</button>
+            <button class="nav-btn" data-page="guestbook">Guestbook</button>
+            <button class="nav-btn" data-page="about">About</button>
+        </nav>
+
+        <!-- Home -->
+        <div id="page-home" class="page-panel active">
+            <div class="hero-enter" id="heroEnter"><span class="hero-icon">🕹️</span><div class="hero-title">Explore All Games</div><div class="hero-sub">— Tap to enter the pixel vault —</div><div class="hero-count">📦 <span id="heroTotalGames">0</span> games</div></div>
+            <div class="home-section"><div class="section-header"><div class="sec-title">🔄 Recent <span class="count-badge" id="recentCount">0</span></div><button class="sec-more" data-goto="categories">View all →</button></div><div class="scroll-row" id="recentGames"></div></div>
+            <div class="home-section"><div class="section-header"><div class="sec-title">⭐ Featured <span class="count-badge" id="featuredCount">0</span></div><button class="sec-more" data-goto="categories">View all →</button></div><div class="scroll-row" id="featuredGames"></div></div>
+            <div class="home-section"><div class="section-header"><div class="sec-title">🖥️ Emulators <span class="count-badge" id="emulatorCount">0</span></div><button class="sec-more" data-goto="categories">View all →</button></div><div class="scroll-row" id="emulatorRow"></div></div>
+            <div class="home-section"><div class="section-header"><div class="sec-title">🏢 Developers <span class="count-badge" id="devCount">0</span></div><button class="sec-more" data-goto="categories">View all →</button></div><div class="scroll-row" id="devRow"></div></div>
+        </div>
+
+        <!-- Categories -->
+        <div id="page-categories" class="page-panel"><div class="section-title">📂 Categories <span class="badge yellow" id="categoryCountBadge">8 types</span></div><div class="category-grid" id="categoryGrid"></div></div>
+
+        <!-- Game List -->
+        <div id="page-games" class="page-panel">
+            <div style="margin-bottom:10px;"><button class="detail-back" id="backFromGames">← Back</button></div>
+            <div class="section-title">🎮 Games <span class="badge purple" id="gameCountBadge">All</span></div>
+            <div class="filter-bar">
+                <div class="filter-group"><span class="filter-label">📂 Category</span><div class="filter-buttons" id="categoryFilterButtons"></div></div>
+                <div class="filter-group"><span class="filter-label">🏷️ Tags</span><div class="filter-buttons" id="tagFilterButtons"></div></div>
+                <div style="margin-top:10px;"><button class="filter-btn clear-btn" id="clearFiltersBtn">✕ Clear filters</button></div>
+            </div>
+            <div class="filter-result-info" id="filterResultInfo">Showing all games</div>
+            <div class="game-list-full" id="gameListFull"></div>
+        </div>
+
+        <!-- Tags -->
+        <div id="page-tags" class="page-panel"><div class="section-title">🏷️ Tag Cloud <span class="badge green">Hot tags</span></div><div class="tag-cloud" id="tagCloud"></div></div>
+
+        <!-- Articles -->
+        <div id="page-articles" class="page-panel">
+            <div class="section-title">📰 Articles <span class="badge blue">Guides & News</span></div>
+            <div class="article-list">
+                <div class="article-item"><div class="article-title">🎮 Pixel Game Dev Guide — From Zero to Arcade</div><div class="article-meta"><span class="author">👤 PixelDriver</span><span>📅 2026-06-18</span><span class="art-tag">Guide</span><span class="art-tag">Dev</span></div><div class="article-excerpt">A deep dive into pixel game creation: engine choice, pixel art, physics, and building your own retro arcade game…</div></div>
+                <div class="article-item"><div class="article-title">🏆 June Tournament Recap: Highlights</div><div class="article-meta"><span class="author">👤 Reporter</span><span>📅 2026-06-16</span><span class="art-tag">Tournament</span><span class="art-tag">Community</span></div><div class="article-excerpt">128 players competed this month. 'MECH WAR' champion 'PixelKing' scored 99,999 points…</div></div>
+                <div class="article-item"><div class="article-title">🕹️ Arcade History: From the 80s to Modern Revival</div><div class="article-meta"><span class="author">👤 RetroFan</span><span>📅 2026-06-14</span><span class="art-tag">Culture</span><span class="art-tag">History</span></div><div class="article-excerpt">From Space Invaders to Street Fighter — why pixel aesthetics still captivate us today…</div></div>
+                <div class="article-item"><div class="article-title">⚡ Online Multiplayer Lag Optimization</div><div class="article-meta"><span class="author">👤 Techie</span><span>📅 2026-06-12</span><span class="art-tag">Tech</span><span class="art-tag">Multiplayer</span></div><div class="article-excerpt">How we reduced P2P latency with rollback netcode and frame sync…</div></div>
+            </div>
+        </div>
+
+        <!-- Guestbook -->
+        <div id="page-guestbook" class="page-panel">
+            <div class="section-title">💬 Guestbook <span class="badge pink"><span id="gbCount">0</span> messages</span></div>
+            <div class="guestbook-area"><div class="gb-form"><input type="text" id="gbName" placeholder="Your name" /><textarea id="gbContent" placeholder="Leave a message…"></textarea><button class="gb-submit" id="gbSubmit">📨 Send</button></div><div class="gb-messages" id="gbMessages"></div></div>
+        </div>
+
+        <!-- About -->
+        <div id="page-about" class="page-panel">
+            <div class="section-title">ℹ️ About <span class="badge purple">Pixel Heart</span></div>
+            <div class="about-content">
+                <p>🎮 <span class="highlight">PIXEL ARCADE</span> is a retro gaming site built by enthusiasts. We collect, curate, and share the purest pixel gaming experiences — playable right in your browser.</p>
+                <p>📅 Founded in 2026. Our mission: a pixel utopia combining game library, community, and retro culture.</p>
+                <div class="team"><div class="team-member"><span class="avatar">👨‍💻</span><div class="name">PixelDriver</div><div class="role">Founder</div></div><div class="team-member"><span class="avatar">🎨</span><div class="name">PixelArtist</div><div class="role">Art Director</div></div><div class="team-member"><span class="avatar">🕹️</span><div class="name">ArcadeManiac</div><div class="role">Designer</div></div><div class="team-member"><span class="avatar">📝</span><div class="name">RetroWriter</div><div class="role">Editor</div></div></div>
+                <p style="margin-top:14px; font-family:var(--font-body); font-size:clamp(0.55rem,1.3vw,0.62rem); color:var(--text-muted);">📧 pixel@arcade.retro</p>
+            </div>
+        </div>
+
+        <!-- Detail -->
+        <div id="page-detail" class="page-panel">
+            <div class="detail-back" id="detailBack">← Back to games</div>
+            <div class="detail-header"><div class="detail-icon" id="detailIcon">👾</div><div class="detail-info"><div class="detail-title" id="detailTitle">Game Title</div><div class="detail-meta" id="detailMeta"><span>🏷️ Shooter</span><span>📅 1984</span><span>⭐ Classic</span></div><div class="detail-desc" id="detailDesc">Description</div><div class="detail-actions"><button class="btn-arcade btn-play" id="detailPlayBtn">🕹️ Play Now</button><button class="btn-arcade btn-queue" id="detailQueueBtn">➕ Queue</button></div></div></div>
+            <div class="comment-section"><div class="cmt-title">💬 Comments <span class="cmt-count" id="cmtCount">(0)</span></div><div class="cmt-form"><input type="text" id="cmtName" placeholder="Your name" /><textarea id="cmtContent" placeholder="Write a comment…"></textarea><button class="cmt-submit" id="cmtSubmit">✏️ Post</button></div><div class="cmt-list" id="cmtList"></div></div>
+        </div>
+
+        <!-- Float Window -->
+        <div class="game-float-window minimized" id="gameFloatWindow">
+            <div class="game-float-header" id="floatHeader"><span class="window-title">🕹️ <span class="game-name" id="floatGameName">-</span></span><div class="window-actions"><button class="minimize-btn" id="floatMinimize" title="Minimize">▼</button><button class="close-btn" id="floatClose" title="Close">✕</button></div></div>
+            <div class="game-float-body" id="floatBody" style="display:none;"><canvas id="floatCanvas" width="300" height="300"></canvas><div class="float-game-info"><span class="float-score">🏆 <span id="floatScore">0</span></span><span class="float-status"><span class="status-dot stopped" id="floatStatusDot"></span><span id="floatStatusText">Idle</span></span></div></div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-top"><div class="pixel-counter"><span class="dot"></span><span>Players online 42</span></div></div>
+            <div class="footer-links"><button class="link-btn" data-page="about">📖 About</button><button class="link-btn" data-page="guestbook">💬 Guestbook</button><a href="#" onclick="alert('Privacy: We do not collect any personal information.'); return false;">🔒 Privacy</a><button class="link-btn" id="loginToggle">🔑 Login</button><span id="loginStatus"></span></div>
+        </div>
+    </div>
+
+    <!-- FAB -->
+    <div class="fab-backdrop" id="fabBackdrop"></div>
+    <div class="fab-container" id="fabContainer">
+        <div class="fab-menu" id="fabMenu">
+            <button class="fab-menu-item" id="fabRandom">🎲 Random Game</button>
+            <button class="fab-menu-item" id="fabQueue">⏭ Queue <span id="fabQueueCount">0</span></button>
+            <button class="fab-menu-item" id="fabRecent">🕹️ Resume Last</button>
+        </div>
+        <button class="fab-btn idle" id="fabBtn" title="Quick play">🎮</button>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-modal"><div class="modal-title">🔑 Login</div><div class="input-group"><label>👤 Username</label><input type="text" id="loginUser" placeholder="Your nickname" /></div><div class="input-group"><label>🔒 Password</label><input type="password" id="loginPass" placeholder="Anything works" /></div><div class="error-msg" id="loginError"></div><div class="login-actions"><button class="login-btn" id="loginSubmit">🚀 Login</button><button class="cancel-btn" id="loginCancel">✕ Cancel</button></div></div>
+    </div>
+
+    <script>
+        const gamesData = [
+            { id: 0, icon: '👾', title: 'SPACE BLAST', category: 'Shooter', year: '1984', tags: 'Classic, Bullet Hell', emulator: 'Arcade', series: 'Space Ranger', developer: 'Namco', desc: 'Classic space shooter. Dodge alien fire and strike back. Intense pixel explosions and a relentless rhythm.' },
+            { id: 1, icon: '🐉', title: 'DRAGON QUEST', category: 'RPG', year: '1986', tags: 'RPG, Adventure', emulator: 'NES', series: 'Dragon Quest', developer: 'Enix', desc: 'A Dragon Quest-style pixel RPG. Explore a vast world, defeat monsters, and save the princess.' },
+            { id: 2, icon: '🏎️', title: 'TURBO RACER', category: 'Racing', year: '1990', tags: 'Racing, Speed', emulator: 'Genesis', series: 'Turbo Racer', developer: 'Sega', desc: 'Blaze through pixel highways, dodge obstacles, and overtake rivals. Nitro boosts and drift mechanics.' },
+            { id: 3, icon: '🧙', title: 'MAGIC CASTLE', category: 'Adventure', year: '1988', tags: 'Adventure, Puzzle', emulator: 'SNES', series: 'Magic World', developer: 'Konami', desc: 'Explore a mysterious magic castle, solve puzzles, and collect enchanted items.' },
+            { id: 4, icon: '🤖', title: 'MECH WAR', category: 'Action', year: '1992', tags: 'Action, Mecha', emulator: 'Arcade', series: 'Mech Warrior', developer: 'Capcom', desc: 'Pilot a giant mech into battle. Multiple weapons and skill combos in pixel mecha combat.' },
+            { id: 5, icon: '🍄', title: 'MUSHROOM KING', category: 'Platformer', year: '1985', tags: 'Platform, Classic', emulator: 'NES', series: 'Mushroom Kingdom', developer: 'Nintendo', desc: 'Classic platformer adventure in the Mushroom Kingdom. Stomp enemies, collect coins.' },
+            { id: 6, icon: '🧟', title: 'ZOMBIE NIGHT', category: 'Survival', year: '1993', tags: 'Horror, Survival', emulator: 'GameBoy', series: 'Zombie Night', developer: 'Konami', desc: 'Survive the zombie apocalypse. Gather resources, build defenses. Tense pixel horror.' },
+            { id: 7, icon: '🚀', title: 'STAR FOX', category: 'Shooter', year: '1991', tags: 'Sci-Fi, Shooter', emulator: 'SNES', series: 'Star Fox', developer: 'Nintendo', desc: 'Interstellar fighter combat. Battle enemy ships and dodge asteroids in high-speed pixel warfare.' },
+            { id: 8, icon: '👊', title: 'FATAL FURY', category: 'Fighting', year: '1989', tags: 'Fighting, Versus', emulator: 'Arcade', series: 'Fatal Fury', developer: 'SNK', desc: 'Classic pixel fighter. Choose your character for 1v1 duels. Special moves and combos.' },
+            { id: 9, icon: '🏁', title: 'OUT RUN', category: 'Racing', year: '1986', tags: 'Racing, Classic', emulator: 'Arcade', series: 'Out Run', developer: 'Sega', desc: 'Cruise scenic pixel highways, choose your route, and enjoy the speed and music.' },
+            { id: 10, icon: '🧛', title: 'CASTLEVANIA', category: 'Action', year: '1987', tags: 'Classic, Adventure', emulator: 'NES', series: 'Castlevania', developer: 'Konami', desc: 'Vampire hunter adventure. Explore Dracula\'s castle and defeat monsters. Gothic pixel art.' },
+            { id: 11, icon: '🐱', title: 'NYAN QUEST', category: 'Platformer', year: '1994', tags: 'Casual, Rainbow', emulator: 'GBA', series: 'Nyan Cat', developer: 'Namco', desc: 'Rainbow cat adventure. Jump through colorful pixel worlds and collect stars.' },
+            { id: 12, icon: '⚔️', title: 'FINAL SWORD', category: 'RPG', year: '1995', tags: 'RPG, Epic', emulator: 'SNES', series: 'Final Fantasy', developer: 'Square', desc: 'Epic pixel RPG. The story of the Warriors of Light saving the world. Classic turn-based combat.' },
+            { id: 13, icon: '🐺', title: 'SONIC BLAST', category: 'Platformer', year: '1991', tags: 'Speed, Classic', emulator: 'Genesis', series: 'Sonic', developer: 'Sega', desc: 'Sonic the Hedgehog dashes through pixel worlds, collecting rings and defeating Dr. Eggman.' },
+            { id: 14, icon: '🔫', title: 'METAL SLUG', category: 'Shooter', year: '1996', tags: 'Action, Classic', emulator: 'Arcade', series: 'Metal Slug', developer: 'SNK', desc: 'Classic run-and-gun. Battle through warzones, defeat enemies, and rescue POWs. Iconic pixel art.' },
+            { id: 15, icon: '👑', title: 'ZELDA QUEST', category: 'Adventure', year: '1986', tags: 'Adventure, Classic', emulator: 'NES', series: 'Zelda', developer: 'Nintendo', desc: 'Link\'s adventure. Explore pixel dungeons, solve puzzles, fight enemies, and save the princess.' },
+            { id: 16, icon: '🎯', title: 'POKEMON BATTLE', category: 'RPG', year: '1996', tags: 'RPG, Collection', emulator: 'GameBoy', series: 'Pokemon', developer: 'Nintendo', desc: 'Catch, train Pokemon, challenge gyms, and become the champion. A pixel world full of exploration.' },
+            { id: 17, icon: '🏯', title: 'SAMURAI SHOWDOWN', category: 'Fighting', year: '1993', tags: 'Fighting, Classic', emulator: 'Arcade', series: 'Samurai Shodown', developer: 'SNK', desc: 'Samurai fighter. Settle duels with blades. Flashy pixel effects and powerful special moves.' },
+            { id: 18, icon: '🦊', title: 'MEGA MAN X', category: 'Action', year: '1993', tags: 'Action, Classic', emulator: 'SNES', series: 'Mega Man', developer: 'Capcom', desc: 'Mega Man\'s adventure. Defeat bosses and acquire their special weapons. Classic side-scrolling action.' },
+            { id: 19, icon: '💎', title: 'PUZZLE BOBBLE', category: 'Puzzle', year: '1994', tags: 'Puzzle, Casual', emulator: 'Arcade', series: 'Bubble Bobble', developer: 'Namco', desc: 'Cute bubble puzzle game. Shoot bubbles, match colors, and clear the screen.' },
+            { id: 20, icon: '🌌', title: 'STAR OCEAN', category: 'RPG', year: '1996', tags: 'RPG, Sci-Fi', emulator: 'SNES', series: 'Star Ocean', developer: 'Square', desc: 'Sci-fi pixel RPG. Explore the universe and encounter alien civilizations. Rich skill and battle systems.' },
+            { id: 21, icon: '🎸', title: 'GUITAR HERO', category: 'Music', year: '1998', tags: 'Music, Casual', emulator: 'PS1', series: 'Guitar Hero', developer: 'Konami', desc: 'Perform on a pixel stage. Follow the rhythm and hit the notes.' },
+            { id: 22, icon: '🏰', title: 'CASTLE QUEST', category: 'Platformer', year: '1988', tags: 'Platform, Adventure', emulator: 'NES', series: 'Ghosts \'n Goblins', developer: 'Capcom', desc: 'Classic hardcore platformer. Adventure through demon castles, defeat monsters, and save the princess.' },
+            { id: 23, icon: '🐉', title: 'BREATH OF FIRE', category: 'RPG', year: '1993', tags: 'RPG, Classic', emulator: 'SNES', series: 'Breath of Fire', developer: 'Capcom', desc: 'A dragon descendant\'s adventure. Explore pixel worlds, transform into a mighty dragon, and save the realm.' }
+        ];
+
+        const allCategories = [...new Set(gamesData.map(g => g.category))];
+        const allTags = [...new Set(gamesData.flatMap(g => g.tags.split(',').map(t => t.trim())))];
+        const allEmulators = [...new Set(gamesData.map(g => g.emulator).filter(Boolean))];
+        const allDevs = [...new Set(gamesData.map(g => g.developer).filter(Boolean))];
+
+        let selectedCategory = null;
+        let selectedTag = null;
+        let loggedInUser = localStorage.getItem('pixelUser') || null;
+
+        // Game Engine
+        const floatCanvas = document.getElementById('floatCanvas');
+        const fctx = floatCanvas.getContext('2d');
+        const floatGameName = document.getElementById('floatGameName');
+        const floatScore = document.getElementById('floatScore');
+        const floatStatusDot = document.getElementById('floatStatusDot');
+        const floatStatusText = document.getElementById('floatStatusText');
+        const floatWindow = document.getElementById('gameFloatWindow');
+        const floatBody = document.getElementById('floatBody');
+        const GRID = 15, TILE = floatCanvas.width / GRID;
+
+        let currentGameId = parseInt(localStorage.getItem('currentGameId')) || null;
+        let snake = [{ x: 7, y: 7 }], dir = { x: 1, y: 0 }, nextDir = { x: 1, y: 0 }, food = { x: 12, y: 7 }, score = 0;
+        let gameRunning = false, gamePaused = false, gameLoop = null, speed = 150, lastTime = 0;
+        let highScore = parseInt(localStorage.getItem('snakeHighScore')) || 0;
+        let playQueue = JSON.parse(localStorage.getItem('playQueue')) || [];
+
+        function saveProgress() { if (currentGameId === null) return; const data = { snake, food, score, dir, nextDir, gameRunning, gamePaused, timestamp: Date.now() }; localStorage.setItem('gameProgress_' + currentGameId, JSON.stringify(data)); }
+        function loadProgress(gameId) { const raw = localStorage.getItem('gameProgress_' + gameId); if (!raw) return false; try { const data = JSON.parse(raw); snake = data.snake || [{ x: 7, y: 7 }]; food = data.food || { x: 12, y: 7 }; score = data.score || 0; dir = data.dir || { x: 1, y: 0 }; nextDir = data.nextDir || { x: 1, y: 0 }; gameRunning = data.gameRunning || false; gamePaused = data.gamePaused || false; return true; } catch { return false; } }
+        function spawnFood() { const free = []; for (let i = 0; i < GRID; i++) for (let j = 0; j < GRID; j++) { if (!snake.some(s => s.x === i && s.y === j)) free.push({ x: i, y: j }); } if (free.length === 0) return false; food = free[Math.floor(Math.random() * free.length)]; return true; }
+        function resetGame() { snake = [{ x: 7, y: 7 }]; dir = { x: 1, y: 0 }; nextDir = { x: 1, y: 0 }; score = 0; gamePaused = false; spawnFood(); gameRunning = true; saveProgress(); updateUI(); updateFAB(); }
+
+        function updateGame() {
+            if (!gameRunning || gamePaused) return;
+            dir = { ...nextDir }; const head = snake[0]; const newHead = { x: head.x + dir.x, y: head.y + dir.y };
+            if (newHead.x < 0 || newHead.x >= GRID || newHead.y < 0 || newHead.y >= GRID) { gameRunning = false; checkHighScore(); saveProgress(); updateUI(); updateFAB(); return; }
+            const ate = (newHead.x === food.x && newHead.y === food.y);
+            let newSnake = ate ? [newHead, ...snake] : [newHead, ...snake.slice(0, -1)];
+            if (ate) { score++; if (!spawnFood()) { gameRunning = false; checkHighScore(); saveProgress(); updateUI(); updateFAB(); return; } }
+            if (newSnake.slice(1).some(seg => seg.x === newHead.x && seg.y === newHead.y)) { gameRunning = false; checkHighScore(); saveProgress(); updateUI(); updateFAB(); return; }
+            snake = newSnake; saveProgress(); updateUI();
+        }
+
+        function checkHighScore() { if (score > highScore) { highScore = score; localStorage.setItem('snakeHighScore', highScore); } }
+
+        function drawGame() {
+            fctx.clearRect(0, 0, floatCanvas.width, floatCanvas.height); fctx.strokeStyle = '#2e2a38'; fctx.lineWidth = 1;
+            for (let i = 0; i <= GRID; i++) { fctx.beginPath(); fctx.moveTo(i * TILE, 0); fctx.lineTo(i * TILE, floatCanvas.height); fctx.stroke(); fctx.beginPath(); fctx.moveTo(0, i * TILE); fctx.lineTo(floatCanvas.width, i * TILE); fctx.stroke(); }
+            fctx.fillStyle = '#e02d7a'; fctx.shadowColor = '#e02d7a'; fctx.shadowBlur = 10; fctx.fillRect(food.x * TILE + 2, food.y * TILE + 2, TILE - 4, TILE - 4); fctx.shadowBlur = 0;
+            snake.forEach((seg, idx) => { const color = idx === 0 ? '#2dd97a' : '#60e898'; fctx.fillStyle = color; fctx.shadowColor = color; fctx.shadowBlur = 6; const m = idx === 0 ? 2 : 3; fctx.fillRect(seg.x * TILE + m, seg.y * TILE + m, TILE - m * 2, TILE - m * 2); fctx.shadowBlur = 0; });
+            fctx.fillStyle = '#ede8f5'; fctx.font = '10px "Press Start 2P"'; fctx.fillText('Score: ' + score, 4, 14);
+            if (!gameRunning && snake.length > 0) { fctx.fillStyle = '#e02d7a'; fctx.font = '14px "Press Start 2P"'; fctx.textAlign = 'center'; fctx.fillText('GAME OVER', floatCanvas.width / 2, floatCanvas.height / 2 - 8); fctx.font = '8px "Press Start 2P"'; fctx.fillText('Press Start', floatCanvas.width / 2, floatCanvas.height / 2 + 22); fctx.textAlign = 'left'; }
+            else if (gamePaused && gameRunning) { fctx.fillStyle = '#f0b028'; fctx.font = '16px "Press Start 2P"'; fctx.textAlign = 'center'; fctx.fillText('⏸', floatCanvas.width / 2, floatCanvas.height / 2 + 6); fctx.textAlign = 'left'; }
+        }
+
+        function gameStep(timestamp) { if (!gameRunning) { drawGame(); gameLoop = null; return; } if (!lastTime) lastTime = timestamp; if (timestamp - lastTime >= speed) { updateGame(); lastTime = timestamp; } drawGame(); gameLoop = requestAnimationFrame(gameStep); }
+
+        function startGameEngine() { if (gameLoop) cancelAnimationFrame(gameLoop); if (currentGameId === null) { currentGameId = 0; localStorage.setItem('currentGameId', '0'); } if (!loadProgress(currentGameId)) resetGame(); else { gameRunning = true; } lastTime = 0; gameLoop = requestAnimationFrame(gameStep); updateUI(); updateFAB(); floatWindow.classList.remove('minimized'); floatBody.style.display = 'block'; }
+        function pauseGameEngine() { if (!gameRunning) return; gamePaused = !gamePaused; saveProgress(); updateUI(); updateFAB(); }
+        function resetGameEngine() { if (gameLoop) cancelAnimationFrame(gameLoop); resetGame(); lastTime = 0; gameLoop = requestAnimationFrame(gameStep); updateUI(); updateFAB(); }
+
+        function loadGame(gameId) {
+            if (gameLoop) cancelAnimationFrame(gameLoop); currentGameId = gameId; localStorage.setItem('currentGameId', String(gameId));
+            if (!loadProgress(gameId)) resetGame(); else { gameRunning = true; gamePaused = false; }
+            lastTime = 0; gameLoop = requestAnimationFrame(gameStep);
+            const game = gamesData.find(g => g.id === gameId); if (game) floatGameName.textContent = game.title;
+            floatWindow.classList.remove('minimized'); floatBody.style.display = 'block'; updateUI(); updateFAB(); updateDetailQueueBtn(gameId);
+        }
+
+        function updateUI() {
+            floatScore.textContent = score;
+            if (gameRunning && !gamePaused) { floatStatusDot.className = 'status-dot running'; floatStatusText.textContent = 'Running'; }
+            else if (gameRunning && gamePaused) { floatStatusDot.className = 'status-dot paused'; floatStatusText.textContent = 'Paused'; }
+            else { floatStatusDot.className = 'status-dot stopped'; floatStatusText.textContent = 'Game Over'; }
+        }
+
+        function updateFAB() {
+            const btn = document.getElementById('fabBtn');
+            const scoreEl = btn.querySelector('.fab-score');
+            btn.classList.remove('idle', 'playing', 'paused-state');
+            if (gameRunning && !gamePaused) { btn.classList.add('playing'); btn.textContent = '⏸'; if (!scoreEl) { const s = document.createElement('span'); s.className = 'fab-score'; s.textContent = score; btn.appendChild(s); } else scoreEl.textContent = score; }
+            else if (gameRunning && gamePaused) { btn.classList.add('paused-state'); btn.textContent = '▶'; if (scoreEl) scoreEl.remove(); }
+            else { btn.classList.add('idle'); btn.textContent = '🎮'; if (scoreEl) scoreEl.remove(); }
+            document.getElementById('fabQueueCount').textContent = playQueue.length;
+        }
+
+        function addToQueue(gameId) { if (playQueue.includes(gameId)) return; playQueue.push(gameId); localStorage.setItem('playQueue', JSON.stringify(playQueue)); updateFAB(); updateDetailQueueBtn(gameId); }
+        function removeFromQueue(gameId) { playQueue = playQueue.filter(id => id !== gameId); localStorage.setItem('playQueue', JSON.stringify(playQueue)); updateFAB(); updateDetailQueueBtn(gameId); }
+        function toggleQueue(gameId) { if (playQueue.includes(gameId)) removeFromQueue(gameId); else addToQueue(gameId); }
+        function updateDetailQueueBtn(gameId) { const btn = document.getElementById('detailQueueBtn'); if (!btn) return; if (playQueue.includes(gameId)) { btn.textContent = '✅ In Queue'; btn.classList.add('in-queue'); } else { btn.textContent = '➕ Add to Queue'; btn.classList.remove('in-queue'); } }
+
+        // FAB handlers
+        const fabBtn = document.getElementById('fabBtn');
+        const fabMenu = document.getElementById('fabMenu');
+        const fabBackdrop = document.getElementById('fabBackdrop');
+        function closeFabMenu() { fabMenu.classList.remove('open'); fabBackdrop.classList.remove('open'); }
+        fabBtn.addEventListener('click', (e) => { e.stopPropagation(); if (gameRunning) { pauseGameEngine(); return; } if (fabMenu.classList.contains('open')) { closeFabMenu(); } else { fabMenu.classList.add('open'); fabBackdrop.classList.add('open'); } });
+        fabBackdrop.addEventListener('click', closeFabMenu);
+
+        document.getElementById('fabRandom').addEventListener('click', () => { const randomId = gamesData[Math.floor(Math.random() * gamesData.length)].id; closeFabMenu(); loadGame(randomId); });
+        document.getElementById('fabQueue').addEventListener('click', () => { closeFabMenu(); if (playQueue.length === 0) { alert('Queue is empty! Add games first.'); return; } saveProgress(); loadGame(playQueue.shift()); localStorage.setItem('playQueue', JSON.stringify(playQueue)); updateFAB(); });
+        document.getElementById('fabRecent').addEventListener('click', () => { closeFabMenu(); const savedId = localStorage.getItem('currentGameId'); if (savedId) { loadGame(parseInt(savedId)); } else { const randomId = gamesData[0].id; loadGame(randomId); } });
+
+        // Card play buttons (delegated)
+        document.addEventListener('click', function(e) {
+            const playBtn = e.target.closest('.mini-play-btn, .card-play-btn');
+            if (playBtn) {
+                e.stopPropagation(); e.preventDefault();
+                const card = playBtn.closest('[data-id]');
+                if (card) { const id = parseInt(card.dataset.id); if (!isNaN(id)) loadGame(id); }
+            }
+        });
+
+        // Keyboard
+        document.addEventListener('keydown', function(e) {
+            const key = e.key;
+            if (!gameRunning) { if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(key)) { e.preventDefault(); if (currentGameId === null) { currentGameId = 0; localStorage.setItem('currentGameId', '0'); } startGameEngine(); } return; }
+            if (key === ' ') { e.preventDefault(); pauseGameEngine(); return; }
+            if (gamePaused) return;
+            let dx = 0, dy = 0; switch (key) { case 'ArrowUp': dx = 0; dy = -1; break; case 'ArrowDown': dx = 0; dy = 1; break; case 'ArrowLeft': dx = -1; dy = 0; break; case 'ArrowRight': dx = 1; dy = 0; break; default: return; }
+            e.preventDefault(); if (dx === -dir.x && dy === -dir.y) return; nextDir = { x: dx, y: dy };
+        });
+
+        // Float window controls
+        document.getElementById('floatMinimize').addEventListener('click', () => { floatWindow.classList.toggle('minimized'); floatBody.style.display = floatWindow.classList.contains('minimized') ? 'none' : 'block'; });
+        document.getElementById('floatClose').addEventListener('click', () => { if (gameLoop) cancelAnimationFrame(gameLoop); gameRunning = false; gamePaused = false; floatBody.style.display = 'none'; floatWindow.classList.add('minimized'); saveProgress(); updateUI(); updateFAB(); });
+        let dragData = null;
+        document.getElementById('floatHeader').addEventListener('mousedown', function(e) { if (e.target.closest('.window-actions')) return; dragData = { startX: e.clientX, startY: e.clientY, left: floatWindow.offsetLeft, top: floatWindow.offsetTop }; });
+        document.addEventListener('mousemove', function(e) { if (!dragData) return; floatWindow.style.left = (dragData.left + e.clientX - dragData.startX) + 'px'; floatWindow.style.top = (dragData.top + e.clientY - dragData.startY) + 'px'; floatWindow.style.right = 'auto'; floatWindow.style.bottom = 'auto'; });
+        document.addEventListener('mouseup', () => { dragData = null; });
+
+        // Page Navigation
+        const pageMap = { home: document.getElementById('page-home'), categories: document.getElementById('page-categories'), games: document.getElementById('page-games'), tags: document.getElementById('page-tags'), articles: document.getElementById('page-articles'), guestbook: document.getElementById('page-guestbook'), about: document.getElementById('page-about'), detail: document.getElementById('page-detail') };
+        function showPage(pageId) {
+            Object.values(pageMap).forEach(p => p.classList.remove('active'));
+            if (pageMap[pageId]) pageMap[pageId].classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            const navBtn = document.querySelector(`.nav-btn[data-page="${pageId}"]`); if (navBtn) navBtn.classList.add('active');
+            if (pageId === 'home') renderHome(); if (pageId === 'categories') renderCategoryGrid(); if (pageId === 'tags') renderTagCloud(); if (pageId === 'guestbook') renderGuestbook();
+        }
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => showPage(btn.dataset.page)));
+        document.querySelectorAll('.footer-links .link-btn[data-page]').forEach(btn => btn.addEventListener('click', () => showPage(btn.dataset.page)));
+        document.getElementById('heroEnter').addEventListener('click', () => showPage('categories'));
+        document.querySelectorAll('.sec-more').forEach(btn => btn.addEventListener('click', () => showPage('categories')));
+        document.getElementById('detailBack').addEventListener('click', () => showPage('categories'));
+        document.getElementById('backFromGames').addEventListener('click', () => showPage('categories'));
+
+        function makeMiniCard(g, extraTag = '') {
+            const tagHtml = extraTag ? `<span class="mini-tag ${extraTag.includes('Featured') ? 'gold' : 'green'}">${extraTag}</span>` : '';
+            return `<div class="game-card-mini" data-id="${g.id}"><button class="mini-play-btn" data-id="${g.id}">▶</button><div class="mini-cover">${g.icon}</div><div class="mini-title">${g.title}<small>${g.year}</small></div>${tagHtml}</div>`;
+        }
+
+        function renderHome() {
+            document.getElementById('heroTotalGames').textContent = gamesData.length;
+            const recent = [...gamesData].reverse().slice(0, 6);
+            document.getElementById('recentCount').textContent = recent.length;
+            document.getElementById('recentGames').innerHTML = recent.map(g => makeMiniCard(g, 'Updated')).join('');
+            const featured = gamesData.slice(0, 6);
+            document.getElementById('featuredCount').textContent = featured.length;
+            document.getElementById('featuredGames').innerHTML = featured.map(g => makeMiniCard(g, 'Featured')).join('');
+            const emuStats = allEmulators.map(e => ({ name: e, count: gamesData.filter(g => g.emulator === e).length })).sort((a,b) => b.count - a.count).slice(0, 8);
+            document.getElementById('emulatorCount').textContent = emuStats.length;
+            const emuIcons = { 'Arcade': '🕹️', 'NES': '🎮', 'SNES': '🎮', 'Genesis': '🎮', 'GameBoy': '📱', 'GBA': '📱', 'PS1': '🎮' };
+            document.getElementById('emulatorRow').innerHTML = emuStats.map(s => `<div class="game-card-mini" data-filter="emulator" data-value="${s.name}"><div class="mini-cover" style="font-size:28px;">${emuIcons[s.name]||'🖥️'}</div><div class="mini-title">${s.name}<small>${s.count} games</small></div></div>`).join('');
+            const devStats = allDevs.map(d => ({ name: d, count: gamesData.filter(g => g.developer === d).length })).sort((a,b) => b.count - a.count).slice(0, 8);
+            document.getElementById('devCount').textContent = devStats.length;
+            const devIcons = { 'Nintendo': '🍄', 'Sega': '🐺', 'Capcom': '⚔️', 'Konami': '🧛', 'Namco': '👾', 'Square': '⚔️', 'Enix': '🐉', 'SNK': '👊' };
+            document.getElementById('devRow').innerHTML = devStats.map(s => `<div class="game-card-mini" data-filter="developer" data-value="${s.name}"><div class="mini-cover" style="font-size:28px;">${devIcons[s.name]||'🏢'}</div><div class="mini-title">${s.name}<small>${s.count} games</small></div></div>`).join('');
+        }
+
+        function renderCategoryGrid() {
+            const icons = { 'Shooter': '🔫', 'Action': '⚔️', 'RPG': '🧙', 'Racing': '🏎️', 'Adventure': '🏰', 'Platformer': '🍄', 'Fighting': '👊', 'Survival': '🧟', 'Puzzle': '🧩', 'Music': '🎸' };
+            document.getElementById('categoryGrid').innerHTML = allCategories.map(cat => `<div class="category-card" data-category="${cat}"><span class="emoji-big">${icons[cat]||'📂'}</span><div class="cat-name">${cat}</div><span class="cat-count">${gamesData.filter(g=>g.category===cat).length} games</span></div>`).join('');
+            document.getElementById('categoryCountBadge').textContent = `${allCategories.length} types`;
+        }
+
+        function renderTagCloud() { document.getElementById('tagCloud').innerHTML = allTags.map(tag => { const c = gamesData.filter(g => g.tags.split(',').map(t=>t.trim()).includes(tag)).length; return `<span class="tag-item ${c>20?'large':c>10?'medium':'small'}" data-tag="${tag}">${tag}<span class="count">${c}</span></span>`; }).join(''); }
+        function getFilteredGames() { return gamesData.filter(g => { let m = true; if (selectedCategory) m = m && (g.category === selectedCategory); if (selectedTag) m = m && g.tags.split(',').map(t=>t.trim()).includes(selectedTag); return m; }); }
+
+        function renderGameList() {
+            const filtered = getFilteredGames(); const total = gamesData.length; const count = filtered.length;
+            document.getElementById('gameCountBadge').textContent = count === total ? 'All' : `${count} games`;
+            let info = 'Showing all games'; if (selectedCategory && selectedTag) info = `"${selectedCategory}" + "${selectedTag}" · ${count}`; else if (selectedCategory) info = `Category "${selectedCategory}" · ${count}`; else if (selectedTag) info = `Tag "${selectedTag}" · ${count}`;
+            document.getElementById('filterResultInfo').textContent = info;
+            if (filtered.length === 0) { document.getElementById('gameListFull').innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:30px 0;font-family:var(--font-body);font-size:clamp(0.7rem,2vw,0.9rem);">No games found</div>'; return; }
+            document.getElementById('gameListFull').innerHTML = filtered.map(g => `<div class="game-card" data-id="${g.id}"><button class="card-play-btn" data-id="${g.id}">▶</button><div class="pixel-icon">${g.icon}</div><div class="game-title">${g.title}<small>${g.category}</small></div><span class="game-tag-sm">${g.tags.split(',')[0].trim()}</span></div>`).join('');
+        }
+
+        function renderFilterButtons() {
+            document.getElementById('categoryFilterButtons').innerHTML = allCategories.map(cat => `<button class="filter-btn ${selectedCategory===cat?'active':''}" data-category="${cat}">${cat}<span class="count">(${gamesData.filter(g=>g.category===cat).length})</span></button>`).join('');
+            document.getElementById('tagFilterButtons').innerHTML = allTags.map(tag => `<button class="filter-btn ${selectedTag===tag?'active':''}" data-tag="${tag}">${tag}<span class="count">(${gamesData.filter(g=>g.tags.split(',').map(t=>t.trim()).includes(tag)).length})</span></button>`).join('');
+        }
+
+        document.addEventListener('click', function(e) {
+            const fb = e.target.closest('.filter-btn'); if (fb) { if (fb.dataset.category) { const c = fb.dataset.category; selectedCategory = (selectedCategory === c) ? null : c; } if (fb.dataset.tag) { const t = fb.dataset.tag; selectedTag = (selectedTag === t) ? null : t; } renderFilterButtons(); renderGameList(); return; }
+        });
+        document.getElementById('clearFiltersBtn').addEventListener('click', () => { selectedCategory = null; selectedTag = null; renderFilterButtons(); renderGameList(); });
+
+        function showDetail(gameId) {
+            const game = gamesData.find(g => g.id === gameId); if (!game) return;
+            document.getElementById('detailIcon').textContent = game.icon; document.getElementById('detailTitle').textContent = game.title;
+            document.getElementById('detailMeta').innerHTML = `<span>🏷️ ${game.category}</span><span>📅 ${game.year}</span><span>⭐ ${game.tags}</span>`;
+            document.getElementById('detailDesc').textContent = game.desc;
+            document.getElementById('detailPlayBtn').dataset.id = gameId; document.getElementById('detailQueueBtn').dataset.id = gameId;
+            updateDetailQueueBtn(gameId); showPage('detail');
+            const comments = JSON.parse(localStorage.getItem('gameComments_' + gameId) || '[]');
+            document.getElementById('cmtCount').textContent = `(${comments.length})`;
+            document.getElementById('cmtList').innerHTML = comments.length === 0 ? '<div class="cmt-empty">No comments yet</div>' : comments.slice().reverse().map(c => `<div class="cmt-item"><div class="cmt-header"><span class="cmt-user">${c.avatar||'👤'} ${escapeHtml(c.username)}</span><span class="cmt-time">${formatTime(c.time)}</span><button class="cmt-del" data-id="${c.id}">🗑️</button></div><div class="cmt-content">${escapeHtml(c.content)}</div></div>`).join('');
+            document.querySelectorAll('.cmt-del').forEach(btn => btn.addEventListener('click', function(e) { e.stopPropagation(); const id = parseInt(this.dataset.id); let cmts = JSON.parse(localStorage.getItem('gameComments_' + gameId) || '[]'); cmts = cmts.filter(c => c.id !== id); localStorage.setItem('gameComments_' + gameId, JSON.stringify(cmts)); showDetail(gameId); }));
+        }
+
+        document.getElementById('detailPlayBtn').addEventListener('click', function() { const id = parseInt(this.dataset.id); if (!isNaN(id)) { if (gameRunning) saveProgress(); loadGame(id); if (!gameRunning) { gameRunning = true; if (gameLoop) cancelAnimationFrame(gameLoop); lastTime = 0; gameLoop = requestAnimationFrame(gameStep); } updateUI(); updateFAB(); } });
+        document.getElementById('detailQueueBtn').addEventListener('click', function() { const id = parseInt(this.dataset.id); if (!isNaN(id)) toggleQueue(id); });
+        document.getElementById('cmtSubmit').addEventListener('click', function() { const gameId = parseInt(document.getElementById('detailPlayBtn').dataset.id); if (isNaN(gameId)) return; const name = document.getElementById('cmtName').value.trim() || 'Anonymous'; const content = document.getElementById('cmtContent').value.trim(); if (!content) { alert('Please write a comment!'); return; } const cmts = JSON.parse(localStorage.getItem('gameComments_' + gameId) || '[]'); cmts.push({ id: Date.now(), username: name, content, time: Date.now(), avatar: getAvatar() }); localStorage.setItem('gameComments_' + gameId, JSON.stringify(cmts)); document.getElementById('cmtContent').value = ''; document.getElementById('cmtName').value = ''; showDetail(gameId); });
+
+        function renderGuestbook() {
+            const msgs = JSON.parse(localStorage.getItem('guestbookMessages') || '[]');
+            document.getElementById('gbCount').textContent = msgs.length;
+            document.getElementById('gbMessages').innerHTML = msgs.length === 0 ? '<div class="gb-empty">No messages yet</div>' : msgs.slice().reverse().map(m => `<div class="gb-msg"><div class="gb-header"><span class="gb-user">${m.avatar||'👤'} ${escapeHtml(m.username)}</span><span class="gb-time">${formatTime(m.time)}</span><button class="gb-del" data-id="${m.id}">🗑️</button></div><div class="gb-content">${escapeHtml(m.content)}</div></div>`).join('');
+            document.querySelectorAll('.gb-del').forEach(btn => btn.addEventListener('click', function(e) { e.stopPropagation(); const id = parseInt(this.dataset.id); let msgs = JSON.parse(localStorage.getItem('guestbookMessages') || '[]'); msgs = msgs.filter(m => m.id !== id); localStorage.setItem('guestbookMessages', JSON.stringify(msgs)); renderGuestbook(); }));
+        }
+        document.getElementById('gbSubmit').addEventListener('click', function() { const name = document.getElementById('gbName').value.trim() || 'Anonymous'; const content = document.getElementById('gbContent').value.trim(); if (!content) { alert('Please write a message!'); return; } const msgs = JSON.parse(localStorage.getItem('guestbookMessages') || '[]'); msgs.push({ id: Date.now(), username: name, content, time: Date.now(), avatar: getAvatar() }); localStorage.setItem('guestbookMessages', JSON.stringify(msgs)); document.getElementById('gbContent').value = ''; document.getElementById('gbName').value = ''; renderGuestbook(); });
+
+        function escapeHtml(text) { const d = document.createElement('div'); d.textContent = text; return d.innerHTML; }
+        function formatTime(ts) { const d = new Date(ts); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+        function getAvatar() { const a = ['👾','🐱','🐶','🦊','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🐔','🐧','🐦','🐤','🐣','🐥','🐺','🐗','🐴','🦄','🐝','🐞','🦋','🐙','🦑','🐬','🐳','🐊','🦕','🦖','🐉','🌵','🎮','🕹️','💎','🌈','⭐','🌙','☀️','⚡','🔥','💧','🍄','🌻','🌸','🌺']; return a[Math.floor(Math.random()*a.length)]; }
+
+        function updateLoginUI() {
+            if (loggedInUser) { document.getElementById('loginStatus').innerHTML = `👋 ${loggedInUser} <button class="link-btn" id="logoutBtn" style="margin-left:4px;">🚪</button>`; document.getElementById('loginToggle').textContent = '👤 Account'; const lb = document.getElementById('logoutBtn'); if (lb) lb.addEventListener('click', e => { e.stopPropagation(); loggedInUser = null; localStorage.removeItem('pixelUser'); updateLoginUI(); alert('Logged out'); }); }
+            else { document.getElementById('loginStatus').innerHTML = ''; document.getElementById('loginToggle').textContent = '🔑 Login'; }
+        }
+        document.getElementById('loginToggle').addEventListener('click', e => { e.stopPropagation(); if (loggedInUser) alert(`Logged in as: ${loggedInUser}`); else document.getElementById('loginOverlay').classList.add('active'); });
+        document.getElementById('loginSubmit').addEventListener('click', () => { const u = document.getElementById('loginUser').value.trim(); const p = document.getElementById('loginPass').value.trim(); if (!u) { document.getElementById('loginError').textContent = 'Enter username'; return; } if (!p) { document.getElementById('loginError').textContent = 'Enter password'; return; } loggedInUser = u; localStorage.setItem('pixelUser', u); document.getElementById('loginOverlay').classList.remove('active'); updateLoginUI(); alert(`Welcome back, ${u}!`); });
+        document.getElementById('loginCancel').addEventListener('click', () => document.getElementById('loginOverlay').classList.remove('active'));
+        document.getElementById('loginOverlay').addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
+
+        // Card clicks → detail or filter
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.mini-play-btn, .card-play-btn, .fab-btn, .fab-menu-item')) return;
+            const card = e.target.closest('.game-card-mini, .game-card, .category-card');
+            if (card && card.dataset.id !== undefined) { const id = parseInt(card.dataset.id); if (!isNaN(id)) showDetail(id); }
+            if (card && card.dataset.category) { selectedCategory = card.dataset.category; selectedTag = null; showPage('games'); renderFilterButtons(); renderGameList(); }
+            if (card && card.dataset.tag) { selectedTag = card.dataset.tag; selectedCategory = null; showPage('games'); renderFilterButtons(); renderGameList(); }
+        });
+
+        function restoreLastGame() {
+            const savedId = localStorage.getItem('currentGameId');
+            if (savedId !== null) { const id = parseInt(savedId); const game = gamesData.find(g => g.id === id); if (game) { currentGameId = id; floatGameName.textContent = game.title; if (loadProgress(id)) { gameRunning = true; gamePaused = false; lastTime = 0; if (gameLoop) cancelAnimationFrame(gameLoop); gameLoop = requestAnimationFrame(gameStep); floatWindow.classList.remove('minimized'); floatBody.style.display = 'block'; } } }
+            updateUI(); updateFAB();
+        }
+
+        renderHome(); renderCategoryGrid(); renderTagCloud(); renderGuestbook(); updateLoginUI(); showPage('home');
+        setTimeout(restoreLastGame, 400);
+    </script>
+</body>
+</html>
