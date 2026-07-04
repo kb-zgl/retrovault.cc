@@ -2878,6 +2878,17 @@ h1.hero-title em {
     height: 60px;
     font-size: 28px;
   }
+  .fab-panel {
+    max-width: 400px;
+    padding: 16px;
+  }
+  .fab-cover {
+    width: 64px;
+  }
+  .fab-cover-img {
+    width: 56px;
+    height: 56px;
+  }
   .detail-icon {
     width: 140px;
   }
@@ -2905,6 +2916,22 @@ h1.hero-title em {
     width: 66px;
     height: 66px;
     font-size: 30px;
+  }
+  .fab-panel {
+    max-width: 480px;
+    padding: 18px;
+    gap: 12px;
+  }
+  .fab-cover {
+    width: 72px;
+  }
+  .fab-cover-img {
+    width: 64px;
+    height: 64px;
+  }
+  .fab-now-cover {
+    width: 56px;
+    height: 56px;
   }
   .detail-icon {
     width: 170px;
