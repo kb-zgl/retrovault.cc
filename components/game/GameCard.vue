@@ -1,6 +1,5 @@
 <template>
-  <component
-    :is="clickable ? 'div' : 'div'"
+  <div
     :class="[size === 'grid' ? 'game-card' : 'game-card-mini']"
     @click="$emit('click')"
     :data-slug="game.slug"
@@ -24,23 +23,18 @@
       <span v-else>{{ emojiFallback }}</span>
     </div>
 
-    <!-- Title -->
+    <!-- Title + year -->
     <div :class="size === 'grid' ? 'game-title' : 'mini-title'">
       {{ game.title }}
-      <small>{{ resolvedSubtitle }}</small>
+      <small>{{ game.year }}</small>
     </div>
 
-    <!-- Tag: mini cards get .mini-tag (optional), grid cards get .game-tag-sm -->
-    <span
-      v-if="size === 'mini' && tag"
-      class="mini-tag"
-      :class="tag === 'Featured' ? 'gold' : 'green'"
-    >{{ tag }}</span>
-    <span
-      v-else-if="size === 'grid'"
-      class="game-tag-sm"
-    >{{ tag || game.platform }}</span>
-  </component>
+    <!-- Tags: platform + genre -->
+    <div class="mini-tags">
+      <span class="mini-tag">{{ game.platform }}</span>
+      <span class="mini-tag">{{ game.genre }}</span>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -49,8 +43,6 @@ import type { GameSummary } from '~/types/games'
 const props = withDefaults(defineProps<{
   game: GameSummary
   size?: 'mini' | 'grid'
-  tag?: string
-  subtitle?: string
 }>(), {
   size: 'mini',
 })
@@ -62,17 +54,8 @@ defineEmits<{
 
 const coverOk = ref(true)
 
-// Reset cover on game change
 watch(() => props.game.slug, () => { coverOk.value = true })
 
-const resolvedSubtitle = computed(() =>
-  props.subtitle
-  ?? (props.size === 'grid' ? props.game.genre : undefined)
-  ?? props.game.year
-  ?? props.game.platform,
-)
-
-// Deterministic emoji from game slug
 const emojiPool = ['👾', '🐉', '🏎️', '🧙', '🤖', '🍄', '🧟', '🚀', '👊', '🏁', '🧛', '🐱', '⚔️', '🐺', '🔫', '👑', '🎯', '🏯', '🦊', '💎', '🌌', '🎸', '🏰', '🐲']
 const emojiFallback = computed(() => {
   let hash = 0

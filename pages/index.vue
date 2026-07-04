@@ -35,7 +35,6 @@
             v-for="g in recent"
             :key="g.slug"
             :game="g"
-            tag="Updated"
             @click="navigateTo(`/games/${g.slug}`)"
             @play="navigateTo(`/games/${g.slug}`)"
           />
@@ -53,7 +52,6 @@
             v-for="g in featured"
             :key="g.slug"
             :game="g"
-            tag="Featured"
             @click="navigateTo(`/games/${g.slug}`)"
             @play="navigateTo(`/games/${g.slug}`)"
           />
@@ -172,8 +170,20 @@ function slugFor(platform: string): string {
   return map[platform] || platform.toLowerCase().replace(/\s+/g, '-')
 }
 
-usePageSeo({
+useSeoMeta({
   title: 'RetroVault — 2000+ Free Retro Games Online',
   description: 'Play 2000+ classic retro games in your browser. NES, SNES, GBA, Arcade, and more. No download, no signup required.',
+  ogTitle: 'RetroVault — 2000+ Free Retro Games Online',
+  ogDescription: 'Play 2000+ classic retro games in your browser. NES, SNES, GBA, Arcade, and more.',
+  ogType: 'website',
 })
+
+useSchemaOrg([
+  {
+    '@type': 'WebSite',
+    name: 'RetroVault',
+    url: 'https://retrovault.cc',
+    description: '2000+ Free Retro Games Online',
+  },
+])
 </script>

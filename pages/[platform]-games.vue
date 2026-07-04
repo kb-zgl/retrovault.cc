@@ -30,7 +30,6 @@
         :key="g.slug"
         :game="g"
         size="mini"
-        :tag="String(g.year)"
         @click="navigateTo(`/games/${g.slug}`)"
         @play="navigateTo(`/games/${g.slug}`)"
       />

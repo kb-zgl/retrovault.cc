@@ -1235,6 +1235,13 @@ h1.hero-title em {
   letter-spacing: 0;
 }
 
+.mini-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 8px;
+  justify-content: center;
+}
 .mini-tag {
   display: inline-block;
   font-family: var(--font-body);
@@ -1242,8 +1249,10 @@ h1.hero-title em {
   font-weight: 600;
   padding: 3px 10px;
   border-radius: var(--radius-lg);
-  margin-top: 6px;
   letter-spacing: 0;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
 }
 .mini-tag.gold {
   background: rgba(240, 176, 40, 0.20);

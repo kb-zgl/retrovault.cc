@@ -56,7 +56,6 @@
           :key="g.slug"
           :game="g"
           size="mini"
-          :tag="g.platform"
           @click="navigateTo(`/games/${g.slug}`)"
           @play="navigateTo(`/games/${g.slug}`)"
         />
