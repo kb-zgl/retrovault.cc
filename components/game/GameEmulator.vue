@@ -42,6 +42,9 @@ function onKeydown(e: KeyboardEvent) {
 
 onMounted(() => {
   document.addEventListener('keydown', onKeydown)
+  // Component may mount with visible=true (e.g. Play Now from detail page)
+  // Watch won't fire for initial value, so init here
+  if (props.visible) initEmulator()
 })
 
 onUnmounted(() => {
