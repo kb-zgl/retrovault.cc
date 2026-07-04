@@ -30,12 +30,26 @@
             :class="{ active: selectedPlatform === plat }"
             @click="togglePlatform(plat)"
           >{{ plat }}</button>
-          <button
-            v-if="selectedPlatform || selectedGenre"
-            class="filter-btn clear-btn"
-            @click="clearFilters"
-          >✕ Clear</button>
-          <span class="filter-result-info-inline">{{ resultInfo }}</span>
+        </div>
+
+        <!-- Active filters -->
+        <div v-if="selectedGenre || selectedPlatform" class="filter-active">
+          <span
+            v-if="selectedGenre"
+            class="filter-active-chip"
+          >
+            {{ selectedGenre }}
+            <button @click="toggleGenre(selectedGenre)" aria-label="Remove genre filter">✕</button>
+          </span>
+          <span
+            v-if="selectedPlatform"
+            class="filter-active-chip"
+          >
+            {{ selectedPlatform }}
+            <button @click="togglePlatform(selectedPlatform)" aria-label="Remove platform filter">✕</button>
+          </span>
+          <button class="filter-active-clear" @click="clearFilters">Clear all</button>
+          <span class="filter-active-count">{{ total }} games</span>
         </div>
       </div>
 
