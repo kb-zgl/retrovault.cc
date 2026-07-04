@@ -51,20 +51,14 @@
 
       <!-- Game grid -->
       <div v-else class="game-list-full">
-        <div
+        <GameCard
           v-for="g in games"
           :key="g.slug"
-          class="game-card"
+          :game="g"
+          size="grid"
           @click="navigateTo(`/games/${g.slug}`)"
-        >
-          <button class="card-play-btn" @click.stop="navigateTo(`/games/${g.slug}`)">▶</button>
-          <div class="pixel-icon">🎮</div>
-          <div class="game-title">
-            {{ g.title }}
-            <small>{{ g.genre }}</small>
-          </div>
-          <span class="game-tag-sm">{{ g.platform }}</span>
-        </div>
+          @play="navigateTo(`/games/${g.slug}`)"
+        />
       </div>
 
       <!-- Pagination -->

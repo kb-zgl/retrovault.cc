@@ -25,20 +25,15 @@
 
     <!-- Grid -->
     <div v-else class="game-list-full">
-      <div
+      <GameCard
         v-for="g in games"
         :key="g.slug"
-        class="game-card"
+        :game="g"
+        size="grid"
+        :tag="String(g.year)"
         @click="navigateTo(`/games/${g.slug}`)"
-      >
-        <button class="card-play-btn" @click.stop="navigateTo(`/games/${g.slug}`)">▶</button>
-        <div class="pixel-icon">🎮</div>
-        <div class="game-title">
-          {{ g.title }}
-          <small>{{ g.genre }}</small>
-        </div>
-        <span class="game-tag-sm">{{ g.year }}</span>
-      </div>
+        @play="navigateTo(`/games/${g.slug}`)"
+      />
     </div>
   </div>
 </template>

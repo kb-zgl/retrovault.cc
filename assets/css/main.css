@@ -1189,6 +1189,12 @@ h1.hero-title em {
   justify-content: center;
   font-size: clamp(2.2rem, 9vw, 3rem);
   margin-bottom: 10px;
+  overflow: hidden;
+}
+.game-card-mini .mini-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .game-card-mini .mini-play-btn {
@@ -1329,6 +1335,12 @@ h1.hero-title em {
   justify-content: center;
   font-size: clamp(2.4rem, 10vw, 3.4rem);
   max-width: 90px;
+  overflow: hidden;
+}
+.game-list-full .game-card .pixel-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .game-list-full .game-card .card-play-btn {
