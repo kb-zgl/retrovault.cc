@@ -147,31 +147,39 @@ async function saveAndDestroy(): Promise<void> {
   let stateData: any = null
 
   if (emu) {
-    // 1. 同步获取快照（先抓数据，再杀音视频）
+    // 1. 同步获取快照
     if (slug && typeof emu.gameManager?.getState === 'function') {
       try {
         stateData = emu.gameManager.getState()
       } catch { /* ignore */ }
     }
 
-    // 2. 立即关闭 AudioContext + 销毁 EJS（音频瞬间停）
+    // 2. 先暂停模拟器（暂停音频处理管线，destroy 才能干净关音频）
+    if (typeof emu.pause === 'function') {
+      try { emu.pause() } catch { /* ignore */ }
+    }
+
+    // 3. 关闭 AudioContext + 销毁 EJS
     killResidualAudio(emu)
     if (typeof emu.destroy === 'function') {
       try { emu.destroy() } catch { /* ignore */ }
     }
   }
 
-  // 3. 清理 DOM 和全局变量
+  // 4. 清理 DOM 和全局变量
   cleanupEJS()
   ejsInited.value = false
   loading.value = true
 
-  // 4. 后台写入 IndexedDB（不阻塞音频关闭）
+  // 5. 后台写入 IndexedDB
   if (slug && stateData) {
     try {
       await saves.saveState(slug, stateData)
     } catch { /* ignore */ }
   }
+
+  // 6. 重置关闭锁
+  isClosing.value = false
 }
 
 async function destroyEmulator() {
