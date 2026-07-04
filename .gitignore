@@ -1,0 +1,45 @@
+# Nuxt 构建缓存
+.nuxt/
+.output/
+dist/
+
+# Dependencies
+node_modules/
+retrovault-scraper/node_modules/
+
+# Cloudflare
+.wrangler/
+.dev.vars
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# 爬虫 — ROM 文件（大体积 + 版权敏感）
+retrovault-scraper/data/roms/
+
+# 爬虫 — 封面图（大体积，可从爬虫重新生成）
+retrovault-scraper/data/covers/
+
+# 构建缓存
+.turbo/
+.cache/
+
+# 测试覆盖
+coverage/
