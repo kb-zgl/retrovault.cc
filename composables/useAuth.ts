@@ -1,17 +1,16 @@
 export interface AuthUser {
-  id: number
+  id: string
+  email: string
   username: string
-  email?: string
-  avatar_url?: string
-  contact_email?: string | null
-  email_verified?: number
-  needs_contact_email?: boolean
+  avatarUrl: string | null
+  createdAt: number
 }
 
 // Module-level shared state — required so app.vue and AuthButton share same refs
 const token = ref<string | null>(null)
 const user = ref<AuthUser | null>(null)
 const loading = ref(false)
+const showAuthModal = ref(false)
 
 function lsGet(): string | null {
   if (import.meta.server) return null
@@ -19,7 +18,7 @@ function lsGet(): string | null {
 }
 
 export const useAuth = () => {
-	const { get } = useApi()
+  const { get } = useApi()
   const isLoggedIn = computed(() => !!token.value)
 
   async function fetchUser() {
@@ -42,7 +41,7 @@ export const useAuth = () => {
   }
 
   function login() {
-    window.location.href = '/api/auth/github'
+    showAuthModal.value = true
   }
 
   function logout() {
@@ -52,7 +51,7 @@ export const useAuth = () => {
     navigateTo('/')
   }
 
-  /** Restore token from localStorage (set by pre-Nuxt script in app.vue head) */
+  /** Restore token from localStorage */
   function handleUrlToken() {
     if (import.meta.server) return
     const stored = lsGet()
@@ -64,5 +63,5 @@ export const useAuth = () => {
     }
   }
 
-  return { token, user, loading, isLoggedIn, login, logout, fetchUser, handleUrlToken }
+  return { token, user, loading, isLoggedIn, showAuthModal, login, logout, fetchUser, handleUrlToken }
 }

@@ -37,6 +37,12 @@
 
     <!-- FAB (teleported to body inside component) -->
     <GameFAB />
+
+    <!-- Auth modal -->
+    <AuthModal
+      :visible="showAuthModal"
+      @close="showAuthModal = false"
+    />
   </div>
 </template>
 
@@ -63,7 +69,7 @@ useHead({
 
 useKeyboardShortcuts()
 
-const { isLoggedIn, user, login, logout, handleUrlToken } = useAuth()
+const { isLoggedIn, user, login, logout, handleUrlToken, showAuthModal } = useAuth()
 
 // 恢复 localStorage 中的认证令牌
 handleUrlToken()

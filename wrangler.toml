@@ -7,3 +7,13 @@ assets = { directory = ".output/public" }
 
 [vars]
 SITE_URL = "https://retrovault.cc"
+# JWT_SECRET and RESEND_API_KEY should be set via `wrangler secret put`:
+#   wrangler secret put JWT_SECRET
+#   wrangler secret put RESEND_API_KEY
+
+[[kv_namespaces]]
+binding = "RETROVAULT_KV"
+# Set the ID after creating the namespace:
+#   wrangler kv namespace create RETROVAULT_KV
+# Then paste the returned id below.
+id = ""
