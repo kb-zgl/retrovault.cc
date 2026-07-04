@@ -35,11 +35,9 @@
             class="filter-btn clear-btn"
             @click="clearFilters"
           >✕ Clear</button>
+          <span class="filter-result-info-inline">{{ resultInfo }}</span>
         </div>
       </div>
-
-      <!-- Result info -->
-      <div class="filter-result-info">{{ resultInfo }}</div>
 
       <!-- Empty state -->
       <div v-if="games.length === 0" class="empty-state">

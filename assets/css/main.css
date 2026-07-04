@@ -1446,6 +1446,16 @@ h1.hero-title em {
 .filter-group-scroll .filter-btn {
   flex-shrink: 0;
 }
+.filter-group-scroll .filter-result-info-inline {
+  font-family: var(--font-body);
+  font-size: clamp(0.55rem, 1.4vw, 0.65rem);
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  margin-left: auto;
+  padding-left: 8px;
+  white-space: nowrap;
+  letter-spacing: 0;
+}
 
 .filter-group {
   margin-bottom: 10px;
