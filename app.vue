@@ -16,9 +16,9 @@
         <NuxtLink class="nav-btn" :class="{ active: route.path === '/' }" to="/">Home</NuxtLink>
         <NuxtLink class="nav-btn" :class="{ active: route.path.startsWith('/games') }" to="/games">Games</NuxtLink>
         <NuxtLink class="nav-btn" to="/games">Tags</NuxtLink>
-        <NuxtLink class="nav-btn" to="/games">News</NuxtLink>
+        <NuxtLink class="nav-btn" :class="{ active: route.path === '/news' }" to="/news">News</NuxtLink>
         <NuxtLink class="nav-btn" to="/games">Guestbook</NuxtLink>
-        <NuxtLink class="nav-btn" to="/games">About</NuxtLink>
+        <NuxtLink class="nav-btn" :class="{ active: route.path === '/about' }" to="/about">About</NuxtLink>
       </nav>
 
       <!-- Main Content -->
@@ -39,7 +39,7 @@
             {{ loggedInUser ? '👤 Account' : '🔑 Login' }}
           </button>
           <span v-if="loggedInUser" class="login-status">👋 {{ loggedInUser }}</span>
-          <button class="link-btn" @click="alert('📖 About page coming soon!')">📖 About</button>
+          <NuxtLink class="link-btn" to="/about">📖 About</NuxtLink>
           <button class="link-btn" @click="alert('💬 Guestbook coming soon!')">💬 Guestbook</button>
           <button class="link-btn" @click="alert('🔒 Privacy: We do not collect any personal information.')">🔒 Privacy</button>
         </div>
