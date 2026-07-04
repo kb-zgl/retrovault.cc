@@ -18,7 +18,7 @@
       <NuxtLink class="nav-btn" :class="{ active: route.path === '/about' }" to="/about">About</NuxtLink>
     </nav>
 
-    <ThemeToggle class="hidden sm:flex" />
+    <div class="hidden sm:flex"><ThemeToggle /></div>
 
     <!-- Mobile hamburger -->
     <button class="hamburger-btn" @click="mobileMenuOpen = true" aria-label="Menu">
@@ -43,9 +43,7 @@
         <button class="link-btn" @click="authAction; mobileMenuOpen = false">
           {{ isLoggedIn ? '👤 ' + user?.username : '🔑 Login' }}
         </button>
-        <button class="link-btn" @click="mobileMenuOpen = false">
-          <ThemeToggle />
-        </button>
+        <div class="flex items-center justify-center py-1"><ThemeToggle /></div>
         <button class="link-btn" @click="alert('📖 Guestbook coming soon!'); mobileMenuOpen = false">💬 Guestbook</button>
       </div>
     </div>
