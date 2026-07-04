@@ -77,6 +77,7 @@
             >
               {{ inQueue ? '✅ In Queue' : '➕ Queue' }}
             </button>
+            <GameShareButton :game="game" />
           </div>
         </div>
       </div>
