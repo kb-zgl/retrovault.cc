@@ -1,11 +1,8 @@
 <template>
   <Teleport to="body">
     <div v-if="visible" class="emulator-overlay">
-      <!-- Top bar -->
-      <div class="emulator-bar">
-        <span class="emulator-bar-title">🕹️ {{ game?.title || 'Loading...' }}</span>
-        <button class="emulator-bar-close" @click="close">✕</button>
-      </div>
+      <!-- Close button (floating top-right) -->
+      <button class="emulator-close-btn" @click="close" title="Close (Esc)">✕</button>
 
       <!-- Loading state -->
       <div v-if="loading" class="emulator-loading">
@@ -33,6 +30,21 @@ const emit = defineEmits<{
 
 const containerRef = ref<HTMLElement | null>(null)
 const loading = ref(true)
+
+// Esc key to close
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape') close()
+}
+
+onMounted(() => {
+  document.addEventListener('keydown', onKeydown)
+  if (props.visible) initEmulator()
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', onKeydown)
+  cleanupEJS()
+})
 
 function initEmulator() {
   if (!props.game) return
@@ -99,14 +111,6 @@ watch(() => props.visible, (val) => {
   if (val) initEmulator()
   else close()
 })
-
-onMounted(() => {
-  if (props.visible) initEmulator()
-})
-
-onUnmounted(() => {
-  cleanupEJS()
-})
 </script>
 
 <style scoped>
@@ -118,41 +122,28 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
 }
-.emulator-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 48px;
-  padding: 0 16px;
-  background: var(--color-bg-elevated);
-  border-bottom: 1px solid var(--color-border);
-  flex-shrink: 0;
-}
-.emulator-bar-title {
-  font-family: var(--font-pixel);
-  font-size: clamp(0.5rem, 1.6vw, 0.65rem);
-  color: var(--color-text-primary);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.emulator-bar-close {
-  width: 32px;
-  height: 32px;
+.emulator-close-btn {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 5010;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 1px solid var(--color-border);
-  background: transparent;
+  background: var(--color-bg-elevated);
   color: var(--color-accent);
-  font-size: 16px;
+  font-size: 18px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
   font-family: var(--font-body);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  transition: all 0.1s ease;
 }
-.emulator-bar-close:hover {
-  background: rgba(224, 45, 122, 0.15);
+.emulator-close-btn:hover {
+  background: rgba(224, 45, 122, 0.2);
   border-color: var(--color-accent);
 }
 .emulator-loading {
