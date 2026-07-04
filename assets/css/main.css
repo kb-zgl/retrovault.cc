@@ -2444,7 +2444,7 @@ h1.hero-title em {
   flex-wrap: wrap;
   gap: 12px;
   font-family: var(--font-body);
-  font-size: clamp(0.55rem, 1.4vw, 0.65rem);
+  font-size: clamp(0.75rem, 1.8vw, 0.85rem);
   color: var(--color-text-muted);
   letter-spacing: 0;
 }
@@ -2468,7 +2468,7 @@ h1.hero-title em {
   gap: 12px 20px;
   margin-top: 12px;
   font-family: var(--font-body);
-  font-size: clamp(0.55rem, 1.4vw, 0.65rem);
+  font-size: clamp(0.75rem, 1.8vw, 0.85rem);
   color: var(--color-text-muted);
   letter-spacing: 0;
 }
@@ -2481,7 +2481,7 @@ h1.hero-title em {
   border: none;
   font-family: var(--font-body);
   font-size: inherit;
-  padding: 6px 0;
+  padding: 10px 14px;
   letter-spacing: 0;
 }
 .footer-links a:hover,
