@@ -1,0 +1,21 @@
+name = "my-project"
+main = ".output/server/index.mjs"
+compatibility_date = "2026-05-07"
+compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
+
+assets = { directory = ".output/public" }
+
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "my-db"
+# database_id = ""
+
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = ""
+
+[vars]
+API_BASE = "https://example.com"
+
+# [triggers]
+# crons = ["0 9 * * *"]
