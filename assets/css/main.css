@@ -1394,32 +1394,35 @@ h1.hero-title em {
   margin-bottom: 18px;
 }
 
-/* 横向滚动筛选条 — 替代旧 filter-group 布局 */
-.filter-bar-scroll {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  overflow-x: auto;
-  padding: 10px 16px;
-  margin-bottom: 18px;
+/* 横向滚动筛选条 — 紧凑版，替代旧 filter-group 布局 */
+.filter-bar-compact {
   background: var(--color-bg-elevated);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  white-space: nowrap;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+  padding: 12px 14px;
+  margin-bottom: 16px;
 }
-.filter-bar-scroll::-webkit-scrollbar { display: none; }
-.filter-bar-scroll .filter-label-pill {
+.filter-group-scroll {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.filter-group-scroll:last-child { margin-bottom: 0; }
+.filter-group-scroll::-webkit-scrollbar { display: none; }
+.filter-group-scroll .filter-label-pill {
   font-family: var(--font-body);
   font-size: clamp(0.6rem, 1.5vw, 0.7rem);
   font-weight: 700;
   color: var(--color-text-muted);
-  letter-spacing: 0;
   flex-shrink: 0;
-  padding: 0 2px;
+  letter-spacing: 0;
 }
-.filter-bar-scroll .filter-btn {
+.filter-group-scroll .filter-btn {
   flex-shrink: 0;
 }
 

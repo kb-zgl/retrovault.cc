@@ -1,13 +1,5 @@
 <template>
   <div>
-    <Breadcrumb :items="breadcrumbItems" />
-
-    <!-- Title -->
-    <div class="section-title">
-      🎮 Games
-      <span class="badge-purple badge">{{ totalAll ? `${totalAll} total` : 'Loading...' }}</span>
-    </div>
-
     <!-- Loading state -->
     <div v-if="pending" class="game-list-full">
       <div v-for="n in 12" :key="n" class="game-card" style="padding:0;border:none;background:transparent">
@@ -17,36 +9,34 @@
     </div>
 
     <template v-else>
-      <!-- Filter bar (horizontal scroll) -->
-      <div class="filter-bar-scroll">
-        <span class="filter-label-pill">📂</span>
-        <button
-          v-for="g in genres"
-          :key="g"
-          class="filter-btn"
-          :class="{ active: selectedGenre === g }"
-          @click="toggleGenre(g)"
-        >
-          {{ g }}
-        </button>
-
-        <span class="filter-label-pill" style="margin-left:4px">🖥️</span>
-        <button
-          v-for="plat in platforms"
-          :key="plat"
-          class="filter-btn"
-          :class="{ active: selectedPlatform === plat }"
-          @click="togglePlatform(plat)"
-        >
-          {{ plat }}
-        </button>
-
+      <!-- Filter bar (compact, two rows) -->
+      <div class="filter-bar-compact">
+        <div class="filter-group-scroll">
+          <span class="filter-label-pill">📂 Genre</span>
+          <button
+            v-for="g in genres"
+            :key="g"
+            class="filter-btn"
+            :class="{ active: selectedGenre === g }"
+            @click="toggleGenre(g)"
+          >{{ g }}</button>
+        </div>
+        <div class="filter-group-scroll">
+          <span class="filter-label-pill">🖥️ Platform</span>
+          <button
+            v-for="plat in platforms"
+            :key="plat"
+            class="filter-btn"
+            :class="{ active: selectedPlatform === plat }"
+            @click="togglePlatform(plat)"
+          >{{ plat }}</button>
+        </div>
         <button
           v-if="selectedPlatform || selectedGenre"
           class="filter-btn clear-btn"
           @click="clearFilters"
-          style="margin-left:4px"
-        >✕</button>
+          style="margin-top:8px"
+        >✕ Clear filters</button>
       </div>
 
       <!-- Result info -->
@@ -114,11 +104,6 @@ useSeoMeta({
   ogDescription: 'Browse and play 2000+ retro games online free.',
   ogType: 'website',
 })
-
-const breadcrumbItems = useBreadcrumb([
-  { label: 'Home', to: '/' },
-  { label: 'Games' },
-])
 
 // Filter state from URL query (shareable filters)
 const selectedPlatform = ref(route.query.platform as string || '')
