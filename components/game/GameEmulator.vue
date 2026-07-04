@@ -60,7 +60,8 @@ function initEmulator() {
   window.EJS_biosUrl = props.game.ejs.biosUrl || ''
   window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/'
   window.EJS_gameName = props.game.title
-  window.EJS_startOnLoaded = true // start game automatically
+  window.EJS_gameId = props.game.slug   // ← key for save states
+  window.EJS_startOnLoaded = true
   window.EJS_fullscreenOnLoaded = false
   window.EJS_ready = () => {
     loading.value = false
@@ -90,19 +91,26 @@ function cleanupEJS() {
   // Remove globals
   const keys = [
     'EJS_player', 'EJS_core', 'EJS_gameUrl', 'EJS_biosUrl',
-    'EJS_pathtodata', 'EJS_gameName', 'EJS_startOnLoaded',
-    'EJS_fullscreenOnLoaded', 'EJS_ready', 'EJS_emulator',
-    'EJS_adBlocked',
+    'EJS_pathtodata', 'EJS_gameName', 'EJS_gameId',
+    'EJS_startOnLoaded', 'EJS_fullscreenOnLoaded',
+    'EJS_ready', 'EJS_emulator', 'EJS_adBlocked',
   ]
   keys.forEach(k => { delete (window as any)[k] })
 }
 
 function close() {
-  // Destroy EJS instance
   const emu = (window as any).EJS_emulator
-  if (emu && typeof emu.destroy === 'function') {
-    emu.destroy()
+
+  // Save state before closing (EJS auto-saves to localStorage keyed by gameId)
+  if (emu && typeof emu.saveState === 'function') {
+    try { emu.saveState() } catch { /* ignore */ }
   }
+
+  // Destroy EJS instance
+  if (emu && typeof emu.destroy === 'function') {
+    try { emu.destroy() } catch { /* ignore */ }
+  }
+
   cleanupEJS()
   emit('close')
 }
