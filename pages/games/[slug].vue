@@ -40,10 +40,6 @@
     <div v-else-if="game">
       <Breadcrumb :items="breadcrumbItems" />
 
-      <button class="detail-back" @click="$router.back()">
-        ← Back to games
-      </button>
-
       <!-- TODO Header -->
       <div class="detail-header">
         <div class="detail-icon">
