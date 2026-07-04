@@ -143,32 +143,35 @@ async function close() {
 
 async function saveAndDestroy(): Promise<void> {
   const emu = (window as any).EJS_emulator
-  const slug = props.game?.slug  // capture before async
+  const slug = props.game?.slug
+  let stateData: any = null
 
   if (emu) {
-    // 1. 通过 gameManager API 获取快照并存入 IndexedDB
+    // 1. 同步获取快照（先抓数据，再杀音视频）
     if (slug && typeof emu.gameManager?.getState === 'function') {
       try {
-        const state = emu.gameManager.getState()
-        if (state) {
-          await saves.saveState(slug, state)
-        }
+        stateData = emu.gameManager.getState()
       } catch { /* ignore */ }
     }
 
-    // 2. 关闭 AudioContext
+    // 2. 立即关闭 AudioContext + 销毁 EJS（音频瞬间停）
     killResidualAudio(emu)
-
-    // 3. 销毁模拟器实例
     if (typeof emu.destroy === 'function') {
       try { emu.destroy() } catch { /* ignore */ }
     }
   }
 
-  // 4. 清理 DOM 和全局变量
+  // 3. 清理 DOM 和全局变量
   cleanupEJS()
   ejsInited.value = false
   loading.value = true
+
+  // 4. 后台写入 IndexedDB（不阻塞音频关闭）
+  if (slug && stateData) {
+    try {
+      await saves.saveState(slug, stateData)
+    } catch { /* ignore */ }
+  }
 }
 
 async function destroyEmulator() {
