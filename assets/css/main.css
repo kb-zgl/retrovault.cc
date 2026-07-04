@@ -2398,7 +2398,7 @@ h1.hero-title em {
 }
 .nav-overlay-footer .link-btn {
   font-family: var(--font-body);
-  font-size: clamp(0.6rem, 1.5vw, 0.7rem);
+  font-size: clamp(0.85rem, 2.5vw, 1rem);
   color: var(--color-text-muted);
   background: none;
   border: none;
