@@ -31,9 +31,19 @@
             @click="togglePlatform(plat)"
           >{{ plat }}</button>
         </div>
+        <div class="filter-group-scroll">
+          <span class="filter-label-pill">📅 Year</span>
+          <button
+            v-for="dec in decades"
+            :key="dec"
+            class="filter-btn"
+            :class="{ active: selectedDecade === dec }"
+            @click="toggleDecade(dec)"
+          >{{ dec }}s</button>
+        </div>
 
         <!-- Active filters -->
-        <div v-if="selectedGenre || selectedPlatform" class="filter-active">
+        <div v-if="selectedGenre || selectedPlatform || selectedDecade" class="filter-active">
           <span
             v-if="selectedGenre"
             class="filter-active-chip"
@@ -47,6 +57,13 @@
           >
             {{ selectedPlatform }}
             <button @click="togglePlatform(selectedPlatform)" aria-label="Remove platform filter">✕</button>
+          </span>
+          <span
+            v-if="selectedDecade"
+            class="filter-active-chip"
+          >
+            {{ selectedDecade }}s
+            <button @click="toggleDecade(selectedDecade)" aria-label="Remove decade filter">✕</button>
           </span>
           <button class="filter-active-clear" @click="clearFilters">Clear all</button>
           <span class="filter-active-count">{{ total }} games</span>
@@ -110,9 +127,13 @@ useSeoMeta({
   ogType: 'website',
 })
 
+// Decades
+const decades = [1980, 1990, 2000, 2010, 2020]
+
 // Filter state from URL query (shareable filters)
 const selectedPlatform = ref(route.query.platform as string || '')
 const selectedGenre = ref(route.query.genre as string || '')
+const selectedDecade = ref(route.query.year ? parseInt(route.query.year as string) : 0)
 const page = ref(parseInt(route.query.page as string) || 1)
 const limit = 48
 
@@ -121,6 +142,7 @@ const { data, pending, refresh } = useFetch<GameListResponse>('/api/games', {
   query: computed(() => ({
     platform: selectedPlatform.value || undefined,
     genre: selectedGenre.value || undefined,
+    year: selectedDecade.value ? `${selectedDecade.value}s` : undefined,
     page: page.value,
     limit,
   })),
@@ -168,9 +190,15 @@ function toggleGenre(g: string) {
   page.value = 1
   updateUrl()
 }
+function toggleDecade(dec: number) {
+  selectedDecade.value = selectedDecade.value === dec ? 0 : dec
+  page.value = 1
+  updateUrl()
+}
 function clearFilters() {
   selectedPlatform.value = ''
   selectedGenre.value = ''
+  selectedDecade.value = 0
   page.value = 1
   updateUrl()
 }
@@ -180,6 +208,7 @@ function updateUrl() {
   const q: Record<string, string> = {}
   if (selectedPlatform.value) q.platform = selectedPlatform.value
   if (selectedGenre.value) q.genre = selectedGenre.value
+  if (selectedDecade.value) q.year = String(selectedDecade.value)
   if (page.value > 1) q.page = String(page.value)
   router.replace({ query: q })
 }

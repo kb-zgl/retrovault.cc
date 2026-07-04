@@ -3,6 +3,7 @@ import { defineEventHandler, getQuery } from 'h3'
 interface ListQuery {
   platform?: string
   genre?: string
+  year?: string
   page?: string
   limit?: string
 }
@@ -21,6 +22,20 @@ export default defineEventHandler((event) => {
 
   if (genre) {
     filtered = filtered.filter(g => g.genre.toLowerCase() === genre.toLowerCase())
+  }
+
+  if (query.year) {
+    const yearNum = parseInt(query.year)
+    if (!isNaN(yearNum)) {
+      // Exact year: "1990" → match 1990
+      filtered = filtered.filter(g => g.year === yearNum)
+    } else if (query.year.endsWith('0s')) {
+      // Decade filter: "1990s" → 1990–1999
+      const decade = parseInt(query.year) || parseInt(query.year.slice(0, -1))
+      if (!isNaN(decade)) {
+        filtered = filtered.filter(g => g.year >= decade && g.year < decade + 10)
+      }
+    }
   }
 
   const pageNum = Math.max(1, parseInt(page) || 1)
