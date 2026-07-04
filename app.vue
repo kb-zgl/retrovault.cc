@@ -93,6 +93,14 @@
       </div>
     </div>
 
+    <!-- Global emulator overlay (app-level, survives page navigation) -->
+    <GameEmulator
+      v-if="engine.currentGame.value"
+      :game="engine.currentGame.value"
+      :visible="engine.showEmulator.value"
+      @close="closeEmulator"
+    />
+
     <!-- FAB (teleported to body inside component) -->
     <GameFAB />
   </div>
@@ -126,6 +134,15 @@ const mobileMenuOpen = ref(false)
 
 // Global game engine state
 const engine = useGameEngine()
+const history = useGameHistory()
+
+function closeEmulator() {
+  if (engine.currentGame.value) {
+    history.record(engine.currentGame.value.slug)
+    history.saveSession(engine.currentGame.value.slug, { highScore: engine.score.value })
+  }
+  engine.closeGame()
+}
 
 // Footer: online count
 const onlineCount = Math.floor(Math.random() * 50) + 32

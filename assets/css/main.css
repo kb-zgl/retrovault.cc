@@ -2653,6 +2653,7 @@ h1.hero-title em {
   border-radius: var(--radius-sm);
   padding: 3px;
   cursor: pointer;
+  position: relative;
   transition: all 0.1s ease;
 }
 .fab-cover:hover {
@@ -2681,6 +2682,25 @@ h1.hero-title em {
   text-overflow: ellipsis;
   max-width: 50px;
   letter-spacing: 0;
+}
+.fab-cover-playing {
+  border-color: var(--color-accent) !important;
+  position: relative;
+}
+.fab-cover-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-family: var(--font-pixel);
+  font-size: 0.4rem;
+  background: var(--color-accent);
+  color: #fff;
+  padding: 1px 4px;
+  border-radius: 4px;
+  line-height: 1.2;
+  white-space: nowrap;
+  animation: blink 1.2s step-end infinite;
+  z-index: 1;
 }
 
 /* ── Actions row ── */

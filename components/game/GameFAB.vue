@@ -29,6 +29,7 @@
             v-for="g in covers"
             :key="g.slug"
             class="fab-cover"
+            :class="{ 'fab-cover-playing': isPlaying(g) }"
             @click="selectGame(g)"
           >
             <img
@@ -39,13 +40,14 @@
               @error="($event.target as HTMLImageElement).style.display = 'none'"
             />
             <span class="fab-cover-label">{{ g.title.slice(0, 10) }}</span>
+            <span v-if="isPlaying(g)" class="fab-cover-badge">▶ PLAYING</span>
           </button>
         </div>
 
         <!-- Actions -->
         <div class="fab-actions">
           <button class="fab-action" @click="randomGame">🎲 Random</button>
-          <button v-if="queue.count > 0" class="fab-action" @click="queueNext">⏭ Queue ({{ queue.count }})</button>
+          <button v-if="queue.count.value > 0" class="fab-action" @click="queueNext">⏭ Queue ({{ queue.count.value }})</button>
           <button class="fab-action" @click="resumeLast">🕹️ History</button>
         </div>
       </div>
@@ -116,9 +118,22 @@ function handleFabClick() {
   if (panelOpen.value) ensurePool()
 }
 
+// ── Helpers ──
+
+function isPlaying(game: GameSummary | GameData): boolean {
+  return engine.isRunning.value && engine.currentGame.value?.slug === game.slug
+}
+
 // ── Select game ──
 
 function selectGame(game: GameSummary | GameData) {
+  // If same as currently playing → show emulator overlay without navigation
+  if (engine.isRunning.value && engine.currentGame.value?.slug === game.slug) {
+    engine.resumeGame()
+    closePanel()
+    return
+  }
+  // Different game → save current session and navigate
   if (engine.isRunning.value && engine.currentGame.value) {
     history.saveSession(engine.currentGame.value.slug, { highScore: engine.score.value })
   }
@@ -135,11 +150,7 @@ const covers = computed<GameSummary[]>(() => {
   const result: GameSummary[] = []
   const seen = new Set<string>()
 
-  // If a game is running, skip it from the covers row (shown in Now Playing)
-  const skipSlug = engine.isRunning.value ? engine.currentGame.value?.slug : null
-
   const tryAdd = (slug: string): boolean => {
-    if (seen.has(slug) || slug === skipSlug) return false
     const found = pool.find(g => g.slug === slug)
     if (!found) return false
     result.push(found)
@@ -161,7 +172,7 @@ const covers = computed<GameSummary[]>(() => {
 
   // Random fill
   if (result.length < 5) {
-    const candidates = pool.filter(g => !seen.has(g.slug) && g.slug !== skipSlug)
+    const candidates = pool.filter(g => !seen.has(g.slug))
     shuffleArray(candidates)
     for (const g of candidates) {
       if (result.length >= 5) break
@@ -196,7 +207,9 @@ async function fetchPool() {
 function shuffleArray<T>(arr: T[]) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]]
+    const tmp = arr[i]!
+    arr[i] = arr[j]!
+    arr[j] = tmp
   }
 }
 

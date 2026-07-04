@@ -1,12 +1,6 @@
 <template>
   <div>
-    <!-- Emulator overlay -->
-    <GameEmulator
-      v-if="game"
-      :game="game"
-      :visible="emulatorVisible"
-      @close="emulatorVisible = false"
-    />
+    <!-- Emulator overlay moved to app.vue (global, survives navigation) -->
 
     <!-- TODO loading -->
     <div v-if="pending" class="pt-6">
@@ -72,7 +66,7 @@
           <div class="detail-desc">{{ game.description }}</div>
 
           <div class="detail-actions">
-            <button class="btn-pixel btn-pixel-green" @click="emulatorVisible = true">
+            <button class="btn-pixel btn-pixel-green" @click="engine.loadGame(game!)">
               🕹️ Play Now
             </button>
             <!-- TODO Queue -->
@@ -192,32 +186,14 @@ useSchemaOrg([
 // Cover fallback
 const coverLoaded = ref(true)
 
-// Engine + Queue + History
+// Engine + Queue
 const engine = useGameEngine()
 const queueStore = useGameQueue()
-const history = useGameHistory()
 const inQueue = computed(() => queueStore.has(slug.value))
 
 function toggleQueue() {
   queueStore.toggle(slug.value)
 }
-
-// Emulator visibility
-const emulatorVisible = ref(false)
-
-// Play: sync with game engine + persist history
-watch(emulatorVisible, (val) => {
-  if (val && game.value) {
-    engine.loadGame(game.value)
-  } else if (!val) {
-    // Save game history before closing
-    if (game.value) {
-      history.record(game.value.slug)
-      history.saveSession(game.value.slug, { highScore: engine.score.value })
-    }
-    engine.closeEmulator()
-  }
-})
 
 // Comments (localStorage)
 const STORAGE_KEY = computed(() => `gameComments_${slug.value}`)

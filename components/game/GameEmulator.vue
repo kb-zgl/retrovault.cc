@@ -1,6 +1,9 @@
 <template>
   <Teleport to="body">
-    <div v-if="visible" class="emulator-overlay">
+    <div
+      class="emulator-overlay"
+      :class="{ 'emulator-hidden': !visible }"
+    >
       <!-- Close button (floating top-right) -->
       <button class="emulator-close-btn" @click="close" title="Close (Esc)">✕</button>
 
@@ -30,6 +33,7 @@ const emit = defineEmits<{
 
 const containerRef = ref<HTMLElement | null>(null)
 const loading = ref(true)
+const ejsInited = ref(false)
 
 // Esc key to close
 function onKeydown(e: KeyboardEvent) {
@@ -38,36 +42,58 @@ function onKeydown(e: KeyboardEvent) {
 
 onMounted(() => {
   document.addEventListener('keydown', onKeydown)
-  if (props.visible) initEmulator()
 })
 
 onUnmounted(() => {
   document.removeEventListener('keydown', onKeydown)
-  cleanupEJS()
+  destroyEmulator()
+})
+
+// Init on first show, init when switching to a different game
+watch(() => props.game?.slug, (newSlug, oldSlug) => {
+  // Only re-init on actual game switch, not initial mount
+  if (newSlug && oldSlug && newSlug !== oldSlug) {
+    destroyEmulator()
+    nextTick(() => initEmulator())
+  }
+})
+
+watch(() => props.visible, (val) => {
+  if (val) {
+    if (ejsInited.value) {
+      resumeAudio()
+    } else {
+      initEmulator()
+    }
+  } else if (ejsInited.value) {
+    suspendAudio()
+  }
 })
 
 function initEmulator() {
   if (!props.game) return
   loading.value = true
+  ejsInited.value = true
 
-  // Clean previous EJS instance
+  // Clean previous EJS leftovers
   cleanupEJS()
 
   // Set EJS globals
-  window.EJS_player = '#ejs-zone'
-  window.EJS_core = props.game.ejs.core
-  window.EJS_gameUrl = '/' + props.game.defaultRom
-  window.EJS_biosUrl = props.game.ejs.biosUrl || ''
-  window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/'
-  window.EJS_gameName = props.game.title
-  window.EJS_gameId = props.game.slug   // ← key for save states
-  window.EJS_startOnLoaded = true
-  window.EJS_fullscreenOnLoaded = false
-  window.EJS_ready = () => {
+  const w = window as any
+  w.EJS_player = '#ejs-zone'
+  w.EJS_core = props.game.ejs.core
+  w.EJS_gameUrl = '/' + props.game.defaultRom
+  w.EJS_biosUrl = props.game.ejs.biosUrl || ''
+  w.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/'
+  w.EJS_gameName = props.game.title
+  w.EJS_gameId = props.game.slug
+  w.EJS_startOnLoaded = true
+  w.EJS_fullscreenOnLoaded = false
+  w.EJS_ready = () => {
     loading.value = false
   }
 
-  // Load EJS script synchronously
+  // Load EJS script
   const existing = document.getElementById('ejs-loader')
   if (existing) existing.remove()
 
@@ -75,20 +101,16 @@ function initEmulator() {
   script.id = 'ejs-loader'
   script.src = 'https://cdn.emulatorjs.org/stable/data/loader.js'
   document.body.appendChild(script)
-  loading.value = false
 }
 
 function cleanupEJS() {
-  // Remove script
   const script = document.getElementById('ejs-loader')
   if (script) script.remove()
 
-  // Clear container
   if (containerRef.value) {
     containerRef.value.innerHTML = ''
   }
 
-  // Remove globals
   const keys = [
     'EJS_player', 'EJS_core', 'EJS_gameUrl', 'EJS_biosUrl',
     'EJS_pathtodata', 'EJS_gameName', 'EJS_gameId',
@@ -98,27 +120,44 @@ function cleanupEJS() {
   keys.forEach(k => { delete (window as any)[k] })
 }
 
-function close() {
+function suspendAudio() {
   const emu = (window as any).EJS_emulator
-
-  // Save state before closing (EJS auto-saves to localStorage keyed by gameId)
-  if (emu && typeof emu.saveState === 'function') {
-    try { emu.saveState() } catch { /* ignore */ }
+  if (emu) {
+    try {
+      const ac = emu.audioContext ?? emu.emulator?.audioContext ?? emu.runtime?.audioContext
+      if (ac && typeof ac.suspend === 'function') ac.suspend()
+    } catch { /* ignore */ }
   }
+  if (containerRef.value) {
+    containerRef.value.querySelectorAll('audio, video').forEach(el => {
+      try { (el as HTMLMediaElement).pause(); (el as HTMLMediaElement).src = ''; (el as HTMLMediaElement).load() } catch { /* ignore */ }
+    })
+  }
+}
 
-  // Destroy EJS instance
+function resumeAudio() {
+  const emu = (window as any).EJS_emulator
+  if (emu) {
+    try {
+      const ac = emu.audioContext ?? emu.emulator?.audioContext ?? emu.runtime?.audioContext
+      if (ac && typeof ac.resume === 'function') ac.resume()
+    } catch { /* ignore */ }
+  }
+}
+
+function destroyEmulator() {
+  ejsInited.value = false
+  loading.value = true
+  const emu = (window as any).EJS_emulator
   if (emu && typeof emu.destroy === 'function') {
     try { emu.destroy() } catch { /* ignore */ }
   }
-
   cleanupEJS()
-  emit('close')
 }
 
-// visible→false handled by parent's @close handler already; only react to visibility→true
-watch(() => props.visible, (val) => {
-  if (val) initEmulator()
-})
+function close() {
+  emit('close')
+}
 </script>
 
 <style scoped>
@@ -129,6 +168,9 @@ watch(() => props.visible, (val) => {
   background: var(--color-bg-base);
   display: flex;
   flex-direction: column;
+}
+.emulator-hidden {
+  display: none !important;
 }
 .emulator-close-btn {
   position: fixed;

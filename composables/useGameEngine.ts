@@ -23,19 +23,23 @@ export function useGameEngine() {
     localStorage.setItem('currentGameId', game.slug)
   }
 
-  function closeEmulator() {
-    showEmulator.value = false
-    isRunning.value = false
-  }
-
-  function togglePause() {
-    isPaused.value = !isPaused.value
-  }
-
+  /** Hide emulator overlay — keep EJS instance alive for resume */
   function closeGame() {
     showEmulator.value = false
     isRunning.value = false
     isPaused.value = false
+  }
+
+  /** Show emulator overlay without re-initializing EJS */
+  function resumeGame() {
+    if (!currentGame.value) return
+    showEmulator.value = true
+    isRunning.value = true
+    isPaused.value = false
+  }
+
+  function togglePause() {
+    isPaused.value = !isPaused.value
   }
 
   function setScore(val: number) {
@@ -53,9 +57,9 @@ export function useGameEngine() {
     score,
     showEmulator,
     loadGame,
-    closeEmulator,
-    togglePause,
     closeGame,
+    resumeGame,
+    togglePause,
     setScore,
     restoreLastGame,
   }
