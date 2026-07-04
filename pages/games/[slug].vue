@@ -192,9 +192,10 @@ useSchemaOrg([
 // Cover fallback
 const coverLoaded = ref(true)
 
-// Engine + Queue
+// Engine + Queue + History
 const engine = useGameEngine()
 const queueStore = useGameQueue()
+const history = useGameHistory()
 const inQueue = computed(() => queueStore.has(slug.value))
 
 function toggleQueue() {
@@ -204,11 +205,16 @@ function toggleQueue() {
 // Emulator visibility
 const emulatorVisible = ref(false)
 
-// Play: sync with game engine
+// Play: sync with game engine + persist history
 watch(emulatorVisible, (val) => {
   if (val && game.value) {
     engine.loadGame(game.value)
   } else if (!val) {
+    // Save game history before closing
+    if (game.value) {
+      history.record(game.value.slug)
+      history.saveSession(game.value.slug, { highScore: engine.score.value })
+    }
     engine.closeEmulator()
   }
 })

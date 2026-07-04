@@ -115,9 +115,9 @@ function close() {
   emit('close')
 }
 
+// visible→false handled by parent's @close handler already; only react to visibility→true
 watch(() => props.visible, (val) => {
   if (val) initEmulator()
-  else close()
 })
 </script>
 
