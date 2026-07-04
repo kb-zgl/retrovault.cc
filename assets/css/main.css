@@ -1209,7 +1209,7 @@ h1.hero-title em {
   background: var(--color-success);
   color: #0b0a0c;
   border: none;
-  font-family: var(--font-pixel);
+  line-height: 1;
   font-size: 16px;
   cursor: pointer;
   display: flex;
@@ -1366,7 +1366,7 @@ h1.hero-title em {
   background: var(--color-success);
   color: #0b0a0c;
   border: none;
-  font-family: var(--font-pixel);
+  line-height: 1;
   font-size: 18px;
   cursor: pointer;
   display: flex;
