@@ -1,13 +1,19 @@
 @import 'tailwindcss';
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 /* ═══════════════════════════════════════════════
-   Tailwind v4 设计令牌（映射到 CSS 变量）
-═══════════════════════════════════════════════ */
+   Tailwind v4 设计令牌 — RetroVault Pink 主题
+   ├── Retro-Futurism 风格（暗色为主）
+   ├── Pink (#e02d7a) 强调色
+   ├── 大圆角（2x 相比常规 UI）
+   ├── 卡片无阴影（纯边框分割）
+   ═══════════════════════════════════════════════ */
 @theme {
   --font-sans:  'Inter', -apple-system, sans-serif;
   --font-body:  'Inter', -apple-system, sans-serif;
   --font-mono:  'JetBrains Mono', 'Fira Code', monospace;
+  --font-pixel: 'Press Start 2P', monospace;
 
   --color-bg-base:        var(--color-bg-base);
   --color-bg-surface:     var(--color-bg-surface);
@@ -27,95 +33,106 @@
   --color-warning: var(--color-warning);
   --color-danger:  var(--color-danger);
 
-  --radius-sm:   4px;
-  --radius-md:   6px;
-  --radius-lg:   10px;
-  --radius-xl:   14px;
+  /* 辅助强调色（cyan 用于 secondary CTA）*/
+  --color-accent-secondary: var(--color-accent-secondary);
+
+  /* 半径（Retro 风格，比常规 UI 大 1.5-2x）*/
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
   --radius-full: 9999px;
 }
 
 /* ═══════════════════════════════════════════════
-   夜间模式（默认）— Indigo 强调色
+   暗色模式（默认）— Pink 强调色
+   ┌─ bg-base:    #0d0b12  深紫黑（page）
+   ├─ bg-surface: #1a1722  紫灰（cards）
+   ├─ bg-elevated:#221f2c  浅紫灰（hover/input）
+   ├─ accent:     #e02d7a  霓虹粉
+   └─ radius:     6/10/16/24px  大圆角
 ═══════════════════════════════════════════════ */
 :root,
 [data-theme="dark"] {
 
-  --color-bg-base:        #0a0a0b;
-  --color-bg-surface:     #121214;
-  --color-bg-elevated:    #18181b;
-  --color-bg-input:       #141416;
-  --color-header-bg:      rgba(10,10,11,0.92);
+  --color-bg-base:        #0d0b12;
+  --color-bg-surface:     #1a1722;
+  --color-bg-elevated:    #221f2c;
+  --color-bg-input:       #1a1722;
+  --color-header-bg:      rgba(13, 11, 18, 0.92);
 
-  --color-border:         #27272a;
-  --color-border-hover:   #3f3f46;
-  --color-border-active:  #6366f1;
+  --color-border:         #2e2a38;
+  --color-border-hover:   #3f3a4e;
+  --color-border-active:  #e02d7a;
 
-  --color-text-primary:   #f4f4f5;
-  --color-text-secondary: #a1a1aa;
-  --color-text-muted:     #71717a;
-  --color-text-link:      #818cf8;
+  --color-text-primary:   #ede8f5;
+  --color-text-secondary: #9e97ad;
+  --color-text-muted:     #6e687a;
+  --color-text-link:      #f05a9a;
 
-  --color-accent:         #6366f1;
-  --color-accent-dim:     rgba(99, 102, 241, 0.08);
-  --color-accent-border:  rgba(99, 102, 241, 0.20);
-  --color-accent-glow:    rgba(99, 102, 241, 0.12);
+  --color-accent:         #e02d7a;
+  --color-accent-dim:     rgba(224, 45, 122, 0.10);
+  --color-accent-border:  rgba(224, 45, 122, 0.25);
+  --color-accent-glow:    rgba(224, 45, 122, 0.15);
+  --color-accent-secondary: #2db8d9;
 
   --color-success:        #22c55e;
-  --color-warning:        #f59e0b;
+  --color-warning:        #f0b028;
   --color-danger:         #ef4444;
 
-  --color-badge-1-bg:      rgba(245, 158, 11, 0.08);
-  --color-badge-1-text:    #f59e0b;
-  --color-badge-1-border:  rgba(245, 158, 11, 0.20);
+  --color-badge-1-bg:      rgba(240, 176, 40, 0.10);
+  --color-badge-1-text:    #f0b028;
+  --color-badge-1-border:  rgba(240, 176, 40, 0.25);
 
-  --color-badge-2-bg:      rgba(34, 197, 94, 0.08);
+  --color-badge-2-bg:      rgba(34, 197, 94, 0.10);
   --color-badge-2-text:    #22c55e;
-  --color-badge-2-border:  rgba(34, 197, 94, 0.20);
+  --color-badge-2-border:  rgba(34, 197, 94, 0.25);
 
-  --color-badge-3-bg:      rgba(6, 182, 212, 0.08);
-  --color-badge-3-text:    #06b6d4;
-  --color-badge-3-border:  rgba(6, 182, 212, 0.20);
+  --color-badge-3-bg:      rgba(45, 184, 217, 0.10);
+  --color-badge-3-text:    #2db8d9;
+  --color-badge-3-border:  rgba(45, 184, 217, 0.25);
 
-  --color-tag-1-bg:       rgba(34, 197, 94, 0.08);
+  --color-tag-1-bg:       rgba(34, 197, 94, 0.10);
   --color-tag-1-text:     #22c55e;
-  --color-tag-1-border:   rgba(34, 197, 94, 0.20);
-  --color-tag-2-bg:       rgba(6, 182, 212, 0.08);
-  --color-tag-2-text:     #06b6d4;
-  --color-tag-2-border:   rgba(6, 182, 212, 0.20);
-  --color-tag-3-bg:       rgba(167, 139, 250, 0.08);
-  --color-tag-3-text:     #a78bfa;
-  --color-tag-3-border:   rgba(167, 139, 250, 0.20);
+  --color-tag-1-border:   rgba(34, 197, 94, 0.25);
+  --color-tag-2-bg:       rgba(45, 184, 217, 0.10);
+  --color-tag-2-text:     #2db8d9;
+  --color-tag-2-border:   rgba(45, 184, 217, 0.25);
+  --color-tag-3-bg:       rgba(224, 45, 122, 0.10);
+  --color-tag-3-text:     #e02d7a;
+  --color-tag-3-border:   rgba(224, 45, 122, 0.25);
 
-  --shadow-card:   0 1px 3px rgba(0,0,0,0.5), 0 0 0 1px var(--color-border);
-  --shadow-hover:  0 4px 16px rgba(0,0,0,0.6), 0 0 0 1px var(--color-border-hover);
+  --shadow-card:   0 0 0 1px var(--color-border);
+  --shadow-hover:  0 0 0 1px var(--color-border-hover);
   --shadow-active: 0 0 0 2px var(--color-accent-glow), 0 0 0 1px var(--color-accent);
   --shadow-modal:  0 25px 60px rgba(0,0,0,0.7);
 }
 
 /* ═══════════════════════════════════════════════
-   日间模式
+   日间模式 — 同 Pink 色板反转背景
 ═══════════════════════════════════════════════ */
 [data-theme="light"] {
 
-  --color-bg-base:        #fafafa;
+  --color-bg-base:        #f5f3f7;
   --color-bg-surface:     #ffffff;
-  --color-bg-elevated:    #f4f4f5;
-  --color-bg-input:       #f9f9fb;
-  --color-header-bg:      rgba(250,250,250,0.92);
+  --color-bg-elevated:    #f0eef4;
+  --color-bg-input:       #ffffff;
+  --color-header-bg:      rgba(245, 243, 247, 0.92);
 
-  --color-border:         #e4e4e7;
-  --color-border-hover:   #d4d4d8;
-  --color-border-active:  #4f46e5;
+  --color-border:         #dcd8e4;
+  --color-border-hover:   #c8c2d4;
+  --color-border-active:  #e02d7a;
 
-  --color-text-primary:   #18181b;
-  --color-text-secondary: #52525b;
-  --color-text-muted:     #a1a1aa;
-  --color-text-link:      #4f46e5;
+  --color-text-primary:   #1a1722;
+  --color-text-secondary: #4a4560;
+  --color-text-muted:     #8a8498;
+  --color-text-link:      #c0296a;
 
-  --color-accent:         #4f46e5;
-  --color-accent-dim:     rgba(79, 70, 229, 0.08);
-  --color-accent-border:  rgba(79, 70, 229, 0.20);
-  --color-accent-glow:    rgba(79, 70, 229, 0.12);
+  --color-accent:         #e02d7a;
+  --color-accent-dim:     rgba(224, 45, 122, 0.08);
+  --color-accent-border:  rgba(224, 45, 122, 0.18);
+  --color-accent-glow:    rgba(224, 45, 122, 0.12);
+  --color-accent-secondary: #0f9db8;
 
   --color-success:        #16a34a;
   --color-warning:        #d97706;
@@ -129,22 +146,22 @@
   --color-badge-2-text:    #16a34a;
   --color-badge-2-border:  rgba(22, 163, 74, 0.20);
 
-  --color-badge-3-bg:      rgba(8, 145, 178, 0.08);
-  --color-badge-3-text:    #0891b2;
-  --color-badge-3-border:  rgba(8, 145, 178, 0.20);
+  --color-badge-3-bg:      rgba(15, 157, 184, 0.08);
+  --color-badge-3-text:    #0f9db8;
+  --color-badge-3-border:  rgba(15, 157, 184, 0.20);
 
   --color-tag-1-bg:       rgba(22, 163, 74, 0.08);
   --color-tag-1-text:     #16a34a;
   --color-tag-1-border:   rgba(22, 163, 74, 0.20);
-  --color-tag-2-bg:       rgba(8, 145, 178, 0.08);
-  --color-tag-2-text:     #0891b2;
-  --color-tag-2-border:   rgba(8, 145, 178, 0.20);
-  --color-tag-3-bg:       rgba(124, 58, 237, 0.08);
-  --color-tag-3-text:     #7c3aed;
-  --color-tag-3-border:   rgba(124, 58, 237, 0.20);
+  --color-tag-2-bg:       rgba(15, 157, 184, 0.08);
+  --color-tag-2-text:     #0f9db8;
+  --color-tag-2-border:   rgba(15, 157, 184, 0.20);
+  --color-tag-3-bg:       rgba(224, 45, 122, 0.08);
+  --color-tag-3-text:     #c0296a;
+  --color-tag-3-border:   rgba(224, 45, 122, 0.20);
 
-  --shadow-card:   0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px var(--color-border);
-  --shadow-hover:  0 4px 16px rgba(0,0,0,0.10), 0 0 0 1px var(--color-border-hover);
+  --shadow-card:   0 0 0 1px var(--color-border);
+  --shadow-hover:  0 0 0 1px var(--color-border-hover);
   --shadow-active: 0 0 0 2px var(--color-accent-glow), 0 0 0 1px var(--color-accent);
   --shadow-modal:  0 25px 60px rgba(0,0,0,0.20);
 }
@@ -181,6 +198,13 @@ body {
 }
 
 /* ═══════════════════════════════════════════════
+   工具类
+═══════════════════════════════════════════════ */
+.font-pixel {
+  font-family: var(--font-pixel);
+}
+
+/* ═══════════════════════════════════════════════
    页面进入动画
 ═══════════════════════════════════════════════ */
 @keyframes fadeIn {
@@ -207,6 +231,8 @@ body {
 
 /* ═══════════════════════════════════════════════
    卡片（通用）
+   ── Retro 风格：无阴影，纯边框分割
+   ── Hover 仅变边框色，无弹起效果
 ═══════════════════════════════════════════════ */
 .card {
   background: var(--color-bg-surface);
@@ -230,8 +256,6 @@ body {
 .card:hover {
   background: var(--color-bg-elevated);
   border-color: var(--color-border-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-hover);
 }
 .card:hover::after {
   border-color: var(--color-accent-dim);
@@ -243,6 +267,11 @@ body {
 }
 .card-highlighted:hover {
   background: linear-gradient(135deg, var(--color-badge-1-bg) 0%, var(--color-bg-elevated) 60%);
+}
+
+.card-hover-glow:hover {
+  box-shadow: 0 0 0 1px var(--color-accent-border), 0 0 20px var(--color-accent-glow);
+  border-color: var(--color-accent-border);
 }
 
 /* ═══════════════════════════════════════════════
@@ -385,6 +414,45 @@ body {
 .btn-ghost:hover {
   background: var(--color-bg-elevated);
   color: var(--color-text-primary);
+}
+
+.btn-pixel {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn-pixel:active { transform: scale(0.96); }
+
+.btn-pixel-pink {
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+}
+.btn-pixel-pink:hover { opacity: 0.85; }
+
+.btn-pixel-green {
+  background: var(--color-success);
+  color: #fff;
+  border: none;
+}
+.btn-pixel-green:hover { opacity: 0.85; }
+
+.btn-pixel-outline {
+  background: transparent;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+.btn-pixel-outline:hover {
+  background: var(--color-bg-elevated);
+  border-color: var(--color-border-hover);
 }
 
 /* ═══════════════════════════════════════════════

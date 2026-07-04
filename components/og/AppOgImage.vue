@@ -1,20 +1,20 @@
 <template>
-  <div style="display: flex; width: 100%; height: 100%; background: #0a0a0b; font-family: Inter, sans-serif;">
+  <div style="display: flex; width: 100%; height: 100%; background: #0d0b12; font-family: Inter, sans-serif;">
     <!-- Left brand panel -->
     <div style="display: flex; flex-direction: column; justify-content: space-between; width: 340px; height: 100%; padding: 60px 40px; flex-shrink: 0;">
       <!-- Site name -->
       <div style="display: flex; align-items: center; gap: 8px;">
-        <div style="width: 18px; height: 18px; background: #6366f1; border-radius: 4px; flex-shrink: 0;" />
-        <span style="font-size: 20px; font-weight: 700; color: #f0f0f0; letter-spacing: -0.3px;">MyApp</span>
+        <div style="width: 18px; height: 18px; background: #e02d7a; border-radius: 4px; flex-shrink: 0;" />
+        <span style="font-size: 20px; font-weight: 700; color: #f0f0f0; letter-spacing: -0.3px;">RetroVault</span>
       </div>
 
       <!-- Decorative lines -->
       <div style="display: flex; flex-direction: column; gap: 8px;">
         <div style="display: flex; gap: 6px;">
-          <div style="width: 32px; height: 4px; background: #6366f1; border-radius: 2px;" />
-          <div style="width: 16px; height: 4px; background: #6366f1; border-radius: 2px; opacity: 0.5;" />
+          <div style="width: 32px; height: 4px; background: #e02d7a; border-radius: 2px;" />
+          <div style="width: 16px; height: 4px; background: #e02d7a; border-radius: 2px; opacity: 0.5;" />
         </div>
-        <div style="width: 120px; height: 2px; background: #6366f1; border-radius: 1px; opacity: 0.3;" />
+        <div style="width: 120px; height: 2px; background: #e02d7a; border-radius: 1px; opacity: 0.3;" />
       </div>
 
       <!-- Bottom tagline -->
@@ -25,14 +25,14 @@
     </div>
 
     <!-- Vertical separator -->
-    <div style="width: 1px; height: 70%; align-self: center; background: linear-gradient(to bottom, transparent, #6366f1 30%, #6366f1 70%, transparent); flex-shrink: 0;" />
+    <div style="width: 1px; height: 70%; align-self: center; background: linear-gradient(to bottom, transparent, #e02d7a 30%, #e02d7a 70%, transparent); flex-shrink: 0;" />
 
     <!-- Right content panel -->
     <div style="display: flex; flex-direction: column; justify-content: center; flex: 1; padding: 60px 60px 60px 50px; overflow: hidden;">
       <!-- Page type badge -->
-      <div style="align-items: center; gap: 6px; margin-bottom: 16px; padding: 4px 12px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 20px;">
-        <div style="width: 6px; height: 6px; background: #6366f1; border-radius: 50%; flex-shrink: 0;" />
-        <span style="font-size: 12px; color: #6366f1; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;">{{ type || 'Page' }}</span>
+      <div style="align-items: center; gap: 6px; margin-bottom: 16px; padding: 4px 12px; background: rgba(224, 45, 122, 0.1); border: 1px solid rgba(224, 45, 122, 0.25); border-radius: 20px;">
+        <div style="width: 6px; height: 6px; background: #e02d7a; border-radius: 50%; flex-shrink: 0;" />
+        <span style="font-size: 12px; color: #e02d7a; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;">{{ type || 'Page' }}</span>
       </div>
 
       <!-- Title -->

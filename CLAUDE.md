@@ -50,10 +50,13 @@ pnpm typecheck    # Type check
 
 The `assets/css/main.css` defines all CSS variables for dark/light themes:
 
-- **Dark mode (default)**: near-black backgrounds, light text
-- **Light mode**: near-white backgrounds, dark text
-- **Accent**: Indigo (#6366f1 dark / #4f46e5 light)
-- **Fonts**: Inter (body/headings), JetBrains Mono (code)
+- **Style**: Retro-Futurism (dark arcade aesthetic)
+- **Dark mode (default)**: deep purple-black backgrounds (#0d0b12), pink accent
+- **Light mode**: near-white backgrounds (#f5f3f7), same pink accent
+- **Accent**: Pink (#e02d7a) — primary CTA, active states, highlights
+- **Fonts**: Inter (body/headings), JetBrains Mono (code), Press Start 2P (pixel/titles)
+- **Radius**: Large radii (6/10/16/24px) for rounded retro feel
+- **Cards**: Border-only (no shadows), hover = border tint only
 
 Theme is persisted in localStorage (`app-theme`). Toggle via `useTheme()` composable.
 

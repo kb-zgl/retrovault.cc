@@ -22,7 +22,7 @@
         <div class="card">
           <div class="text-lg mb-1">🎨</div>
           <div class="font-sans font-semibold text-[13px] mb-1" style="color: var(--color-text-primary)">Design System</div>
-          <div class="font-body text-[11px]" style="color: var(--color-text-secondary)">CSS variables, dark/light mode, Inter + JetBrains Mono fonts, Indigo accent</div>
+          <div class="font-body text-[11px]" style="color: var(--color-text-secondary)">CSS variables, dark/light mode, Inter + Press Start 2P + JetBrains Mono, Pink accent</div>
         </div>
         <div class="card">
           <div class="text-lg mb-1">🧩</div>

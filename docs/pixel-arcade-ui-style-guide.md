@@ -1,8 +1,8 @@
 # Pixel Arcade · UI-UX Style Guide
 
 > Methodology: UI-UX-Pro-Max  
-> Version: 1.0  
-> Status: Finalized
+> Version: 2.0  
+> Status: 已同步 main.css·审计调整后版本
 
 ---
 
@@ -30,39 +30,53 @@
 
 ### 2.1 Color System
 
+**决策：MVP 阶段 dark-first，保留 light 模式但不再独立设计。light 模式使用相同的 pink 色板自动反转背景。**
+
+Token 命名与现有 `main.css` 的 Tailwind v4 `@theme` 变量体系统一。
+
 #### Backgrounds
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--bg-deep` | `#0d0b12` | Page background |
-| `--bg-card` | `#1a1722` | Main container, cards |
-| `--bg-surface` | `#221f2c` | Elevated surfaces, inputs |
+| Tailwind Token | 暗色值 | 亮色值 | Usage |
+|----------------|--------|--------|-------|
+| `--color-bg-base` | `#0d0b12` | `#f5f3f7` | Page background |
+| `--color-bg-surface` | `#1a1722` | `#ffffff` | Main container, cards |
+| `--color-bg-elevated` | `#221f2c` | `#f0eef4` | Elevated surfaces, inputs |
+| `--color-header-bg` | `rgba(13,11,18,0.92)` | `rgba(245,243,247,0.92)` | Header |
 
 #### Accents
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--accent-pink` | `#e02d7a` | Primary CTA, active nav, highlights |
-| `--accent-green` | `#2dd97a` | Play button, success state, running indicator |
-| `--accent-yellow` | `#f0b028` | Queue button, paused state, warnings |
-| `--accent-cyan` | `#2db8d9` | Secondary CTA, random button |
+| Tailwind Token | Value | Usage |
+|----------------|-------|-------|
+| `--color-accent` | `#e02d7a` | Primary CTA, active nav, highlights |
+| `--color-success` | `#22c55e` | Play button, running indicator, green states |
+| `--color-warning` | `#f0b028` | Queue button, paused state, warnings |
+| `--color-danger` | `#ef4444` | Errors, destructive actions |
+| `--color-accent-secondary` | `#2db8d9` | Secondary CTA (random button, optional links) |
 
 #### Text
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--text-primary` | `#ede8f5` | Headings, important text |
-| `--text-secondary` | `#9e97ad` | Body text, descriptions |
-| `--text-muted` | `#6e687a` | Metadata, labels, placeholders |
+| Tailwind Token | 暗色值 | 亮色值 | Usage |
+|----------------|--------|--------|-------|
+| `--color-text-primary` | `#ede8f5` | `#1a1722` | Headings, important text |
+| `--color-text-secondary` | `#9e97ad` | `#4a4560` | Body text, descriptions |
+| `--color-text-muted` | `#6e687a` | `#8a8498` | Metadata, labels, placeholders |
+| `--color-text-link` | `#f05a9a` | `#c0296a` | Links |
 
 #### Borders
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--border-subtle` | `#2e2a38` | All borders, dividers |
+| Tailwind Token | 暗色值 | 亮色值 | Usage |
+|----------------|--------|--------|-------|
+| `--color-border` | `#2e2a38` | `#dcd8e4` | All borders, dividers |
+| `--color-border-hover` | `#3f3a4e` | `#c8c2d4` | Hover state borders |
+| `--color-border-active` | `#e02d7a` | `#e02d7a` | Active/focus border |
 
 ### 2.2 Typography
 
 #### Font Stack
 ```css
+/* 在 main.css 中 */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 --font-pixel: 'Press Start 2P', monospace;
---font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, Helvetica, Arial, sans-serif;
+--font-sans:  'Inter', -apple-system, sans-serif;
+--font-body:  'Inter', -apple-system, sans-serif;
+--font-mono:  'JetBrains Mono', 'Fira Code', monospace;
 ```
 
 #### Usage Rules
@@ -70,35 +84,46 @@
 |---------|------|-------------------|---------------------|
 | Headings (section titles, hero) | Pixel | 11px | 15px |
 | Navigation buttons | Pixel | 10px | 13px |
-| Game titles (cards) | Pixel | 9px | 12px |
-| Card subtitles, metadata | Body | 8px | 11px |
-| Body text (descriptions, comments) | Body | 10px | 12px |
-| Buttons (pixel) | Pixel | 8px | 10px |
-| Footer, labels | Body | 10px | 12px |
+| Game titles (cards) | Pixel | 10px | 12px |
+| Card subtitles, metadata | Body | **clamp(11px, 1.5vw, 13px)** | |
+| Body text (descriptions, comments) | Body | **clamp(12px, 2vw, 14px)** | |
+| Buttons (pixel) | Pixel | 10px | 12px |
+| Footer, labels | Body | **clamp(11px, 1.5vw, 13px)** | |
 
-**Rule:** Pixel font minimum 10px for readability. Body font minimum 10px. All sizes use `clamp()` for fluid scaling.
+**规则：**
+- Pixel 字体最小 10px（低于此值像素笔画不可读）
+- 正文最小 **12px**（10px 在手机上会导致用户手动缩放，不符合 WCAG）
+- 所有字体大小使用 `clamp()` 流体缩放
+- Pixel 字体只用于标题/导航/按钮，**不用于正文**（anti-pattern）
 
 ### 2.3 Spacing & Radius
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--radius-sm` | `10px` | Cover images, inputs |
-| `--radius-md` | `16px` | Cards, panels |
-| `--radius-lg` | `24px` | Main container, buttons, chips |
-| Card gap | `14-16px` mobile, `18-22px` desktop | Grid/list spacing |
-| Section margin | `24px` | Between home sections |
-| Page padding | `12px` mobile, `28-36px` desktop | Body padding |
+与现有 `main.css` Tailwind v4 `@theme` 半径体系统一。
+
+| Token | 旧值 (starter) | 新值 (retro) | Usage |
+|-------|---------------|--------------|-------|
+| `--radius-sm` | 4px | **6px** | Cover images, inputs |
+| `--radius-md` | 6px | **10px** | Buttons, small containers |
+| `--radius-lg` | 10px | **16px** | Cards, panels |
+| `--radius-xl` | 14px | **24px** | Main container, hero section |
+| `--radius-full` | 9999px | 9999px | Pills, tags |
+| Card gap | — | 14-16px mobile, 18-22px desktop | Grid/list spacing |
+| Section margin | — | 24px | Between home sections |
+| Page padding | — | 12px mobile, 28-36px desktop | Body padding |
 
 ### 2.4 Shadows & Elevation
 
 | Level | Usage | Value |
 |-------|-------|-------|
-| 1 (Cards) | Game cards, list items | `none` (border-only) |
+| 1 (Cards) | Game cards, list items | `none`（border-only `var(--color-border)`） |
 | 2 (FAB) | Floating button | `0 6px 24px rgba(0,0,0,0.5)` |
 | 3 (Panel) | FAB panel, modals | `0 8px 36px rgba(0,0,0,0.6)` |
 | 4 (Container) | Main cabinet | `0 8px 40px rgba(0,0,0,0.5)` |
 
-**Rule:** No heavy shadows on small cards. Use 1px borders for separation. Reserve shadows for floating elements.
+**规则：**
+- 小卡片**无阴影**，用 1px 边框分离层次
+- 保留阴影给浮动元素（FAB、面板、模态框）
+- 卡片 hover 时仅变边框色，不加阴影弹起
 
 ---
 
@@ -303,9 +328,9 @@
 ## 6. Accessibility
 
 - Touch targets: minimum 44×44px (WCAG 2.5.5)
-- Color contrast: text-primary on bg-deep = 12.5:1 (AAA)
-- Focus indicators: border-color change to accent-pink on interactive elements
-- Font sizes: minimum 10px for pixel font, 10px for body font (mobile)
+- Color contrast: text-primary on bg-base dark = 12.5:1 (AAA)
+- Focus indicators: border-color change to `--color-accent` pink on interactive elements
+- Font sizes: pixel font min **10px**, body font min **12px** (WCAG 1.4.4 — text resizing)
 - Reduced motion: `prefers-reduced-motion` should disable blink animations (future)
 
 ---
@@ -323,6 +348,14 @@
 - ❌ More than 3 accent colors in one view
 - ❌ Auto-playing games without user intent
 - ❌ Fixed bottom control panel taking screen real estate
+- ❌ Emoji as structural icons (use SVG: Heroicons, Lucide)
+- ❌ CRT scanline/glitch as permanent overlay（仅装饰性使用，不可影响可读性）
+
+### 7.3 装饰效果（可选，非 MVP）
+以下 Retro-Futurism 装饰效果属于 UI/UX Pro Max 推荐但 MVP 阶段暂不实现：
+- CRT scanline overlay（`::before` 线条叠加）
+- Neon glow（`text-shadow` + `box-shadow` 霓虹辉光）
+- Glitch 文字特效（skew/offset 关键帧动画）
 
 ---
 
@@ -330,4 +363,5 @@
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.0 | 2026-07-04 | 与 main.css 统一 Token 命名（Tailwind v4 @theme）。Pink 色板 + 日间模式兼容。字体大小调整（body ≥12px）。半径整体放大 1.5x。卡片无阴影纯边框。CRT 效果标记为 MVP 后。 |
 | 1.0 | 2026-07-03 | Initial style guide. Hero dual-state, FAB cover panel, fullscreen game, queue system, responsive tokens. |
