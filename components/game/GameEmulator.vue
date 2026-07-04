@@ -122,14 +122,45 @@ function saveAndDestroy() {
     if (typeof emu.saveState === 'function') {
       try { emu.saveState() } catch { /* ignore */ }
     }
-    // Destroy EJS (kills AudioContext, all audio stops)
+    // Destroy EJS (should kill AudioContext)
     if (typeof emu.destroy === 'function') {
       try { emu.destroy() } catch { /* ignore */ }
     }
+    // Fallback: deep-clean any residual AudioContext
+    try {
+      killResidualAudio(emu)
+    } catch { /* ignore */ }
   }
   cleanupEJS()
   ejsInited.value = false
   loading.value = true
+}
+
+/** Deep-search EJS object for AudioContext and close it */
+function killResidualAudio(obj: Record<string, any>) {
+  // Known paths where EJS may store AudioContext
+  const paths = [
+    'audioContext', 'audioCtx', 'core.audioContext',
+    'emulator.audioContext', 'runtime.audioContext',
+    'modules.audioContext', 'FS.audioContext',
+  ]
+  for (const path of paths) {
+    try {
+      let cur = obj
+      for (const key of path.split('.')) {
+        if (!cur) break
+        cur = cur[key]
+      }
+      if (cur && typeof cur.state !== 'undefined' && typeof cur.close === 'function') {
+        if (cur.state !== 'closed') cur.close()
+      }
+    } catch { /* ignore */ }
+  }
+  // Also try closing any AudioContext on window
+  const w = window as any
+  ;['audioContext', 'audioCtx', 'ejsAudio', 'gameAudio', 'EJS_audioContext'].forEach(k => {
+    try { if (w[k] && typeof w[k].close === 'function' && w[k].state !== 'closed') w[k].close() } catch {}
+  })
 }
 
 function destroyEmulator() {
