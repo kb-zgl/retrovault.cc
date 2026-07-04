@@ -11,7 +11,6 @@ const isRunning = ref(false)
 const isPaused = ref(false)
 const score = ref(0)
 const showEmulator = ref(false)
-const showFloat = ref(false)
 
 export function useGameEngine() {
 
@@ -21,14 +20,12 @@ export function useGameEngine() {
     isRunning.value = true
     isPaused.value = false
     showEmulator.value = true
-    showFloat.value = false
     localStorage.setItem('currentGameId', game.slug)
   }
 
   function closeEmulator() {
     showEmulator.value = false
     isRunning.value = false
-    showFloat.value = true
   }
 
   function togglePause() {
@@ -36,7 +33,6 @@ export function useGameEngine() {
   }
 
   function closeGame() {
-    showFloat.value = false
     showEmulator.value = false
     isRunning.value = false
     isPaused.value = false
@@ -56,7 +52,6 @@ export function useGameEngine() {
     isPaused,
     score,
     showEmulator,
-    showFloat,
     loadGame,
     closeEmulator,
     togglePause,

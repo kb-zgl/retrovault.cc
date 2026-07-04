@@ -93,15 +93,8 @@
       </div>
     </div>
 
-    <!-- FAB + Float Window (teleported to body) -->
+    <!-- FAB (teleported to body inside component) -->
     <GameFAB />
-    <GameFloatWindow
-      :game="engine.currentGame.value"
-      :visible="engine.showFloat.value"
-      :score="engine.score.value"
-      :status="engine.isRunning.value ? (engine.isPaused.value ? 'paused' : 'running') : 'stopped'"
-      @close="engine.closeGame()"
-    />
   </div>
 </template>
 
@@ -133,14 +126,6 @@ const mobileMenuOpen = ref(false)
 
 // Global game engine state
 const engine = useGameEngine()
-
-// Restore last game session on mount
-onMounted(() => {
-  const last = engine.restoreLastGame()
-  if (last) {
-    engine.showFloat.value = true
-  }
-})
 
 // Footer: online count
 const onlineCount = Math.floor(Math.random() * 50) + 32

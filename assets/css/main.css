@@ -2543,96 +2543,9 @@ h1.hero-title em {
 }
 
 /* ═══════════════════════════════════════════════
-   游戏浮动窗口（匹配 demo .game-float-window）
-═══════════════════════════════════════════════ */
-.game-float-window {
-  position: fixed;
-  bottom: 90px;
-  right: 12px;
-  z-index: 1000;
-  width: 220px;
-  max-width: 45vw;
-  background: var(--color-bg-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-float);
-  overflow: hidden;
-}
-.game-float-window.minimized {
-  width: 130px;
-  border-radius: var(--radius-lg);
-}
-.game-float-window.minimized .game-float-body {
-  display: none;
-}
-
-.game-float-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 12px 6px 16px;
-  background: var(--color-bg-elevated);
-  border-bottom: 1px solid var(--color-border);
-  cursor: grab;
-  user-select: none;
-}
-.game-float-header .window-title {
-  font-family: var(--font-pixel);
-  font-size: clamp(0.45rem, 1.4vw, 0.55rem);
-  color: var(--color-text-primary);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.game-float-header .window-title .game-name {
-  color: var(--color-success);
-}
-.game-float-header .window-actions {
-  display: flex;
-  gap: 4px;
-  flex-shrink: 0;
-}
-.game-float-header .window-actions button {
-  background: none;
-  border: 1px solid var(--color-border);
-  border-radius: 50%;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  font-size: clamp(0.6rem, 2vw, 0.8rem);
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.1s ease;
-  font-family: var(--font-body);
-  padding: 0;
-}
-.game-float-header .window-actions button:hover {
-  background: rgba(255,255,255,0.04);
-  color: var(--color-text-primary);
-  border-color: var(--color-accent);
-}
-.game-float-header .window-actions .close-btn {
-  color: var(--color-accent);
-}
-.game-float-header .window-actions .close-btn:hover {
-  background: rgba(224, 45, 122, 0.15);
-  border-color: var(--color-accent);
-}
-
-.game-float-body {
-  padding: 8px;
-  background: var(--color-bg-base);
-}
-
-/* ═══════════════════════════════════════════════
    FAB - Floating Action Button（匹配 demo .fab-container）
 ═══════════════════════════════════════════════ */
-.fab-container {
+.fab-wrapper {
   position: fixed;
   bottom: 24px;
   right: 16px;
@@ -2640,47 +2553,176 @@ h1.hero-title em {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 10px;
+  gap: 12px;
 }
-.fab-menu {
+
+/* ── Panel ── */
+.fab-panel {
   display: none;
   flex-direction: column;
-  gap: 8px;
-  align-items: flex-end;
+  gap: 10px;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  min-width: 200px;
+  max-width: 340px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
 }
-.fab-menu.open {
+.fab-panel.open {
   display: flex;
 }
-.fab-menu-item {
+
+/* ── Now Playing ── */
+.fab-now-label {
   font-family: var(--font-body);
-  font-size: clamp(0.55rem, 1.4vw, 0.62rem);
-  font-weight: 600;
+  font-size: clamp(0.6rem, 1.6vw, 0.7rem);
+  font-weight: 700;
+  color: var(--color-success);
+  letter-spacing: 0;
+  margin-bottom: 2px;
+}
+.fab-now-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-success);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+.fab-now-card:hover {
+  border-color: var(--color-accent);
   background: var(--color-bg-elevated);
+}
+.fab-now-card:active {
+  transform: scale(0.97);
+}
+.fab-now-cover {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.fab-now-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.fab-now-title {
+  font-family: var(--font-sans);
+  font-size: clamp(0.7rem, 1.8vw, 0.8rem);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0;
+}
+.fab-now-score {
+  font-family: var(--font-body);
+  font-size: clamp(0.6rem, 1.4vw, 0.7rem);
+  color: var(--color-success);
+  letter-spacing: 0;
+}
+
+/* ── Covers row ── */
+.fab-covers-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+.fab-covers-row::-webkit-scrollbar {
+  display: none;
+}
+.fab-cover {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 56px;
+  background: none;
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+.fab-cover:hover {
+  border-color: var(--color-accent);
+}
+.fab-cover:active {
+  transform: scale(0.93);
+}
+.fab-cover.active {
+  border-color: var(--color-success);
+}
+.fab-cover-img {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  display: block;
+}
+.fab-cover-label {
+  font-family: var(--font-body);
+  font-size: clamp(0.45rem, 1.2vw, 0.55rem);
+  color: var(--color-text-muted);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 50px;
+  letter-spacing: 0;
+}
+
+/* ── Actions row ── */
+.fab-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.fab-action {
+  font-family: var(--font-body);
+  font-size: clamp(0.65rem, 1.6vw, 0.75rem);
+  font-weight: 600;
+  background: var(--color-bg-surface);
   color: var(--color-text-primary);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 8px 16px;
+  padding: 8px 14px;
   cursor: pointer;
   white-space: nowrap;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.4);
   letter-spacing: 0;
   transition: all 0.1s ease;
+  flex: 1;
+  min-width: 60px;
+  text-align: center;
 }
-.fab-menu-item:hover {
+.fab-action:hover {
   border-color: var(--color-accent);
-  background: var(--color-bg-surface);
+  background: var(--color-bg-elevated);
 }
-.fab-menu-item:active {
+.fab-action:active {
   transform: scale(0.95);
 }
 
+/* ── FAB button ── */
 .fab-btn {
   width: 54px;
   height: 54px;
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  font-family: var(--font-pixel);
+  line-height: 1;
   font-size: 24px;
   display: flex;
   align-items: center;
@@ -2706,16 +2748,17 @@ h1.hero-title em {
 }
 .fab-btn .fab-score {
   position: absolute;
-  top: -8px;
-  right: -8px;
+  top: -6px;
+  right: -6px;
   background: var(--color-bg-base);
   color: var(--color-success);
   font-family: var(--font-pixel);
-  font-size: 10px;
-  padding: 2px 8px;
+  font-size: 9px;
+  padding: 2px 7px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-success);
   white-space: nowrap;
+  line-height: 1.3;
 }
 
 .fab-backdrop {
@@ -2822,13 +2865,6 @@ h1.hero-title em {
     grid-template-columns: repeat(3, 1fr);
     gap: 18px;
   }
-  .game-float-window {
-    width: 280px;
-    max-width: 30vw;
-    bottom: 100px;
-    right: 20px;
-  }
-  .game-float-window.minimized { width: 160px; }
   .scroll-row .game-card-mini {
     flex: 0 0 190px;
     min-width: 170px;
@@ -2857,13 +2893,6 @@ h1.hero-title em {
     grid-template-columns: repeat(4, 1fr);
     gap: 22px;
   }
-  .game-float-window {
-    width: 320px;
-    max-width: 22vw;
-    bottom: 110px;
-    right: 28px;
-  }
-  .game-float-window.minimized { width: 190px; }
   .scroll-row .game-card-mini {
     flex: 0 0 220px;
     min-width: 200px;
