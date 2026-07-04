@@ -1393,6 +1393,36 @@ h1.hero-title em {
   padding: 14px 16px;
   margin-bottom: 18px;
 }
+
+/* 横向滚动筛选条 — 替代旧 filter-group 布局 */
+.filter-bar-scroll {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 10px 16px;
+  margin-bottom: 18px;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.filter-bar-scroll::-webkit-scrollbar { display: none; }
+.filter-bar-scroll .filter-label-pill {
+  font-family: var(--font-body);
+  font-size: clamp(0.6rem, 1.5vw, 0.7rem);
+  font-weight: 700;
+  color: var(--color-text-muted);
+  letter-spacing: 0;
+  flex-shrink: 0;
+  padding: 0 2px;
+}
+.filter-bar-scroll .filter-btn {
+  flex-shrink: 0;
+}
+
 .filter-group {
   margin-bottom: 10px;
 }

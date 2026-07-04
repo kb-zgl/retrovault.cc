@@ -17,41 +17,36 @@
     </div>
 
     <template v-else>
-      <!-- Filter bar -->
-      <div class="filter-bar">
-        <div class="filter-group">
-          <span class="filter-label">📂 Genre</span>
-          <div class="filter-buttons">
-            <button
-              v-for="g in genres"
-              :key="g"
-              class="filter-btn"
-              :class="{ active: selectedGenre === g }"
-              @click="toggleGenre(g)"
-            >
-              {{ g }}
-            </button>
-          </div>
-        </div>
-        <div class="filter-group">
-          <span class="filter-label">🖥️ Platform</span>
-          <div class="filter-buttons">
-            <button
-              v-for="plat in platforms"
-              :key="plat"
-              class="filter-btn"
-              :class="{ active: selectedPlatform === plat }"
-              @click="togglePlatform(plat)"
-            >
-              {{ plat }}
-            </button>
-          </div>
-        </div>
-        <div style="margin-top:10px">
-          <button v-if="selectedPlatform || selectedGenre" class="filter-btn clear-btn" @click="clearFilters">
-            ✕ Clear filters
-          </button>
-        </div>
+      <!-- Filter bar (horizontal scroll) -->
+      <div class="filter-bar-scroll">
+        <span class="filter-label-pill">📂</span>
+        <button
+          v-for="g in genres"
+          :key="g"
+          class="filter-btn"
+          :class="{ active: selectedGenre === g }"
+          @click="toggleGenre(g)"
+        >
+          {{ g }}
+        </button>
+
+        <span class="filter-label-pill" style="margin-left:4px">🖥️</span>
+        <button
+          v-for="plat in platforms"
+          :key="plat"
+          class="filter-btn"
+          :class="{ active: selectedPlatform === plat }"
+          @click="togglePlatform(plat)"
+        >
+          {{ plat }}
+        </button>
+
+        <button
+          v-if="selectedPlatform || selectedGenre"
+          class="filter-btn clear-btn"
+          @click="clearFilters"
+          style="margin-left:4px"
+        >✕</button>
       </div>
 
       <!-- Result info -->
