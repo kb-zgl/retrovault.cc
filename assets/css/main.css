@@ -2105,10 +2105,11 @@ h1.hero-title em {
 ═══════════════════════════════════════════════ */
 .cabinet-header {
   position: sticky;
-  top: 10px;
+  top: 0;
   z-index: 100;
   background: var(--color-bg-surface);
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  padding-top: 10px;
+  padding-bottom: 10px;
   display: flex;
   align-items: center;
   gap: 12px;
