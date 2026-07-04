@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-6">
+  <div>
     <!-- Title -->
     <div class="section-title">
       🎮 Games
@@ -109,6 +109,14 @@ import type { GameListResponse } from '~/types/games'
 
 const route = useRoute()
 const router = useRouter()
+
+useSeoMeta({
+  title: 'All Retro Games — Play Online Free | RetroVault',
+  description: 'Browse 2000+ retro games. Filter by platform and genre. Play NES, SNES, GBA, Arcade games online in your browser.',
+  ogTitle: 'All Retro Games — RetroVault',
+  ogDescription: 'Browse and play 2000+ retro games online free.',
+  ogType: 'website',
+})
 
 // Filter state from URL query (shareable filters)
 const selectedPlatform = ref(route.query.platform as string || '')

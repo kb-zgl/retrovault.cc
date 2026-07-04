@@ -37,7 +37,7 @@
     </div>
 
     <!-- TODO content -->
-    <div v-else-if="game" class="pt-6">
+    <div v-else-if="game">
       <!-- TODO Back -->
       <button class="detail-back" @click="$router.back()">
         ← Back to games
@@ -139,6 +139,46 @@ const slug = computed(() => route.params.slug as string)
 const { data: game, pending, error } = useFetch<GameData>(`/api/games/${slug.value}`, {
   key: `game-${slug.value}`,
 })
+
+// SEO: title + description + VideoGame Schema.org
+const pageTitle = computed(() => {
+  if (!game.value) return 'Loading...'
+  return `Play ${game.value.title} Online Free — RetroVault`
+})
+
+const pageDesc = computed(() => {
+  if (!game.value) return 'RetroVault'
+  return game.value.description.slice(0, 158)
+})
+
+useSeoMeta({
+  title: pageTitle,
+  description: pageDesc,
+  ogTitle: pageTitle,
+  ogDescription: pageDesc,
+  ogType: 'website',
+})
+
+useSchemaOrg([
+  {
+    '@type': 'VideoGame',
+    name: computed(() => game.value?.title || ''),
+    description: computed(() => game.value?.description || ''),
+    genre: computed(() => game.value?.genre ? [game.value.genre] : []),
+    platform: computed(() => game.value?.platform ? [game.value.platform] : []),
+    datePublished: computed(() => game.value?.year ? String(game.value.year) : undefined),
+    author: computed(() => game.value?.developer ? { '@type': 'Organization', name: game.value.developer } : undefined),
+    publisher: computed(() => game.value?.publisher ? { '@type': 'Organization', name: game.value.publisher } : undefined),
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+    },
+    applicationCategory: 'Game',
+    operatingSystem: 'Browser',
+  },
+])
 
 // Cover fallback
 const coverLoaded = ref(true)

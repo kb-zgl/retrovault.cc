@@ -202,11 +202,47 @@ body {
   letter-spacing: 0.02em;
   min-height: 100vh;
   overflow-x: hidden;
+  padding: 12px 12px 40px;
+}
+
+@media (min-width: 600px) {
+  body {
+    padding: 16px 20px 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    padding: 20px 24px 48px;
+  }
 }
 
 #__nuxt {
   position: relative;
   z-index: 1;
+}
+
+/* ═══════════════════════════════════════════════
+   Arcade Cabinet（匹配 demo .arcade-cabinet）
+═══════════════════════════════════════════════ */
+.arcade-cabinet {
+  max-width: 100%;
+  width: 100%;
+  background: var(--color-bg-surface);
+  padding: 18px 16px 32px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  margin-top: 6px;
+}
+
+@media (min-width: 1024px) {
+  .arcade-cabinet {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 32px 36px 44px;
+  }
 }
 
 /* ═══════════════════════════════════════════════

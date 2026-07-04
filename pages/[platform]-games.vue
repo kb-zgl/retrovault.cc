@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-6">
+  <div>
     <!-- Title -->
     <div class="section-title">
       🖥️ {{ displayName }} Games
@@ -45,6 +45,14 @@
 import type { GameListResponse } from '~/types/games'
 
 const route = useRoute()
+
+useSeoMeta({
+  title: computed(() => `${displayName.value} Games Online Free — RetroVault`),
+  description: computed(() => `Play ${displayName.value} games online free in your browser. Browse the full collection of ${displayName.value} retro games at RetroVault.`),
+  ogTitle: computed(() => `${displayName.value} Games — RetroVault`),
+  ogDescription: computed(() => `Play ${displayName.value} games online free.`),
+  ogType: 'website',
+})
 
 const platformSlug = computed(() => {
   const raw = route.params.platform as string
