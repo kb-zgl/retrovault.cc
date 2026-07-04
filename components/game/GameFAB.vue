@@ -45,7 +45,7 @@
         <!-- Actions -->
         <div class="fab-actions">
           <button class="fab-action" @click="randomGame">🎲 Random</button>
-          <button class="fab-action" @click="queueNext">⏭ Queue ({{ queue.count }})</button>
+          <button v-if="queue.count > 0" class="fab-action" @click="queueNext">⏭ Queue ({{ queue.count }})</button>
           <button class="fab-action" @click="resumeLast">🕹️ History</button>
         </div>
       </div>
