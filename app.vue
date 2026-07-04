@@ -9,6 +9,17 @@
     </main>
     <AppFooter />
     <MobileTabBar />
+
+    <!-- Global: FAB + Float Window -->
+    <GameFAB />
+
+    <GameFloatWindow
+      :game="engine.currentGame.value"
+      :visible="engine.showFloat.value"
+      :score="engine.score.value"
+      :status="engine.isRunning.value ? (engine.isPaused.value ? 'paused' : 'running') : 'stopped'"
+      @close="engine.closeGame()"
+    />
   </div>
 </template>
 
@@ -34,4 +45,16 @@ useHead({
 })
 
 useKeyboardShortcuts()
+
+// Global game engine state
+const engine = useGameEngine()
+
+// Restore last game session on mount
+onMounted(() => {
+  const last = engine.restoreLastGame()
+  if (last) {
+    // Show float window if there was a previous game
+    engine.showFloat.value = true
+  }
+})
 </script>

@@ -143,21 +143,26 @@ const { data: game, pending, error } = useFetch<GameData>(`/api/games/${slug.val
 // Cover fallback
 const coverLoaded = ref(true)
 
-// Queue
-const queue = useQueue()
-const inQueue = computed(() => queue.value.includes(slug.value))
+// Engine + Queue
+const engine = useGameEngine()
+const queueStore = useGameQueue()
+const inQueue = computed(() => queueStore.has(slug.value))
 
 function toggleQueue() {
-  if (inQueue.value) {
-    queue.value = queue.value.filter((s: string) => s !== slug.value)
-  } else {
-    queue.value.push(slug.value)
-  }
-  localStorage.setItem('playQueue', JSON.stringify(queue.value))
+  queueStore.toggle(slug.value)
 }
 
 // Emulator visibility
 const emulatorVisible = ref(false)
+
+// Play: sync with game engine
+watch(emulatorVisible, (val) => {
+  if (val && game.value) {
+    engine.loadGame(game.value)
+  } else if (!val) {
+    engine.closeEmulator()
+  }
+})
 
 // Comments (localStorage)
 const STORAGE_KEY = computed(() => `gameComments_${slug.value}`)
@@ -202,9 +207,4 @@ function getAvatar() {
   return avatars[Math.floor(Math.random() * avatars.length)]
 }
 
-// Queue composable helper
-function useQueue() {
-  const raw = typeof window !== 'undefined' ? localStorage.getItem('playQueue') : '[]'
-  try { return ref<string[]>(JSON.parse(raw || '[]')) } catch { return ref<string[]>([]) }
-}
 </script>
