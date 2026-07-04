@@ -42,8 +42,7 @@ function onKeydown(e: KeyboardEvent) {
 
 onMounted(() => {
   document.addEventListener('keydown', onKeydown)
-  // Component may mount with visible=true (e.g. Play Now from detail page)
-  // Watch won't fire for initial value, so init here
+  // Component may mount with visible=true; watch won't fire for initial value
   if (props.visible) initEmulator()
 })
 
@@ -52,24 +51,20 @@ onUnmounted(() => {
   destroyEmulator()
 })
 
-// Init on first show, init when switching to a different game
+// Switch to a different game → full re-init
 watch(() => props.game?.slug, (newSlug, oldSlug) => {
-  // Only re-init on actual game switch, not initial mount
   if (newSlug && oldSlug && newSlug !== oldSlug) {
     destroyEmulator()
     nextTick(() => initEmulator())
   }
 })
 
+// Show/hide overlay — only re-init if not yet initialized
 watch(() => props.visible, (val) => {
   if (val) {
-    if (ejsInited.value) {
-      resumeAudio()
-    } else {
+    if (!ejsInited.value) {
       initEmulator()
     }
-  } else if (ejsInited.value) {
-    suspendAudio()
   }
 })
 
@@ -78,10 +73,8 @@ function initEmulator() {
   loading.value = true
   ejsInited.value = true
 
-  // Clean previous EJS leftovers
   cleanupEJS()
 
-  // Set EJS globals
   const w = window as any
   w.EJS_player = '#ejs-zone'
   w.EJS_core = props.game.ejs.core
@@ -96,7 +89,6 @@ function initEmulator() {
     loading.value = false
   }
 
-  // Load EJS script
   const existing = document.getElementById('ejs-loader')
   if (existing) existing.remove()
 
@@ -123,42 +115,29 @@ function cleanupEJS() {
   keys.forEach(k => { delete (window as any)[k] })
 }
 
-function suspendAudio() {
+function saveAndDestroy() {
   const emu = (window as any).EJS_emulator
   if (emu) {
-    try {
-      const ac = emu.audioContext ?? emu.emulator?.audioContext ?? emu.runtime?.audioContext
-      if (ac && typeof ac.suspend === 'function') ac.suspend()
-    } catch { /* ignore */ }
+    // Save state to localStorage first
+    if (typeof emu.saveState === 'function') {
+      try { emu.saveState() } catch { /* ignore */ }
+    }
+    // Destroy EJS (kills AudioContext, all audio stops)
+    if (typeof emu.destroy === 'function') {
+      try { emu.destroy() } catch { /* ignore */ }
+    }
   }
-  if (containerRef.value) {
-    containerRef.value.querySelectorAll('audio, video').forEach(el => {
-      try { (el as HTMLMediaElement).pause(); (el as HTMLMediaElement).src = ''; (el as HTMLMediaElement).load() } catch { /* ignore */ }
-    })
-  }
-}
-
-function resumeAudio() {
-  const emu = (window as any).EJS_emulator
-  if (emu) {
-    try {
-      const ac = emu.audioContext ?? emu.emulator?.audioContext ?? emu.runtime?.audioContext
-      if (ac && typeof ac.resume === 'function') ac.resume()
-    } catch { /* ignore */ }
-  }
+  cleanupEJS()
+  ejsInited.value = false
+  loading.value = true
 }
 
 function destroyEmulator() {
-  ejsInited.value = false
-  loading.value = true
-  const emu = (window as any).EJS_emulator
-  if (emu && typeof emu.destroy === 'function') {
-    try { emu.destroy() } catch { /* ignore */ }
-  }
-  cleanupEJS()
+  saveAndDestroy()
 }
 
 function close() {
+  saveAndDestroy()
   emit('close')
 }
 </script>

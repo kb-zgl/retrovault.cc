@@ -23,14 +23,14 @@ export function useGameEngine() {
     localStorage.setItem('currentGameId', game.slug)
   }
 
-  /** Hide emulator overlay — keep EJS instance alive for resume */
+  /** Close emulator — stops audio, destroys EJS instance */
   function closeGame() {
     showEmulator.value = false
     isRunning.value = false
     isPaused.value = false
   }
 
-  /** Show emulator overlay without re-initializing EJS */
+  /** Re-launch emulator for same game — re-inits EJS, loads save state from localStorage */
   function resumeGame() {
     if (!currentGame.value) return
     showEmulator.value = true
