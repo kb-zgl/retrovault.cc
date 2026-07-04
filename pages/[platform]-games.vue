@@ -30,7 +30,7 @@
         :key="g.slug"
         :game="g"
         size="mini"
-        @click="navigateTo(`/games/${g.slug}`)"
+        :to="`/games/${g.slug}`"
         @play="navigateTo(`/games/${g.slug}`)"
       />
     </div>

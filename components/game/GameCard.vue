@@ -1,7 +1,8 @@
 <template>
-  <div
+  <component
+    :is="to ? 'NuxtLink' : 'div'"
+    :to="to"
     :class="[size === 'grid' ? 'game-card' : 'game-card-mini']"
-    @click="$emit('click')"
     :data-slug="game.slug"
   >
     <!-- Play button -->
@@ -34,7 +35,7 @@
       <span class="mini-tag">{{ game.platform }}</span>
       <span class="mini-tag">{{ game.genre }}</span>
     </div>
-  </div>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -42,13 +43,13 @@ import type { GameSummary } from '~/types/games'
 
 const props = withDefaults(defineProps<{
   game: GameSummary
+  to?: string
   size?: 'mini' | 'grid'
 }>(), {
   size: 'mini',
 })
 
 defineEmits<{
-  click: []
   play: []
 }>()
 

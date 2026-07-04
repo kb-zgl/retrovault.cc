@@ -1162,6 +1162,8 @@ h1.hero-title em {
   flex: 0 0 160px;
   scroll-snap-align: start;
   background: var(--color-bg-elevated);
+  text-decoration: none;
+  color: inherit;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 14px 10px 18px;
@@ -1321,6 +1323,8 @@ h1.hero-title em {
   padding: 14px 12px 18px;
   border-radius: var(--radius-md);
   text-align: center;
+  text-decoration: none;
+  color: inherit;
   transition: all 0.1s ease;
   cursor: pointer;
   position: relative;

@@ -35,7 +35,7 @@
             v-for="g in recent"
             :key="g.slug"
             :game="g"
-            @click="navigateTo(`/games/${g.slug}`)"
+            :to="`/games/${g.slug}`"
             @play="navigateTo(`/games/${g.slug}`)"
           />
         </div>
@@ -52,7 +52,7 @@
             v-for="g in featured"
             :key="g.slug"
             :game="g"
-            @click="navigateTo(`/games/${g.slug}`)"
+            :to="`/games/${g.slug}`"
             @play="navigateTo(`/games/${g.slug}`)"
           />
         </div>
