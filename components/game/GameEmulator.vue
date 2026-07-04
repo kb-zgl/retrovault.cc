@@ -4,16 +4,13 @@
       class="emulator-overlay"
       :class="{ 'emulator-hidden': !visible }"
     >
-      <!-- Close button (floating top-right) -->
       <button class="emulator-close-btn" @click="close" title="Close (Esc)">✕</button>
 
-      <!-- Loading state -->
       <div v-if="loading" class="emulator-loading">
         <div class="emulator-loading-spinner"></div>
         <span>Loading emulator...</span>
       </div>
 
-      <!-- EJS container -->
       <div id="ejs-zone" ref="containerRef" class="emulator-zone" />
     </div>
   </Teleport>
@@ -34,6 +31,7 @@ const emit = defineEmits<{
 const containerRef = ref<HTMLElement | null>(null)
 const loading = ref(true)
 const ejsInited = ref(false)
+const isClosing = ref(false)  // 防止重复关闭
 
 // Esc key to close
 function onKeydown(e: KeyboardEvent) {
@@ -42,7 +40,6 @@ function onKeydown(e: KeyboardEvent) {
 
 onMounted(() => {
   document.addEventListener('keydown', onKeydown)
-  // Component may mount with visible=true; watch won't fire for initial value
   if (props.visible) initEmulator()
 })
 
@@ -51,7 +48,7 @@ onUnmounted(() => {
   destroyEmulator()
 })
 
-// Switch to a different game → full re-init
+// 切换游戏 → 全量重建
 watch(() => props.game?.slug, (newSlug, oldSlug) => {
   if (newSlug && oldSlug && newSlug !== oldSlug) {
     destroyEmulator()
@@ -59,7 +56,7 @@ watch(() => props.game?.slug, (newSlug, oldSlug) => {
   }
 })
 
-// Show/hide overlay — only re-init if not yet initialized
+// 显示/隐藏
 watch(() => props.visible, (val) => {
   if (val) {
     if (!ejsInited.value) {
@@ -68,10 +65,13 @@ watch(() => props.visible, (val) => {
   }
 })
 
+// ==================== 初始化 ====================
+
 function initEmulator() {
   if (!props.game) return
   loading.value = true
   ejsInited.value = true
+  isClosing.value = false
 
   cleanupEJS()
 
@@ -83,10 +83,16 @@ function initEmulator() {
   w.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/'
   w.EJS_gameName = props.game.title
   w.EJS_gameId = props.game.slug
-  w.EJS_startOnLoaded = true
+  w.EJS_startOnLoaded = false  // 改为 false，等我们手动恢复状态后再启动
   w.EJS_fullscreenOnLoaded = false
+
+  // ✅ 关键：ready 回调中手动恢复状态
   w.EJS_ready = () => {
     loading.value = false
+    // 延迟一小段确保模拟器内部初始化完成
+    setTimeout(() => {
+      tryRestoreState()
+    }, 200)
   }
 
   const existing = document.getElementById('ejs-loader')
@@ -97,6 +103,78 @@ function initEmulator() {
   script.src = 'https://cdn.emulatorjs.org/stable/data/loader.js'
   document.body.appendChild(script)
 }
+
+// ✅ 尝试从 localStorage 恢复状态
+function tryRestoreState() {
+  const emu = (window as any).EJS_emulator
+  if (!emu) return
+
+  const storageKey = `EJS_state_${props.game?.slug}`
+  try {
+    const saved = localStorage.getItem(storageKey)
+    if (saved && typeof emu.loadState === 'function') {
+      emu.loadState()
+    } else {
+      // 没有保存的状态，直接启动
+      if (typeof emu.resume === 'function') {
+        emu.resume()
+      }
+    }
+  } catch {
+    // 恢复失败，正常启动
+    try { emu.resume?.() } catch { /* ignore */ }
+  }
+}
+
+// ==================== 销毁 ====================
+
+// ✅ 异步关闭：先保存，等一小段确认保存完成，再销毁
+async function close() {
+  if (isClosing.value) return
+  isClosing.value = true
+
+  await saveAndDestroy()
+  emit('close')
+}
+
+async function saveAndDestroy(): Promise<void> {
+  const emu = (window as any).EJS_emulator
+
+  if (emu) {
+    // 1. 先保存状态
+    if (typeof emu.saveState === 'function') {
+      try {
+        emu.saveState()
+        // 给模拟器一点时间完成保存（localStorage 写入通常是同步的，但多一重保险）
+        await new Promise(resolve => setTimeout(resolve, 100))
+      } catch { /* ignore */ }
+    }
+
+    // 2. 暂停模拟器
+    if (typeof emu.pause === 'function') {
+      try { emu.pause() } catch { /* ignore */ }
+    }
+
+    // 3. 关闭 AudioContext
+    killResidualAudio(emu)
+
+    // 4. 销毁模拟器实例
+    if (typeof emu.destroy === 'function') {
+      try { emu.destroy() } catch { /* ignore */ }
+    }
+  }
+
+  // 5. 清理 DOM 和全局变量
+  cleanupEJS()
+  ejsInited.value = false
+  loading.value = true
+}
+
+function destroyEmulator() {
+  saveAndDestroy()
+}
+
+// ==================== 清理 ====================
 
 function cleanupEJS() {
   const script = document.getElementById('ejs-loader')
@@ -115,30 +193,10 @@ function cleanupEJS() {
   keys.forEach(k => { delete (window as any)[k] })
 }
 
-function saveAndDestroy() {
-  const emu = (window as any).EJS_emulator
-  if (emu) {
-    // Save state to localStorage first
-    if (typeof emu.saveState === 'function') {
-      try { emu.saveState() } catch { /* ignore */ }
-    }
-    // Destroy EJS (should kill AudioContext)
-    if (typeof emu.destroy === 'function') {
-      try { emu.destroy() } catch { /* ignore */ }
-    }
-    // Fallback: deep-clean any residual AudioContext
-    try {
-      killResidualAudio(emu)
-    } catch { /* ignore */ }
-  }
-  cleanupEJS()
-  ejsInited.value = false
-  loading.value = true
-}
+// ==================== AudioContext 清理 ====================
 
-/** Deep-search EJS object for AudioContext and close it */
 function killResidualAudio(obj: Record<string, any>) {
-  // Known paths where EJS may store AudioContext
+  // 遍历 EJS 对象关闭 AudioContext
   const paths = [
     'audioContext', 'audioCtx', 'core.audioContext',
     'emulator.audioContext', 'runtime.audioContext',
@@ -156,20 +214,16 @@ function killResidualAudio(obj: Record<string, any>) {
       }
     } catch { /* ignore */ }
   }
-  // Also try closing any AudioContext on window
+
+  // 清理 window 上的 AudioContext
   const w = window as any
   ;['audioContext', 'audioCtx', 'ejsAudio', 'gameAudio', 'EJS_audioContext'].forEach(k => {
-    try { if (w[k] && typeof w[k].close === 'function' && w[k].state !== 'closed') w[k].close() } catch {}
+    try {
+      if (w[k] && typeof w[k].close === 'function' && w[k].state !== 'closed') {
+        w[k].close()
+      }
+    } catch {}
   })
-}
-
-function destroyEmulator() {
-  saveAndDestroy()
-}
-
-function close() {
-  saveAndDestroy()
-  emit('close')
 }
 </script>
 
