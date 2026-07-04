@@ -43,7 +43,7 @@
         </div>
 
         <!-- Active filters -->
-        <div v-if="selectedGenre || selectedPlatform || selectedDecade" class="filter-active">
+        <div v-if="selectedGenre || selectedPlatform || selectedDecade || selectedTag" class="filter-active">
           <span
             v-if="selectedGenre"
             class="filter-active-chip"
@@ -64,6 +64,13 @@
           >
             {{ selectedDecade }}s
             <button @click="toggleDecade(selectedDecade)" aria-label="Remove decade filter">✕</button>
+          </span>
+          <span
+            v-if="selectedTag"
+            class="filter-active-chip"
+          >
+            {{ selectedTag }}
+            <button @click="selectedTag = ''; page = 1; updateUrl()" aria-label="Remove tag filter">✕</button>
           </span>
           <button class="filter-active-clear" @click="clearFilters">Clear all</button>
           <span class="filter-active-count">{{ total }} games</span>
@@ -134,6 +141,7 @@ const decades = [1980, 1990, 2000, 2010, 2020]
 const selectedPlatform = ref(route.query.platform as string || '')
 const selectedGenre = ref(route.query.genre as string || '')
 const selectedDecade = ref(route.query.year ? parseInt(route.query.year as string) : 0)
+const selectedTag = ref(route.query.tag as string || '')
 const page = ref(parseInt(route.query.page as string) || 1)
 const limit = 48
 
@@ -143,6 +151,7 @@ const { data, pending, refresh } = useFetch<GameListResponse>('/api/games', {
     platform: selectedPlatform.value || undefined,
     genre: selectedGenre.value || undefined,
     year: selectedDecade.value ? `${selectedDecade.value}s` : undefined,
+    tag: selectedTag.value || undefined,
     page: page.value,
     limit,
   })),
@@ -199,6 +208,7 @@ function clearFilters() {
   selectedPlatform.value = ''
   selectedGenre.value = ''
   selectedDecade.value = 0
+  selectedTag.value = ''
   page.value = 1
   updateUrl()
 }
@@ -209,6 +219,7 @@ function updateUrl() {
   if (selectedPlatform.value) q.platform = selectedPlatform.value
   if (selectedGenre.value) q.genre = selectedGenre.value
   if (selectedDecade.value) q.year = String(selectedDecade.value)
+  if (selectedTag.value) q.tag = selectedTag.value
   if (page.value > 1) q.page = String(page.value)
   router.replace({ query: q })
 }

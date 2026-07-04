@@ -16,7 +16,7 @@
         <nav class="pixel-nav desktop-nav">
           <NuxtLink class="nav-btn" :class="{ active: route.path === '/' }" to="/">Home</NuxtLink>
           <NuxtLink class="nav-btn" :class="{ active: route.path.startsWith('/games') }" to="/games">Games</NuxtLink>
-          <NuxtLink class="nav-btn" to="/games">Tags</NuxtLink>
+          <NuxtLink class="nav-btn" :class="{ active: route.path === '/tags' }" to="/tags">Tags</NuxtLink>
           <NuxtLink class="nav-btn" :class="{ active: route.path === '/news' }" to="/news">News</NuxtLink>
           <NuxtLink class="nav-btn" :class="{ active: route.path === '/about' }" to="/about">About</NuxtLink>
         </nav>
@@ -60,7 +60,7 @@
         <div class="nav-overlay-items">
           <NuxtLink class="nav-overlay-btn" :class="{ active: route.path === '/' }" to="/" @click="mobileMenuOpen = false">🏠 Home</NuxtLink>
           <NuxtLink class="nav-overlay-btn" :class="{ active: route.path.startsWith('/games') }" to="/games" @click="mobileMenuOpen = false">🎮 Games</NuxtLink>
-          <NuxtLink class="nav-overlay-btn" to="/games" @click="mobileMenuOpen = false">🏷️ Tags</NuxtLink>
+          <NuxtLink class="nav-overlay-btn" :class="{ active: route.path === '/tags' }" to="/tags" @click="mobileMenuOpen = false">🏷️ Tags</NuxtLink>
           <NuxtLink class="nav-overlay-btn" :class="{ active: route.path === '/news' }" to="/news" @click="mobileMenuOpen = false">📰 News</NuxtLink>
           <NuxtLink class="nav-overlay-btn" :class="{ active: route.path === '/about' }" to="/about" @click="mobileMenuOpen = false">ℹ️ About</NuxtLink>
         </div>

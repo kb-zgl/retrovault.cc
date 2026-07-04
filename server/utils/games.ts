@@ -1,5 +1,5 @@
 import { defineEventHandler } from 'h3'
-import { readFileSync, existsSync } from 'node:fs'
+import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 
 // 爬虫数据目录（相对于项目根目录）
@@ -28,6 +28,43 @@ export interface GameListResponse {
 // 缓存 game_list.json（dev 下每次请求都读，未来可加缓存）
 let cachedList: GameListResponse | null = null
 
+// 标签缓存（按需加载）
+let cachedTags: TagEntry[] | null = null
+
+export interface TagEntry {
+  name: string
+  count: number
+}
+
+/** 提取所有标签并统计频次（惰性加载 + 缓存） */
+function loadGameTags(): TagEntry[] {
+  if (cachedTags) return cachedTags
+
+  const gamesDir = join(DATA_DIR, 'games')
+  const entries = readdirSync(gamesDir, { withFileTypes: true })
+  const tagMap = new Map<string, number>()
+
+  for (const entry of entries) {
+    if (!entry.name.endsWith('.json')) continue
+    try {
+      const raw = readFileSync(join(gamesDir, entry.name), 'utf-8')
+      const game = JSON.parse(raw)
+      if (Array.isArray(game.tags)) {
+        for (const t of game.tags) {
+          const tag = String(t).trim().toLowerCase()
+          if (tag) tagMap.set(tag, (tagMap.get(tag) || 0) + 1)
+        }
+      }
+    } catch { /* skip corrupt files */ }
+  }
+
+  cachedTags = [...tagMap.entries()]
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+
+  return cachedTags
+}
+
 function loadGameList(): GameListResponse {
   if (cachedList) return cachedList
 
@@ -54,4 +91,4 @@ function loadGameList(): GameListResponse {
   return cachedList
 }
 
-export { loadGameList, DATA_DIR }
+export { loadGameList, loadGameTags, DATA_DIR }

@@ -1,11 +1,41 @@
 import { defineEventHandler, getQuery } from 'h3'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 
 interface ListQuery {
   platform?: string
   genre?: string
   year?: string
+  tag?: string
   page?: string
   limit?: string
+}
+
+// 标签→slug 映射缓存
+let tagSlugCache: Record<string, string[]> | null = null
+
+function getTagSlugs(targetTag: string): string[] {
+  if (!tagSlugCache) {
+    tagSlugCache = {}
+    const gamesDir = join(process.cwd(), 'retrovault-scraper', 'data', 'games')
+    const { readdirSync } = require('node:fs')
+    const entries = readdirSync(gamesDir, { withFileTypes: true })
+    for (const entry of entries) {
+      if (!entry.name.endsWith('.json')) continue
+      try {
+        const raw = readFileSync(join(gamesDir, entry.name), 'utf-8')
+        const game = JSON.parse(raw)
+        if (Array.isArray(game.tags) && game.slug) {
+          for (const t of game.tags) {
+            const tag = String(t).trim().toLowerCase()
+            if (!tagSlugCache[tag]) tagSlugCache[tag] = []
+            tagSlugCache[tag].push(game.slug)
+          }
+        }
+      } catch { /* skip */ }
+    }
+  }
+  return tagSlugCache[targetTag.toLowerCase()] || []
 }
 
 export default defineEventHandler((event) => {
@@ -27,15 +57,19 @@ export default defineEventHandler((event) => {
   if (query.year) {
     const yearNum = parseInt(query.year)
     if (!isNaN(yearNum)) {
-      // Exact year: "1990" → match 1990
       filtered = filtered.filter(g => g.year === yearNum)
     } else if (query.year.endsWith('0s')) {
-      // Decade filter: "1990s" → 1990–1999
       const decade = parseInt(query.year) || parseInt(query.year.slice(0, -1))
       if (!isNaN(decade)) {
         filtered = filtered.filter(g => g.year >= decade && g.year < decade + 10)
       }
     }
+  }
+
+  if (query.tag) {
+    const tagSlugs = getTagSlugs(query.tag)
+    const slugSet = new Set(tagSlugs)
+    filtered = filtered.filter(g => slugSet.has(g.slug))
   }
 
   const pageNum = Math.max(1, parseInt(page) || 1)
