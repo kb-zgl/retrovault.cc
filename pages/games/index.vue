@@ -1,5 +1,7 @@
 <template>
   <div>
+    <Breadcrumb :items="breadcrumbItems" />
+
     <!-- Title -->
     <div class="section-title">
       🎮 Games
@@ -117,6 +119,11 @@ useSeoMeta({
   ogDescription: 'Browse and play 2000+ retro games online free.',
   ogType: 'website',
 })
+
+const breadcrumbItems = useBreadcrumb([
+  { label: 'Home', to: '/' },
+  { label: 'Games' },
+])
 
 // Filter state from URL query (shareable filters)
 const selectedPlatform = ref(route.query.platform as string || '')

@@ -688,19 +688,24 @@ body {
 ═══════════════════════════════════════════════ */
 .breadcrumb {
   font-family: var(--font-body);
-  font-size: 11px;
-  margin-bottom: 16px;
+  font-size: clamp(0.65rem, 1.6vw, 0.75rem);
+  margin-bottom: 14px;
   display: flex;
   align-items: center;
   gap: 6px;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+.breadcrumb::-webkit-scrollbar { display: none; }
 .breadcrumb a {
   color: var(--color-text-secondary);
   text-decoration: none;
 }
 .breadcrumb a:hover { color: var(--color-text-primary); }
-.breadcrumb .sep { color: var(--color-text-muted); }
-.breadcrumb .current { color: var(--color-text-primary); }
+.breadcrumb .sep { color: var(--color-text-muted); user-select: none; }
+.breadcrumb .current { color: var(--color-text-primary); font-weight: 600; }
 
 /* ═══════════════════════════════════════════════
    搜索弹窗（通用）

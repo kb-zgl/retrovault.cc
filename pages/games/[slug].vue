@@ -38,7 +38,8 @@
 
     <!-- TODO content -->
     <div v-else-if="game">
-      <!-- TODO Back -->
+      <Breadcrumb :items="breadcrumbItems" />
+
       <button class="detail-back" @click="$router.back()">
         ← Back to games
       </button>
@@ -158,6 +159,12 @@ useSeoMeta({
   ogDescription: pageDesc,
   ogType: 'website',
 })
+
+const breadcrumbItems = useBreadcrumb(computed(() => [
+  { label: 'Home', to: '/' },
+  { label: 'Games', to: '/games' },
+  { label: game.value?.title || '…' },
+]))
 
 useSchemaOrg([
   {

@@ -1,5 +1,7 @@
 <template>
   <div>
+    <Breadcrumb :items="breadcrumbItems" />
+
     <!-- Title -->
     <div class="section-title">
       🖥️ {{ displayName }} Games
@@ -53,6 +55,12 @@ useSeoMeta({
   ogDescription: computed(() => `Play ${displayName.value} games online free.`),
   ogType: 'website',
 })
+
+const breadcrumbItems = useBreadcrumb(computed(() => [
+  { label: 'Home', to: '/' },
+  { label: 'Games', to: '/games' },
+  { label: displayName.value },
+]))
 
 const platformSlug = computed(() => {
   const raw = route.params.platform as string
