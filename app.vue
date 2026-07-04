@@ -48,7 +48,7 @@
           </button>
           <span v-if="loggedInUser" class="login-status">👋 {{ loggedInUser }}</span>
           <NuxtLink class="link-btn" to="/about">📖 About</NuxtLink>
-          <button class="link-btn" @click="alert('🔒 Privacy: We do not collect any personal information.')">🔒 Privacy</button>
+          <NuxtLink class="link-btn" to="/privacy">🔒 Privacy</NuxtLink>
         </div>
       </div>
     </div>
