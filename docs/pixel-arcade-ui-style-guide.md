@@ -1,8 +1,8 @@
 # Pixel Arcade · UI-UX Style Guide
 
 > Methodology: UI-UX-Pro-Max  
-> Version: 2.0  
-> Status: 已同步 main.css·保留原 Indigo 色板
+> Version: 3.0  
+> Status: 同步 pixel-arcade-v3.html·Pink 色板定稿
 
 ---
 
@@ -30,41 +30,40 @@
 
 ### 2.1 Color System
 
-**决策：MVP 阶段 dark-first，保留 light 模式。使用 Indigo 强调色。**
+**Switch to dark-only with light-mode compatibility. Pink accent palette from pixel-arcade-v3.html.**
 
-Token 命名与现有 `main.css` 的 Tailwind v4 `@theme` 变量体系统一。
+Token 命名与 main.css 的 Tailwind v4 `@theme` 变量体系统一。
 
 #### Backgrounds
 | Tailwind Token | 暗色值 | 亮色值 | Usage |
 |----------------|--------|--------|-------|
-| `--color-bg-base` | `#0a0a0b` | `#fafafa` | Page background |
-| `--color-bg-surface` | `#121214` | `#ffffff` | Main container, cards |
-| `--color-bg-elevated` | `#18181b` | `#f4f4f5` | Elevated surfaces, inputs |
-| `--color-header-bg` | `rgba(10,10,11,0.92)` | `rgba(250,250,250,0.92)` | Header |
+| `--color-bg-base` | `#0d0b12` | `#f5f3f7` | Page background |
+| `--color-bg-surface` | `#1a1722` | `#ffffff` | Main container, cards |
+| `--color-bg-elevated` | `#221f2c` | `#f0eef4` | Elevated surfaces, inputs |
+| `--color-header-bg` | `rgba(13,11,18,0.92)` | — | Header |
 
 #### Accents
 | Tailwind Token | Value | Usage |
 |----------------|-------|-------|
-| `--color-accent` | `#6366f1` | Primary CTA, active nav, highlights |
-| `--color-success` | `#22c55e` | Play button, running indicator, green states |
-| `--color-warning` | `#f59e0b` | Queue button, paused state, warnings |
-| `--color-danger` | `#ef4444` | Errors, destructive actions |
-| `--color-accent-secondary` | `#06b6d4` | Secondary CTA (random button, optional links) |
+| `--color-accent` | `#e02d7a` | Primary CTA, active nav, highlights |
+| `--color-success` | `#2dd97a` | Play button, running indicator |
+| `--color-warning` | `#f0b028` | Queue button, paused state |
+| `--color-danger` | `#ef4444` | Errors |
+| `--color-accent-secondary` | `#2db8d9` | Secondary CTA |
 
 #### Text
 | Tailwind Token | 暗色值 | 亮色值 | Usage |
 |----------------|--------|--------|-------|
-| `--color-text-primary` | `#f4f4f5` | `#18181b` | Headings, important text |
-| `--color-text-secondary` | `#a1a1aa` | `#52525b` | Body text, descriptions |
-| `--color-text-muted` | `#71717a` | `#a1a1aa` | Metadata, labels, placeholders |
-| `--color-text-link` | `#818cf8` | `#4f46e5` | Links |
+| `--color-text-primary` | `#ede8f5` | `#1a1722` | Headings, important text |
+| `--color-text-secondary` | `#9e97ad` | `#4a4560` | Body text, descriptions |
+| `--color-text-muted` | `#6e687a` | `#8a8498` | Metadata, labels |
 
 #### Borders
 | Tailwind Token | 暗色值 | 亮色值 | Usage |
 |----------------|--------|--------|-------|
-| `--color-border` | `#27272a` | `#e4e4e7` | All borders, dividers |
-| `--color-border-hover` | `#3f3f46` | `#d4d4d8` | Hover state borders |
-| `--color-border-active` | `#6366f1` | `#4f46e5` | Active/focus border |
+| `--color-border` | `#2e2a38` | `#dcd8e4` | All borders, dividers |
+| `--color-border-hover` | `#3f3a4e` | `#c8c2d4` | Hover state |
+| `--color-border-active` | `#e02d7a` | `#e02d7a` | Active/focus |
 
 ### 2.2 Typography
 
@@ -100,12 +99,12 @@ Token 命名与现有 `main.css` 的 Tailwind v4 `@theme` 变量体系统一。
 
 与现有 `main.css` Tailwind v4 `@theme` 半径体系统一。
 
-| Token | 旧值 (starter) | 新值 (retro) | Usage |
-|-------|---------------|--------------|-------|
-| `--radius-sm` | 4px | **6px** | Cover images, inputs |
-| `--radius-md` | 6px | **10px** | Buttons, small containers |
-| `--radius-lg` | 10px | **16px** | Cards, panels |
-| `--radius-xl` | 14px | **24px** | Main container, hero section |
+| Token | 旧值 (starter) | 新值 (匹配 demo) | Usage |
+|-------|---------------|-------------------|-------|
+| `--radius-sm` | 4px | **10px** | Cover images, inputs |
+| `--radius-md` | 6px | **16px** | Cards, panels |
+| `--radius-lg` | 10px | **24px** | Buttons, containers, badges |
+| `--radius-xl` | 14px | **30px** | Hero section, modals |
 | `--radius-full` | 9999px | 9999px | Pills, tags |
 | Card gap | — | 14-16px mobile, 18-22px desktop | Grid/list spacing |
 | Section margin | — | 24px | Between home sections |
@@ -363,5 +362,6 @@ Token 命名与现有 `main.css` 的 Tailwind v4 `@theme` 变量体系统一。
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 2.0 | 2026-07-04 | 与 main.css 统一 Token 命名（Tailwind v4 @theme）。Pink 色板 + 日间模式兼容。字体大小调整（body ≥12px）。半径整体放大 1.5x。卡片无阴影纯边框。CRT 效果标记为 MVP 后。 |
+| 3.0 | 2026-07-04 | 同步 pixel-arcade-v3.html 设计定稿。Pink (#e02d7a) + 深紫黑 (#0d0b12) 正式色板。全部组件 CSS 匹配 demo（卡片/导航/筛选/FAB/浮动窗口/留言板/登录等）。CRT 扫描线叠加。大圆角 10/16/24px。 |
+| 2.0 | 2026-07-04 | 统一 Token 命名 Tailwind v4 @theme。字体大小修正（body ≥12px）。半径放大。卡片无阴影。 |
 | 1.0 | 2026-07-03 | Initial style guide. Hero dual-state, FAB cover panel, fullscreen game, queue system, responsive tokens. |

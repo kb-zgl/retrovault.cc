@@ -48,16 +48,18 @@ pnpm typecheck    # Type check
 
 ## Design System
 
-The `assets/css/main.css` defines all CSS variables for dark/light themes:
+The `assets/css/main.css` defines design tokens matching `docs/pixel-arcade-v3.html`:
 
-- **Dark mode (default)**: near-black backgrounds, light text
-- **Light mode**: near-white backgrounds, dark text
-- **Accent**: Indigo (#6366f1 dark / #4f46e5 light)
+- **Dark mode (default)**: deep purple-black bg (#0d0b12), light text (#ede8f5)
+- **Accent**: Pink (#e02d7a) — primary CTA, active states, highlights
+- **Green (success)**: #2dd97a — play buttons, running indicators
+- **Yellow (warning)**: #f0b028 — queue buttons, paused state
+- **Cyan (secondary)**: #2db8d9 — secondary CTA
 - **Fonts**: Inter (body/headings), JetBrains Mono (code), Press Start 2P (pixel/titles)
-- **Radius**: Large radii (6/10/16/24px)
-- **Cards**: Border-only (no shadows), hover = border tint only
-
-Theme is persisted in localStorage (`app-theme`). Toggle via `useTheme()` composable.
+- **Radius**: Extra large (10/16/24/30px) for retro feel
+- **Cards**: bg-elevated (#221f2c), border, hover = pink border tint, active = scale(0.95)
+- **CRT overlay**: `body::after` scanline pattern (mix-blend-mode: overlay)
+- **Theme**: persisted in localStorage (`app-theme`). Toggle via `useTheme()` composable. Light mode minimal.
 
 ## Cloudflare
 
