@@ -15,17 +15,14 @@ export default defineEventHandler((event) => {
 
   let filtered = Object.values(games)
 
-  // 按平台筛选
   if (platform) {
     filtered = filtered.filter(g => g.platform.toLowerCase() === platform.toLowerCase())
   }
 
-  // 按类型筛选
   if (genre) {
     filtered = filtered.filter(g => g.genre.toLowerCase() === genre.toLowerCase())
   }
 
-  // 分页
   const pageNum = Math.max(1, parseInt(page) || 1)
   const limitNum = Math.min(200, Math.max(1, parseInt(limit) || 48))
   const start = (pageNum - 1) * limitNum

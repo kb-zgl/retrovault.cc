@@ -17,7 +17,6 @@ export default defineEventHandler((event) => {
   const raw = readFileSync(gamePath, 'utf-8')
   const game = JSON.parse(raw)
 
-  // 清理爬虫内部字段
   delete game._scraped_at
   delete game._source
   delete game._detail_method
