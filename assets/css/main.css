@@ -1142,6 +1142,8 @@ h1.hero-title em {
   padding: 4px 2px 14px 2px;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
+  mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
 }
 .scroll-row::-webkit-scrollbar {
   height: 4px;
@@ -2538,10 +2540,16 @@ h1.hero-title em {
   padding: 6px 12px;
   border-radius: var(--radius-lg);
   letter-spacing: 0;
+  transition: all 0.15s ease;
 }
 .home-section .section-header .sec-more:hover {
-  color: var(--color-text-primary);
-  background: rgba(255,255,255,0.03);
+  color: var(--color-accent);
+  background: var(--color-accent-dim);
+  box-shadow: 0 0 12px var(--color-accent-glow);
+}
+.home-section .section-header .sec-more:active {
+  transform: scale(0.96);
+}
 }
 
 /* ═══════════════════════════════════════════════
