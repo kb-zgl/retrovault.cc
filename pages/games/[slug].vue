@@ -23,10 +23,10 @@
     <div v-else-if="error" class="pt-10 text-center">
       <div style="font-size:clamp(3rem,12vw,5rem);margin-bottom:12px">🕹️</div>
       <h1 class="font-pixel text-[clamp(0.8rem,3vw,1.2rem)]" style="color:var(--color-text-primary);margin-bottom:8px">
-        Game Not Found
+        {{ t('common.notFound') }}
       </h1>
       <p class="font-body text-[clamp(0.6rem,1.5vw,0.7rem)]" style="color:var(--color-text-muted)">
-        The game "{{ $route.params.slug }}" doesn't exist in our vault.
+        {{ t('common.notFoundDesc', { slug }) }}
       </p>
     </div>
 
@@ -51,14 +51,14 @@
 
           <div class="detail-meta">
             <NuxtLink
-              :to="{ path: '/games', query: { genre: game.genre } }"
+              :to="{ path: localePath('/games'), query: { genre: game.genre } }"
               class="detail-meta-link"
             >🏷️ {{ game.genre }}</NuxtLink>
             <span>📅 {{ game.year }}</span>
             <span v-if="game.developer">🏢 {{ game.developer }}</span>
             <NuxtLink
               v-if="game.platform"
-              :to="{ path: '/games', query: { platform: game.platform } }"
+              :to="{ path: localePath('/games'), query: { platform: game.platform } }"
               class="detail-meta-link"
             >🖥️ {{ game.platform }}</NuxtLink>
           </div>
@@ -67,7 +67,7 @@
 
           <div class="detail-actions">
             <button class="btn-pixel btn-pixel-green" @click="engine.loadGame(game!)">
-              🕹️ Play Now
+              {{ t('game.playNow') }}
             </button>
             <!-- TODO Queue -->
             <button
@@ -75,7 +75,7 @@
               :class="inQueue ? 'btn-pixel-yellow in-queue' : 'btn-pixel-yellow'"
               @click="toggleQueue"
             >
-              {{ inQueue ? '✅ In Queue' : '➕ Queue' }}
+              {{ inQueue ? t('game.inQueue') : t('game.addQueue') }}
             </button>
             <GameShareButton :game="game" />
           </div>
@@ -85,7 +85,7 @@
       <!-- TODO Comments -->
       <div class="comment-section">
         <div class="cmt-title">
-          💬 Comments
+          {{ t('game.comments') }}
           <span class="cmt-count">({{ comments.length }})</span>
         </div>
 
@@ -93,19 +93,19 @@
           <input
             v-model="cmtName"
             type="text"
-            placeholder="Your name"
+            :placeholder="t('comment.placeholderName')"
           />
           <textarea
             v-model="cmtContent"
-            placeholder="Write a comment…"
+            :placeholder="t('comment.placeholderContent')"
           ></textarea>
           <button class="cmt-submit" @click="postComment">
-            ✏️ Post
+            {{ t('game.post') }}
           </button>
         </div>
 
         <div v-if="comments.length === 0" class="cmt-empty">
-          No comments yet
+          {{ t('game.noComments') }}
         </div>
 
         <div v-else class="cmt-list">
@@ -130,6 +130,9 @@
 <script setup lang="ts">
 import type { GameData, GameComment } from '~/types/games'
 
+const { t } = useAppI18n()
+const { localePath } = useLocalePath()
+
 const route = useRoute()
 const slug = computed(() => route.params.slug as string)
 
@@ -140,12 +143,12 @@ const { data: game, pending, error } = useFetch<GameData>(`/api/games/${slug.val
 
 // SEO: title + description + VideoGame Schema.org
 const pageTitle = computed(() => {
-  if (!game.value) return 'Loading...'
+  if (!game.value) return t('common.loading')
   return `Play ${game.value.title} Online Free — RetroVault`
 })
 
 const pageDesc = computed(() => {
-  if (!game.value) return 'RetroVault'
+  if (!game.value) return t('seo.tagline')
   return game.value.description.slice(0, 158)
 })
 
@@ -158,8 +161,8 @@ useSeoMeta({
 })
 
 const breadcrumbItems = useBreadcrumb(computed(() => [
-  { label: 'Home', to: '/' },
-  { label: 'Games', to: '/games' },
+  { label: t('nav.home'), to: localePath('/') },
+  { label: t('nav.games'), to: localePath('/games') },
   { label: game.value?.title || '…' },
 ]))
 
@@ -213,7 +216,7 @@ onMounted(() => {
 const reversedComments = computed(() => [...comments.value].reverse())
 
 function postComment() {
-  const name = cmtName.value.trim() || 'Anonymous'
+  const name = cmtName.value.trim() || t('comment.anonymous')
   const content = cmtContent.value.trim()
   if (!content) return
 
