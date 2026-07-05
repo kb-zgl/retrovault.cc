@@ -1178,6 +1178,11 @@ h1.hero-title em {
 .game-card-mini:hover {
   border-color: var(--color-accent);
 }
+.game-card-mini .game-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
 .game-card-mini:active {
   transform: scale(0.95);
 }

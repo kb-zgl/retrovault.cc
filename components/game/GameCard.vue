@@ -1,10 +1,13 @@
 <template>
-  <div :data-slug="game.slug">
-    <!-- Card link -->
+  <div
+    :class="[size === 'grid' ? 'game-card' : 'game-card-mini']"
+    :data-slug="game.slug"
+  >
+    <!-- Card link (cover + title) -->
     <NuxtLink
       v-if="to"
       :to="to"
-      :class="[size === 'grid' ? 'game-card' : 'game-card-mini']"
+      class="game-card-link"
     >
       <!-- Play button -->
       <button
@@ -33,7 +36,7 @@
     </NuxtLink>
     <div
       v-else
-      :class="[size === 'grid' ? 'game-card' : 'game-card-mini']"
+      class="game-card-link"
     >
       <!-- Play button -->
       <button
@@ -61,7 +64,7 @@
       </div>
     </div>
 
-    <!-- Tags: platform + genre (outside card link, prevents hover conflict) -->
+    <!-- Tags: platform + genre (inside card wrapper but outside link, prevents nav) -->
     <div class="mini-tags">
       <span class="mini-tag mini-tag-link" @click.stop="goToGames('platform', game.platform)">{{ game.platform }}</span>
       <span class="mini-tag mini-tag-link" @click.stop="goToGames('genre', game.genre)">{{ game.genre }}</span>
