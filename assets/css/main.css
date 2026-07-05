@@ -2318,6 +2318,8 @@ h1.hero-title em {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
 }
 .marquee-title span {
   color: var(--color-warning);
@@ -2325,6 +2327,7 @@ h1.hero-title em {
 .header-logo {
   width: 22px;
   height: 22px;
+  border-radius: 4px;
   vertical-align: middle;
   margin-right: 6px;
   margin-top: -3px;
