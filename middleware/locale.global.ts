@@ -8,30 +8,27 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const locale = useState<'en' | 'zh'>('locale', () => 'en')
   const translations = useState<Record<string, any>>('translations', () => ({}))
+  const cookie = useCookie('locale', { path: '/', sameSite: 'lax' })
+
+  async function loadLang(lang: 'en' | 'zh') {
+    if (!translations.value?.nav?.home) {
+      const data = await import(`~/locales/${lang}.json`)
+      translations.value = data.default || data
+    }
+  }
 
   // Detect from URL prefix
   if (to.path.startsWith('/zh')) {
     locale.value = 'zh'
-    const cookie = useCookie('locale', { path: '/', sameSite: 'lax' })
     cookie.value = 'zh'
-    // Lazy-load Chinese translations
-    if (!translations.value?.nav?.home) {
-      const data = await import(`~/locales/zh.json`)
-      translations.value = data.default || data
-    }
+    await loadLang('zh')
     return // URL stays /zh/..., no redirect
   }
-
-  // No /zh prefix — check cookie
-  const cookie = useCookie('locale', { path: '/', sameSite: 'lax' })
 
   if (cookie.value === 'zh') {
     // User prefers Chinese but URL has no /zh prefix → redirect
     locale.value = 'zh'
-    if (!translations.value?.nav?.home) {
-      const data = await import(`~/locales/zh.json`)
-      translations.value = data.default || data
-    }
+    await loadLang('zh')
     const target = `/zh${to.path === '/' ? '' : to.path}${to.query ? '?' + new URLSearchParams(to.query as any).toString() : ''}`
     return navigateTo(target, { redirectCode: 301 })
   }
@@ -43,10 +40,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     if (acceptLang.startsWith('zh')) {
       cookie.value = 'zh'
       locale.value = 'zh'
-      if (!translations.value?.nav?.home) {
-        const data = await import(`~/locales/zh.json`)
-        translations.value = data.default || data
-      }
+      await loadLang('zh')
       const target = `/zh${to.path === '/' ? '' : to.path}${to.query ? '?' + new URLSearchParams(to.query as any).toString() : ''}`
       return navigateTo(target, { redirectCode: 302 })
     }
@@ -55,8 +49,5 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Default: English
   locale.value = 'en'
   cookie.value = 'en'
-  if (!translations.value?.nav?.home) {
-    const data = await import(`~/locales/en.json`)
-    translations.value = data.default || data
-  }
+  await loadLang('en')
 })
