@@ -6,7 +6,10 @@
       <div class="marquee-lamp">
         <span class="lamp"></span><span class="lamp"></span><span class="lamp"></span><span class="lamp"></span><span class="lamp"></span>
       </div>
-      <div class="marquee-title">🕹️ <span>RETRO</span> VAULT</div>
+      <div class="marquee-title">
+        <img src="/logo.svg" alt="RetroVault" class="header-logo" />
+        <span>RETRO</span> VAULT
+      </div>
     </div>
 
     <!-- Desktop nav -->

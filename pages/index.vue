@@ -2,7 +2,7 @@
   <div>
     <!-- Hero enter block -->
     <div class="hero-enter" @click="navigateTo(localePath('/games'))">
-      <span class="hero-icon">🕹️</span>
+      <img src="/logo.svg" alt="RetroVault" class="hero-logo" />
       <div class="hero-title">{{ t('hero.title') }}</div>
       <div class="hero-sub">{{ t('hero.sub') }}</div>
       <div class="hero-count">{{ t('hero.count', { count: totalAll }) }}</div>

@@ -2313,6 +2313,13 @@ h1.hero-title em {
 .marquee-title span {
   color: var(--color-warning);
 }
+.header-logo {
+  width: 22px;
+  height: 22px;
+  vertical-align: middle;
+  margin-right: 6px;
+  margin-top: -3px;
+}
 
 /* ═══════════════════════════════════════════════
    汉堡按钮 + 移动端遮罩菜单
@@ -2474,10 +2481,11 @@ h1.hero-title em {
 .hero-enter:active {
   transform: scale(0.97);
 }
-.hero-enter .hero-icon {
-  font-size: clamp(2.8rem, 12vw, 4rem);
+.hero-enter .hero-logo {
+  width: clamp(56px, 12vw, 80px);
+  height: clamp(56px, 12vw, 80px);
   display: block;
-  margin-bottom: 8px;
+  margin: 0 auto 12px;
   animation: float 2s ease-in-out infinite;
 }
 @keyframes float {
