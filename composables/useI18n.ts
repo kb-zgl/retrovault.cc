@@ -5,11 +5,16 @@ export function useI18n() {
   const translations = useState<Record<string, any>>('translations', () => ({}))
 
   async function setLocale(lang: 'en' | 'zh') {
-    locale.value = lang
-    const data = await import(`~/locales/${lang}.json`)
-    translations.value = data.default || data
-    const cookie = useCookie('locale', { path: '/', sameSite: 'lax' })
-    cookie.value = lang
+    if (locale.value === lang) return
+    try {
+      const data = await import(`~/locales/${lang}.json`)
+      translations.value = data.default || data
+      locale.value = lang
+      const cookie = useCookie('locale', { path: '/', sameSite: 'lax' })
+      cookie.value = lang
+    } catch (e) {
+      console.error(`[i18n] Failed to load locale: ${lang}`, e)
+    }
   }
 
   function t(key: TranslationKey, params?: Record<string, string | number>): string {
