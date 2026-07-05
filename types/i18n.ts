@@ -9,9 +9,11 @@ type TranslationKey =
   | `filter.${'genre' | 'platform' | 'year' | 'all' | 'clear' | 'results' | 'emptyTitle' | 'emptyHint'}`
   | `platformPage.${'title' | 'description' | 'browseAll'}`
   | `tagCloud.${'title' | 'description'}`
+  | `news.${'title' | 'badge'}`
+  | `privacy.${'title' | 'badge'}`
   | `fab.${'nowPlaying' | 'playing' | 'random' | 'queue' | 'history' | 'resume' | 'pause' | 'quickPlay' | 'emptyQueue'}`
   | `footer.${'playersOnline' | 'login' | 'about' | 'privacy' | 'guestbook'}`
-  | `auth.${'login' | 'logout' | 'magicLink' | 'emailPlaceholder' | 'sendLink' | 'checkEmail' | 'username'}`
+  | `auth.${'login' | 'logout' | 'magicLink' | 'header' | 'desc' | 'emailPlaceholder' | 'sendLink' | 'sending' | 'linkSentTo' | 'checkInbox' | 'useDifferentEmail' | 'invalidEmail' | 'genericError' | 'username'}`
   | `theme.${'light' | 'dark'}`
   | `common.${'loading' | 'error' | 'notFound' | 'notFoundDesc'}`
   | `seo.${'tagline' | 'homeTitle' | 'homeDesc' | 'gamesTitle' | 'gamesDesc' | 'privacyTitle' | 'privacyDesc' | 'aboutTitle' | 'aboutDesc' | 'newsTitle' | 'newsDesc' | 'tagsTitle' | 'tagsDesc' | 'ogTypeHome' | 'ogTypeCategory' | 'ogTypeDetail' | 'ogTypeBlog' | 'ogTypePage'}`
