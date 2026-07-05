@@ -74,6 +74,16 @@
     "privacy": "🔒 Privacy",
     "guestbook": "💬 Guestbook"
   },
+  "about": {
+    "title": "ℹ️ About",
+    "subtitle": "Pixel Heart",
+    "para1": "🎮 RETRO VAULT is a retro gaming site built by enthusiasts. We collect, curate, and share the purest pixel gaming experiences — playable right in your browser.",
+    "para2": "📅 Founded in 2026. Our mission: a pixel utopia combining game library, community, and retro culture. Every game is hand-picked and preserved for future generations of pixel lovers.",
+    "roleFounder": "Founder",
+    "roleArtDirector": "Art Director",
+    "roleDesigner": "Designer",
+    "roleEditor": "Editor"
+  },
   "auth": {
     "login": "Sign in",
     "logout": "Sign Out",

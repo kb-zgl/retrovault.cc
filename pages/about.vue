@@ -1,20 +1,14 @@
 <template>
   <div>
     <div class="section-title">
-      ℹ️ About
-      <span class="badge purple">Pixel Heart</span>
+      {{ t('about.title') }}
+      <span class="badge purple">{{ t('about.subtitle') }}</span>
     </div>
 
     <div class="about-content">
-      <p>
-        🎮 <span class="highlight">RETRO VAULT</span> is a retro gaming site built by enthusiasts.
-        We collect, curate, and share the purest pixel gaming experiences — playable right in your browser.
-      </p>
+      <p>{{ t('about.para1') }}</p>
 
-      <p>
-        📅 Founded in 2026. Our mission: a pixel utopia combining game library, community, and retro culture.
-        Every game is hand-picked and preserved for future generations of pixel lovers.
-      </p>
+      <p>{{ t('about.para2') }}</p>
 
       <div class="team">
         <div
@@ -42,18 +36,20 @@ interface TeamMember {
   role: string
 }
 
-const team: TeamMember[] = [
-  { avatar: '👨‍💻', name: 'PixelDriver', role: 'Founder' },
-  { avatar: '🎨', name: 'PixelArtist', role: 'Art Director' },
-  { avatar: '🕹️', name: 'ArcadeManiac', role: 'Designer' },
-  { avatar: '📝', name: 'RetroWriter', role: 'Editor' },
-]
+const { t } = useAppI18n()
+
+const team = computed<TeamMember[]>(() => [
+  { avatar: '👨‍💻', name: 'PixelDriver', role: t('about.roleFounder') },
+  { avatar: '🎨', name: 'PixelArtist', role: t('about.roleArtDirector') },
+  { avatar: '🕹️', name: 'ArcadeManiac', role: t('about.roleDesigner') },
+  { avatar: '📝', name: 'RetroWriter', role: t('about.roleEditor') },
+])
 
 useSeoMeta({
-  title: 'About RetroVault — Retro Gaming Community',
-  description: 'Learn about RetroVault — our mission, team, and passion for preserving pixel gaming history. Play retro games online free.',
-  ogTitle: 'About RetroVault',
-  ogDescription: 'Retro gaming site built by enthusiasts. Preserving pixel gaming experiences.',
+  title: t('seo.aboutTitle'),
+  description: t('seo.aboutDesc'),
+  ogTitle: t('seo.aboutTitle'),
+  ogDescription: t('seo.aboutDesc'),
   ogType: 'website',
 })
 </script>

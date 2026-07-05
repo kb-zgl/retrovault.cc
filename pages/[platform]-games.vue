@@ -4,7 +4,7 @@
 
     <!-- Title -->
     <div class="section-title">
-      🖥️ {{ displayName }} Games
+      {{ t('platformPage.title', { platform: displayName }) }}
       <span class="badge-purple badge">{{ total }} games</span>
     </div>
 
@@ -19,7 +19,7 @@
     <!-- Empty -->
     <div v-else-if="games.length === 0" class="empty-state">
       <div class="icon" style="font-size:32px">🕹️</div>
-      <h3>No games found</h3>
+      <h3>{{ t('filter.emptyTitle') }}</h3>
       <p>Platform "{{ route.params.platform }}" has no games in our vault</p>
     </div>
 
@@ -30,8 +30,8 @@
         :key="g.slug"
         :game="g"
         size="mini"
-        :to="`/games/${g.slug}`"
-        @play="navigateTo(`/games/${g.slug}`)"
+        :to="localePath(`/games/${g.slug}`)"
+        @play="navigateTo(localePath(`/games/${g.slug}`))"
       />
     </div>
   </div>
@@ -41,18 +41,20 @@
 import type { GameListResponse } from '~/types/games'
 
 const route = useRoute()
+const { t } = useAppI18n()
+const { localePath } = useLocalePath()
 
 useSeoMeta({
-  title: computed(() => `${displayName.value} Games Online Free — RetroVault`),
-  description: computed(() => `Play ${displayName.value} games online free in your browser. Browse the full collection of ${displayName.value} retro games at RetroVault.`),
-  ogTitle: computed(() => `${displayName.value} Games — RetroVault`),
-  ogDescription: computed(() => `Play ${displayName.value} games online free.`),
+  title: computed(() => t('platformPage.title', { platform: displayName.value })),
+  description: computed(() => t('platformPage.description', { platform: displayName.value })),
+  ogTitle: computed(() => t('platformPage.title', { platform: displayName.value })),
+  ogDescription: computed(() => t('platformPage.description', { platform: displayName.value })),
   ogType: 'website',
 })
 
 const breadcrumbItems = useBreadcrumb(computed(() => [
-  { label: 'Home', to: '/' },
-  { label: 'Games', to: '/games' },
+  { label: t('nav.home'), to: localePath('/') },
+  { label: t('nav.games'), to: localePath('/games') },
   { label: displayName.value },
 ]))
 

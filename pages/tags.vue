@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="section-title">
-      🏷️ Tag Cloud
+      {{ t('tagCloud.title') }}
       <span class="badge green">{{ total }} tags</span>
     </div>
 
@@ -22,7 +22,7 @@
       <NuxtLink
         v-for="t in tags"
         :key="t.name"
-        :to="{ path: '/games', query: { tag: t.name } }"
+        :to="tagLinkPath(t.name)"
         class="tag-item"
         :class="t.count > 40 ? 'large' : t.count > 15 ? 'medium' : ''"
       >
@@ -44,16 +44,23 @@ interface TagsResponse {
   tags: TagEntry[]
 }
 
+const { t } = useAppI18n()
+const { localePath } = useLocalePath()
+
 const { data, pending } = useFetch<TagsResponse>('/api/tags', { key: 'tags' })
 
 const tags = computed(() => data.value?.tags || [])
 const total = computed(() => data.value?.total || 0)
 
+function tagLinkPath(tag: string): string {
+  return localePath('/games') + '?tag=' + encodeURIComponent(tag)
+}
+
 useSeoMeta({
-  title: 'Game Tags — Browse by Tag | RetroVault',
-  description: 'Browse retro games by tag. Find games by genre, theme, mechanics, and more.',
-  ogTitle: 'Game Tags — RetroVault',
-  ogDescription: 'Browse 2000+ retro games by tag.',
+  title: t('seo.tagsTitle'),
+  description: t('seo.tagsDesc'),
+  ogTitle: t('seo.tagsTitle'),
+  ogDescription: t('seo.tagsDesc'),
   ogType: 'website',
 })
 </script>

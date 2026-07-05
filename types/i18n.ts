@@ -5,7 +5,8 @@ type TranslationKey =
   | `section.${'recent' | 'featured' | 'emulators' | 'viewAll'}`
   | `game.${'playNow' | 'inQueue' | 'addQueue' | 'removeQueue' | 'comments' | 'noComments' | 'post' | 'genre' | 'platform' | 'year' | 'developer' | 'publisher' | 'loadingEmulator'}`
   | `comment.${'placeholderName' | 'placeholderContent' | 'anonymous'}`
-  | `filter.${'genre' | 'platform' | 'year' | 'all' | 'clear' | 'results'}`
+  | `about.${'title' | 'subtitle' | 'para1' | 'para2' | 'roleFounder' | 'roleArtDirector' | 'roleDesigner' | 'roleEditor'}`
+  | `filter.${'genre' | 'platform' | 'year' | 'all' | 'clear' | 'results' | 'emptyTitle' | 'emptyHint'}`
   | `platformPage.${'title' | 'description' | 'browseAll'}`
   | `tagCloud.${'title' | 'description'}`
   | `fab.${'nowPlaying' | 'playing' | 'random' | 'queue' | 'history' | 'resume' | 'pause' | 'quickPlay' | 'emptyQueue'}`
