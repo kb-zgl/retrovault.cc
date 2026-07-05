@@ -18,7 +18,7 @@
       <NuxtLink class="nav-btn" :class="{ active: route.path === '/about' }" :to="localePath('/about')">{{ t('nav.about') }}</NuxtLink>
     </nav>
 
-    <div class="hidden sm:flex items-center gap-2">
+    <div class="hidden md:flex items-center gap-2">
       <LocaleSwitcher />
       <ThemeToggle />
     </div>
@@ -49,6 +49,7 @@
         <button class="link-btn" @click="toggleTheme">
           {{ theme === 'dark' ? t('theme.light') : t('theme.dark') }}
         </button>
+        <LocaleSwitcher />
         <button class="link-btn" @click="alert('📖 Guestbook coming soon!'); mobileMenuOpen = false">{{ t('footer.guestbook') }}</button>
       </div>
     </div>

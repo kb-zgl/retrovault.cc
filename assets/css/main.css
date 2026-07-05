@@ -2228,8 +2228,10 @@ h1.hero-title em {
 .cabinet-header .pixel-nav.desktop-nav {
   margin: 0;
   padding: 4px 6px;
-  flex-shrink: 0;
+  flex-shrink: 1;
+  flex-wrap: wrap;
   justify-content: flex-end;
+  overflow: hidden;
 }
 .cabinet-header .pixel-nav.desktop-nav .nav-btn {
   min-height: 36px;
