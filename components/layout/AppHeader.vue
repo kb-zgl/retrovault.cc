@@ -14,11 +14,11 @@
 
     <!-- Desktop nav -->
     <nav class="pixel-nav desktop-nav">
-      <NuxtLink class="nav-btn" :class="{ active: activePath.value === '/' }" :to="localePath('/')">{{ t('nav.home') }}</NuxtLink>
-      <NuxtLink class="nav-btn" :class="{ active: activePath.value.startsWith('/games') }" :to="localePath('/games')">{{ t('nav.games') }}</NuxtLink>
-      <NuxtLink class="nav-btn" :class="{ active: activePath.value === '/tags' }" :to="localePath('/tags')">{{ t('nav.tags') }}</NuxtLink>
-      <NuxtLink class="nav-btn" :class="{ active: activePath.value === '/news' }" :to="localePath('/news')">{{ t('nav.news') }}</NuxtLink>
-      <NuxtLink class="nav-btn" :class="{ active: activePath.value === '/about' }" :to="localePath('/about')">{{ t('nav.about') }}</NuxtLink>
+      <NuxtLink class="nav-btn" :class="{ active: activePath === '/' }" :to="localePath('/')">{{ t('nav.home') }}</NuxtLink>
+      <NuxtLink class="nav-btn" :class="{ active: activePath.startsWith('/games') }" :to="localePath('/games')">{{ t('nav.games') }}</NuxtLink>
+      <NuxtLink class="nav-btn" :class="{ active: activePath === '/tags' }" :to="localePath('/tags')">{{ t('nav.tags') }}</NuxtLink>
+      <NuxtLink class="nav-btn" :class="{ active: activePath === '/news' }" :to="localePath('/news')">{{ t('nav.news') }}</NuxtLink>
+      <NuxtLink class="nav-btn" :class="{ active: activePath === '/about' }" :to="localePath('/about')">{{ t('nav.about') }}</NuxtLink>
     </nav>
 
     <div class="hidden md:flex items-center gap-2">
@@ -39,11 +39,11 @@
     <div class="nav-overlay" :class="{ open: mobileMenuOpen }" @click.self="mobileMenuOpen = false">
       <button class="nav-close-btn" @click="mobileMenuOpen = false" aria-label="Close menu">✕</button>
       <div class="nav-overlay-items">
-        <NuxtLink class="nav-overlay-btn" :class="{ active: activePath.value === '/' }" :to="localePath('/')" @click="mobileMenuOpen = false">{{ '🏠 ' + t('nav.home') }}</NuxtLink>
-        <NuxtLink class="nav-overlay-btn" :class="{ active: activePath.value.startsWith('/games') }" :to="localePath('/games')" @click="mobileMenuOpen = false">{{ '🎮 ' + t('nav.games') }}</NuxtLink>
-        <NuxtLink class="nav-overlay-btn" :class="{ active: activePath.value === '/tags' }" :to="localePath('/tags')" @click="mobileMenuOpen = false">{{ '🏷️ ' + t('nav.tags') }}</NuxtLink>
-        <NuxtLink class="nav-overlay-btn" :class="{ active: activePath.value === '/news' }" :to="localePath('/news')" @click="mobileMenuOpen = false">{{ '📰 ' + t('nav.news') }}</NuxtLink>
-        <NuxtLink class="nav-overlay-btn" :class="{ active: activePath.value === '/about' }" :to="localePath('/about')" @click="mobileMenuOpen = false">{{ 'ℹ️ ' + t('nav.about') }}</NuxtLink>
+        <NuxtLink class="nav-overlay-btn" :class="{ active: activePath === '/' }" :to="localePath('/')" @click="mobileMenuOpen = false">{{ '🏠 ' + t('nav.home') }}</NuxtLink>
+        <NuxtLink class="nav-overlay-btn" :class="{ active: activePath.startsWith('/games') }" :to="localePath('/games')" @click="mobileMenuOpen = false">{{ '🎮 ' + t('nav.games') }}</NuxtLink>
+        <NuxtLink class="nav-overlay-btn" :class="{ active: activePath === '/tags' }" :to="localePath('/tags')" @click="mobileMenuOpen = false">{{ '🏷️ ' + t('nav.tags') }}</NuxtLink>
+        <NuxtLink class="nav-overlay-btn" :class="{ active: activePath === '/news' }" :to="localePath('/news')" @click="mobileMenuOpen = false">{{ '📰 ' + t('nav.news') }}</NuxtLink>
+        <NuxtLink class="nav-overlay-btn" :class="{ active: activePath === '/about' }" :to="localePath('/about')" @click="mobileMenuOpen = false">{{ 'ℹ️ ' + t('nav.about') }}</NuxtLink>
       </div>
       <div class="nav-overlay-footer">
         <button class="link-btn" @click="authAction; mobileMenuOpen = false">
