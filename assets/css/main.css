@@ -2550,7 +2550,7 @@ h1.hero-title em {
 .home-section .section-header .sec-more:active {
   transform: scale(0.96);
 }
-}
+
 
 /* ═══════════════════════════════════════════════
    FAB - Floating Action Button（匹配 demo .fab-container）
