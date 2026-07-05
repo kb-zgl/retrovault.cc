@@ -227,4 +227,13 @@ function updateUrl() {
 }
 
 watch(page, () => updateUrl())
+
+// Sync filter state from URL query changes (e.g., navigating from game card tags)
+watch(() => route.query, (q) => {
+  selectedPlatform.value = (q.platform as string) || ''
+  selectedGenre.value = (q.genre as string) || ''
+  selectedDecade.value = q.year ? parseInt(q.year as string) : 0
+  selectedTag.value = (q.tag as string) || ''
+  page.value = parseInt((q.page as string) || '') || 1
+})
 </script>

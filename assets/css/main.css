@@ -1266,6 +1266,15 @@ h1.hero-title em {
   background: rgba(45, 217, 122, 0.20);
   color: #60e898;
 }
+.mini-tag-link {
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.mini-tag-link:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background: var(--color-accent-dim);
+}
 
 /* ═══════════════════════════════════════════════
    分类网格（匹配 demo .category-grid / .category-card）

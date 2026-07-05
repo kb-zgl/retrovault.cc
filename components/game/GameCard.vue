@@ -32,8 +32,8 @@
 
     <!-- Tags: platform + genre -->
     <div class="mini-tags">
-      <span class="mini-tag">{{ game.platform }}</span>
-      <span class="mini-tag">{{ game.genre }}</span>
+      <span class="mini-tag mini-tag-link" @click.stop="goToGames('platform', game.platform)">{{ game.platform }}</span>
+      <span class="mini-tag mini-tag-link" @click.stop="goToGames('genre', game.genre)">{{ game.genre }}</span>
     </div>
   </NuxtLink>
   <div
@@ -88,6 +88,13 @@ const props = withDefaults(defineProps<{
 defineEmits<{
   play: []
 }>()
+
+const router = useRouter()
+const { localePath } = useLocalePath()
+
+function goToGames(filter: 'platform' | 'genre', value: string) {
+  router.push(localePath(`/games?${filter}=${encodeURIComponent(value)}`))
+}
 
 const coverOk = ref(true)
 
