@@ -1,75 +1,70 @@
 <template>
-  <NuxtLink
-    v-if="to"
-    :to="to"
-    :class="[size === 'grid' ? 'game-card' : 'game-card-mini']"
-    :data-slug="game.slug"
-  >
-    <!-- Play button -->
-    <button
-      :class="size === 'grid' ? 'card-play-btn' : 'mini-play-btn'"
-      @click.stop="$emit('play')"
-      :aria-label="`Play ${game.title}`"
-    >▶</button>
+  <div :data-slug="game.slug">
+    <!-- Card link -->
+    <NuxtLink
+      v-if="to"
+      :to="to"
+      :class="[size === 'grid' ? 'game-card' : 'game-card-mini']"
+    >
+      <!-- Play button -->
+      <button
+        :class="size === 'grid' ? 'card-play-btn' : 'mini-play-btn'"
+        @click.stop="$emit('play')"
+        :aria-label="`Play ${game.title}`"
+      >▶</button>
 
-    <!-- Cover -->
-    <div :class="size === 'grid' ? 'pixel-icon' : 'mini-cover'">
-      <img
-        v-if="coverOk"
-        :src="`/covers/${game.slug}.webp`"
-        :alt="game.title"
-        loading="lazy"
-        @error="coverOk = false"
-      />
-      <span v-else>{{ emojiFallback }}</span>
+      <!-- Cover -->
+      <div :class="size === 'grid' ? 'pixel-icon' : 'mini-cover'">
+        <img
+          v-if="coverOk"
+          :src="`/covers/${game.slug}.webp`"
+          :alt="game.title"
+          loading="lazy"
+          @error="coverOk = false"
+        />
+        <span v-else>{{ emojiFallback }}</span>
+      </div>
+
+      <!-- Title + year -->
+      <div :class="size === 'grid' ? 'game-title' : 'mini-title'">
+        {{ game.title }}
+        <small>{{ game.year }}</small>
+      </div>
+    </NuxtLink>
+    <div
+      v-else
+      :class="[size === 'grid' ? 'game-card' : 'game-card-mini']"
+    >
+      <!-- Play button -->
+      <button
+        :class="size === 'grid' ? 'card-play-btn' : 'mini-play-btn'"
+        @click.stop="$emit('play')"
+        :aria-label="`Play ${game.title}`"
+      >▶</button>
+
+      <!-- Cover -->
+      <div :class="size === 'grid' ? 'pixel-icon' : 'mini-cover'">
+        <img
+          v-if="coverOk"
+          :src="`/covers/${game.slug}.webp`"
+          :alt="game.title"
+          loading="lazy"
+          @error="coverOk = false"
+        />
+        <span v-else>{{ emojiFallback }}</span>
+      </div>
+
+      <!-- Title + year -->
+      <div :class="size === 'grid' ? 'game-title' : 'mini-title'">
+        {{ game.title }}
+        <small>{{ game.year }}</small>
+      </div>
     </div>
 
-    <!-- Title + year -->
-    <div :class="size === 'grid' ? 'game-title' : 'mini-title'">
-      {{ game.title }}
-      <small>{{ game.year }}</small>
-    </div>
-
-    <!-- Tags: platform + genre -->
+    <!-- Tags: platform + genre (outside card link, prevents hover conflict) -->
     <div class="mini-tags">
       <span class="mini-tag mini-tag-link" @click.stop="goToGames('platform', game.platform)">{{ game.platform }}</span>
       <span class="mini-tag mini-tag-link" @click.stop="goToGames('genre', game.genre)">{{ game.genre }}</span>
-    </div>
-  </NuxtLink>
-  <div
-    v-else
-    :class="[size === 'grid' ? 'game-card' : 'game-card-mini']"
-    :data-slug="game.slug"
-  >
-    <!-- Play button -->
-    <button
-      :class="size === 'grid' ? 'card-play-btn' : 'mini-play-btn'"
-      @click.stop="$emit('play')"
-      :aria-label="`Play ${game.title}`"
-    >▶</button>
-
-    <!-- Cover -->
-    <div :class="size === 'grid' ? 'pixel-icon' : 'mini-cover'">
-      <img
-        v-if="coverOk"
-        :src="`/covers/${game.slug}.webp`"
-        :alt="game.title"
-        loading="lazy"
-        @error="coverOk = false"
-      />
-      <span v-else>{{ emojiFallback }}</span>
-    </div>
-
-    <!-- Title + year -->
-    <div :class="size === 'grid' ? 'game-title' : 'mini-title'">
-      {{ game.title }}
-      <small>{{ game.year }}</small>
-    </div>
-
-    <!-- Tags: platform + genre -->
-    <div class="mini-tags">
-      <span class="mini-tag">{{ game.platform }}</span>
-      <span class="mini-tag">{{ game.genre }}</span>
     </div>
   </div>
 </template>
