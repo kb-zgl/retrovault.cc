@@ -1,11 +1,11 @@
 <template>
   <div>
     <!-- Hero enter block -->
-    <div class="hero-enter" @click="navigateTo('/games')">
+    <div class="hero-enter" @click="navigateTo(localePath('/games'))">
       <span class="hero-icon">🕹️</span>
-      <div class="hero-title">Explore All Games</div>
-      <div class="hero-sub">— Tap to enter the pixel vault —</div>
-      <div class="hero-count">📦 <span>{{ totalAll }}</span> games</div>
+      <div class="hero-title">{{ t('hero.title') }}</div>
+      <div class="hero-sub">{{ t('hero.sub') }}</div>
+      <div class="hero-count">{{ t('hero.count', { count: totalAll }) }}</div>
     </div>
 
     <!-- Loading skeleton -->
@@ -27,16 +27,16 @@
       <!-- Recent games -->
       <div class="home-section">
         <div class="section-header">
-          <div class="sec-title">🔄 Recent <span class="count-badge">{{ recent.length }}</span></div>
-          <button class="sec-more" @click="navigateTo('/games')">View all →</button>
+          <div class="sec-title">{{ t('section.recent') }} <span class="count-badge">{{ recent.length }}</span></div>
+          <button class="sec-more" @click="navigateTo(localePath('/games'))">{{ t('section.viewAll') }}</button>
         </div>
         <div class="scroll-row">
           <GameCard
             v-for="g in recent"
             :key="g.slug"
             :game="g"
-            :to="`/games/${g.slug}`"
-            @play="navigateTo(`/games/${g.slug}`)"
+            :to="localePath(`/games/${g.slug}`)"
+            @play="navigateTo(localePath(`/games/${g.slug}`))"
           />
         </div>
       </div>
@@ -44,16 +44,16 @@
       <!-- Featured -->
       <div class="home-section">
         <div class="section-header">
-          <div class="sec-title">⭐ Featured <span class="count-badge">{{ featured.length }}</span></div>
-          <button class="sec-more" @click="navigateTo('/games')">View all →</button>
+          <div class="sec-title">{{ t('section.featured') }} <span class="count-badge">{{ featured.length }}</span></div>
+          <button class="sec-more" @click="navigateTo(localePath('/games'))">{{ t('section.viewAll') }}</button>
         </div>
         <div class="scroll-row">
           <GameCard
             v-for="g in featured"
             :key="g.slug"
             :game="g"
-            :to="`/games/${g.slug}`"
-            @play="navigateTo(`/games/${g.slug}`)"
+            :to="localePath(`/games/${g.slug}`)"
+            @play="navigateTo(localePath(`/games/${g.slug}`))"
           />
         </div>
       </div>
@@ -61,18 +61,18 @@
       <!-- Emulators (by platform) -->
       <div class="home-section">
         <div class="section-header">
-          <div class="sec-title">🖥️ Emulators <span class="count-badge">{{ platformStats.length }}</span></div>
-          <button class="sec-more" @click="navigateTo('/games')">View all →</button>
+          <div class="sec-title">{{ t('section.emulators') }} <span class="count-badge">{{ platformStats.length }}</span></div>
+          <button class="sec-more" @click="navigateTo(localePath('/games'))">{{ t('section.viewAll') }}</button>
         </div>
         <div class="scroll-row">
           <div
             v-for="p in platformStats"
             :key="p.name"
             class="game-card-mini"
-            @click="navigateTo(`/${slugFor(p.name)}-games`)"
+            @click="navigateTo(localePath(`/${slugFor(p.name)}-games`))"
           >
             <div class="mini-cover" style="font-size:28px">{{ emojiFor(p.name) }}</div>
-            <div class="mini-title">{{ p.name }}<small>{{ p.count }} games</small></div>
+            <div class="mini-title">{{ p.name }}<small>{{ t('hero.count', { count: p.count }) }}</small></div>
           </div>
         </div>
       </div>
@@ -82,6 +82,9 @@
 
 <script setup lang="ts">
 import type { GameListResponse, GameSummary } from '~/types/games'
+
+const { t } = useAppI18n()
+const { localePath } = useLocalePath()
 
 // Fetch games for homepage sections
 const { data, pending } = useFetch<GameListResponse>('/api/games', {
@@ -171,10 +174,10 @@ function slugFor(platform: string): string {
 }
 
 useSeoMeta({
-  title: 'RetroVault — 2000+ Free Retro Games Online',
-  description: 'Play 2000+ classic retro games in your browser. NES, SNES, GBA, Arcade, and more. No download, no signup required.',
-  ogTitle: 'RetroVault — 2000+ Free Retro Games Online',
-  ogDescription: 'Play 2000+ classic retro games in your browser. NES, SNES, GBA, Arcade, and more.',
+  title: t('seo.homeTitle'),
+  description: t('seo.homeDesc'),
+  ogTitle: t('seo.homeTitle'),
+  ogDescription: t('seo.homeDesc'),
   ogType: 'website',
 })
 
@@ -183,7 +186,7 @@ useSchemaOrg([
     '@type': 'WebSite',
     name: 'RetroVault',
     url: 'https://retrovault.cc',
-    description: '2000+ Free Retro Games Online',
+    description: t('seo.tagline'),
   },
 ])
 </script>
