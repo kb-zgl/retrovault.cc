@@ -1,0 +1,114 @@
+{
+  "nav": {
+    "home": "Home",
+    "games": "Games",
+    "tags": "Tags",
+    "news": "News",
+    "about": "About"
+  },
+  "hero": {
+    "title": "Explore All Games",
+    "sub": "— Tap to enter the pixel vault —",
+    "count": "📦 {count} games"
+  },
+  "section": {
+    "recent": "🔄 Recent",
+    "featured": "⭐ Featured",
+    "emulators": "🖥️ Emulators",
+    "viewAll": "View all →"
+  },
+  "game": {
+    "playNow": "🕹️ Play Now",
+    "inQueue": "✅ In Queue",
+    "addQueue": "➕ Queue",
+    "removeQueue": "Remove Queue",
+    "comments": "💬 Comments",
+    "noComments": "No comments yet",
+    "post": "✏️ Post",
+    "genre": "Genre",
+    "platform": "Platform",
+    "year": "Year",
+    "developer": "Developer",
+    "publisher": "Publisher",
+    "loadingEmulator": "Loading emulator..."
+  },
+  "comment": {
+    "placeholderName": "Your name",
+    "placeholderContent": "Write a comment…",
+    "anonymous": "Anonymous"
+  },
+  "filter": {
+    "genre": "📂 Genre",
+    "platform": "🖥️ Platform",
+    "year": "📅 Year",
+    "all": "All",
+    "clear": "Clear all",
+    "results": "{count} games"
+  },
+  "platformPage": {
+    "title": "{platform} Games",
+    "description": "Play {platform} games online free in your browser.",
+    "browseAll": "Browse All Games"
+  },
+  "tagCloud": {
+    "title": "🏷️ Tag Cloud",
+    "description": "Browse retro games by tag."
+  },
+  "fab": {
+    "nowPlaying": "● Now Playing",
+    "playing": "▶ PLAYING",
+    "random": "🎲 Random",
+    "queue": "⏭ Queue ({count})",
+    "history": "🕹️ History",
+    "resume": "Resume",
+    "pause": "Pause",
+    "quickPlay": "Quick play",
+    "emptyQueue": "Queue is empty! Add games first."
+  },
+  "footer": {
+    "playersOnline": "Players online {count}",
+    "login": "🔑 Login",
+    "about": "📖 About",
+    "privacy": "🔒 Privacy",
+    "guestbook": "💬 Guestbook"
+  },
+  "auth": {
+    "login": "Sign in",
+    "logout": "Sign Out",
+    "magicLink": "Magic Link",
+    "emailPlaceholder": "you@example.com",
+    "sendLink": "Send Magic Link",
+    "checkEmail": "Check your inbox. No email? Check spam.",
+    "username": "Username"
+  },
+  "theme": {
+    "light": "☀️ Light",
+    "dark": "🌙 Dark"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "notFound": "Game Not Found",
+    "notFoundDesc": "The game \"{slug}\" doesn't exist in our vault."
+  },
+  "seo": {
+    "tagline": "2000+ Free Retro Games Online",
+    "homeTitle": "RetroVault — 2000+ Free Retro Games Online",
+    "homeDesc": "Play 2000+ classic retro games in your browser. NES, SNES, GBA, Arcade, and more. No download, no signup required.",
+    "gamesTitle": "All Retro Games — Play Online Free | RetroVault",
+    "gamesDesc": "Browse 2000+ retro games. Filter by platform and genre. Play NES, SNES, GBA, Arcade games online in your browser.",
+    "aboutTitle": "About RetroVault — Retro Gaming Community",
+    "aboutDesc": "Learn about RetroVault — our mission, team, and passion for preserving pixel gaming history. Play retro games online free.",
+    "newsTitle": "Retro Gaming News & Articles — RetroVault",
+    "newsDesc": "Latest retro gaming news, guides, tournament recaps, and development articles. Stay updated with the pixel gaming community.",
+    "privacyTitle": "Privacy Policy — RetroVault",
+    "privacyDesc": "RetroVault privacy policy. Learn how we collect, use, and protect your data while you enjoy classic retro games online.",
+    "tagsTitle": "Game Tags — Browse by Tag | RetroVault",
+    "tagsDesc": "Browse retro games by tag. Find games by genre, theme, mechanics, and more.",
+    "ogTypeHome": "Home",
+    "ogTypeCategory": "Category",
+    "ogTypeDetail": "Detail",
+    "ogTypeBlog": "Blog",
+    "ogTypePage": "Page"
+  }
+}

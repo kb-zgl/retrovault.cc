@@ -1,0 +1,114 @@
+{
+  "nav": {
+    "home": "首页",
+    "games": "游戏库",
+    "tags": "标签",
+    "news": "资讯",
+    "about": "关于"
+  },
+  "hero": {
+    "title": "探索所有游戏",
+    "sub": "— 轻点进入像素宝库 —",
+    "count": "📦 {count} 款游戏"
+  },
+  "section": {
+    "recent": "🔄 最近添加",
+    "featured": "⭐ 精选推荐",
+    "emulators": "🖥️ 模拟器",
+    "viewAll": "查看全部 →"
+  },
+  "game": {
+    "playNow": "🕹️ 立即游玩",
+    "inQueue": "✅ 已在队列",
+    "addQueue": "➕ 加入队列",
+    "removeQueue": "移除队列",
+    "comments": "💬 评论",
+    "noComments": "暂无评论",
+    "post": "✏️ 发表",
+    "genre": "类型",
+    "platform": "平台",
+    "year": "年份",
+    "developer": "开发商",
+    "publisher": "发行商",
+    "loadingEmulator": "模拟器加载中..."
+  },
+  "comment": {
+    "placeholderName": "您的昵称",
+    "placeholderContent": "写评论...",
+    "anonymous": "匿名用户"
+  },
+  "filter": {
+    "genre": "📂 类型",
+    "platform": "🖥️ 平台",
+    "year": "📅 年份",
+    "all": "全部",
+    "clear": "清除筛选",
+    "results": "{count} 款游戏"
+  },
+  "platformPage": {
+    "title": "{platform} 游戏",
+    "description": "在浏览器中免费在线畅玩 {platform} 游戏。",
+    "browseAll": "浏览所有游戏"
+  },
+  "tagCloud": {
+    "title": "🏷️ 标签云",
+    "description": "按标签浏览复古游戏。"
+  },
+  "fab": {
+    "nowPlaying": "● 正在播放",
+    "playing": "▶ 游戏中",
+    "random": "🎲 随机游戏",
+    "queue": "⏭ 队列 ({count})",
+    "history": "🕹️ 历史记录",
+    "resume": "继续",
+    "pause": "暂停",
+    "quickPlay": "快速游戏",
+    "emptyQueue": "队列为空！请先添加游戏。"
+  },
+  "footer": {
+    "playersOnline": "{count} 位玩家在线",
+    "login": "🔑 登录",
+    "about": "📖 关于我们",
+    "privacy": "🔒 隐私政策",
+    "guestbook": "💬 留言板"
+  },
+  "auth": {
+    "login": "登录",
+    "logout": "退出登录",
+    "magicLink": "魔法链接",
+    "emailPlaceholder": "you@example.com",
+    "sendLink": "发送魔法链接",
+    "checkEmail": "请查看您的收件箱。没有收到邮件？请检查垃圾邮件。",
+    "username": "用户名"
+  },
+  "theme": {
+    "light": "☀️ 浅色",
+    "dark": "🌙 深色"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "notFound": "未找到游戏",
+    "notFoundDesc": "游戏 \"{slug}\" 在我们的宝库中不存在。"
+  },
+  "seo": {
+    "tagline": "2000+ 免费在线复古游戏",
+    "homeTitle": "RetroVault — 2000+ 免费在线复古游戏",
+    "homeDesc": "在浏览器中畅玩 2000+ 经典复古游戏。NES、SNES、GBA、街机等。无需下载，无需注册。",
+    "gamesTitle": "所有复古游戏 — 在线免费畅玩 | RetroVault",
+    "gamesDesc": "浏览 2000+ 复古游戏。按平台和类型筛选。在浏览器中在线畅玩 NES、SNES、GBA、街机游戏。",
+    "aboutTitle": "关于 RetroVault — 复古游戏社区",
+    "aboutDesc": "了解 RetroVault — 我们的使命、团队以及对保护像素游戏历史的热情。在线免费畅玩复古游戏。",
+    "newsTitle": "复古游戏资讯与文章 — RetroVault",
+    "newsDesc": "最新的复古游戏资讯、指南、锦标赛回顾和开发文章。与像素游戏社区保持同步。",
+    "privacyTitle": "隐私政策 — RetroVault",
+    "privacyDesc": "RetroVault 隐私政策。了解我们如何在您畅玩经典复古游戏时收集、使用和保护您的数据。",
+    "tagsTitle": "游戏标签 — 按标签浏览 | RetroVault",
+    "tagsDesc": "按标签浏览复古游戏。按类型、主题、机制等查找游戏。",
+    "ogTypeHome": "首页",
+    "ogTypeCategory": "分类",
+    "ogTypeDetail": "详情",
+    "ogTypeBlog": "博客",
+    "ogTypePage": "页面"
+  }
+}
