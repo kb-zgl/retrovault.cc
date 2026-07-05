@@ -10,6 +10,21 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2026-05-07',
 
+  hooks: {
+    'pages:extend'(pages) {
+      // Duplicate all user-facing pages with /zh prefix for Chinese locale
+      const zhPages = pages
+        .filter(p => !p.path.startsWith('/api/'))
+        .map(p => ({
+          ...p,
+          path: `/zh${p.path === '/' ? '' : p.path}`,
+          name: p.name ? `${p.name}-zh` : undefined,
+        }))
+      pages.push(...zhPages)
+    },
+  },
+
+
   components: [
     {
       path: '~/components',
