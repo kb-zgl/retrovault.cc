@@ -14,15 +14,15 @@
         <div class="footer-top">
           <div class="pixel-counter">
             <span class="dot"></span>
-            <span>Players online {{ onlineCount }}</span>
+            <span>{{ t('footer.playersOnline', { count: onlineCount }) }}</span>
           </div>
         </div>
         <div class="footer-links">
           <button class="link-btn" @click="authAction">
-            {{ isLoggedIn ? '👤 ' + user?.username : '🔑 Login' }}
+            {{ isLoggedIn ? '👤 ' + user?.username : t('footer.login') }}
           </button>
-          <NuxtLink class="link-btn" to="/about">📖 About</NuxtLink>
-          <NuxtLink class="link-btn" to="/privacy">🔒 Privacy</NuxtLink>
+          <NuxtLink class="link-btn" :to="localePath('/about')">{{ t('footer.about') }}</NuxtLink>
+          <NuxtLink class="link-btn" :to="localePath('/privacy')">{{ t('footer.privacy') }}</NuxtLink>
         </div>
       </div>
     </div>
@@ -68,6 +68,9 @@ useHead({
 })
 
 useKeyboardShortcuts()
+
+const { t } = useAppI18n()
+const { localePath } = useLocalePath()
 
 const { isLoggedIn, user, login, logout, handleUrlToken, showAuthModal } = useAuth()
 

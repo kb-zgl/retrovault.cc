@@ -1,6 +1,6 @@
 import type { TranslationKey } from '~/types/i18n'
 
-export function useI18n() {
+export function useAppI18n() {
   const locale = useState<'en' | 'zh'>('locale', () => 'en')
   const translations = useState<Record<string, any>>('translations', () => ({}))
 

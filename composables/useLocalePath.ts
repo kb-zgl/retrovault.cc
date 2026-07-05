@@ -1,6 +1,6 @@
 // composables/useLocalePath.ts
 export function useLocalePath() {
-  const { locale } = useI18n()
+  const { locale } = useAppI18n()
 
   function localePath(path: string): string {
     if (locale.value === 'zh' && !path.startsWith('/zh')) {
