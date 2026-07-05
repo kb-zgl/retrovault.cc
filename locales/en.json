@@ -56,6 +56,14 @@
     "title": "🏷️ Tag Cloud",
     "description": "Browse retro games by tag."
   },
+  "news": {
+    "title": "📰 Articles",
+    "badge": "Guides & News"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "badge": "Your Data"
+  },
   "fab": {
     "nowPlaying": "● Now Playing",
     "playing": "▶ PLAYING",
@@ -88,9 +96,16 @@
     "login": "Sign in",
     "logout": "Sign Out",
     "magicLink": "Magic Link",
+    "header": "Sign in to RetroVault",
+    "desc": "Enter your email to receive a sign-in link.",
     "emailPlaceholder": "you@example.com",
     "sendLink": "Send Magic Link",
-    "checkEmail": "Check your inbox. No email? Check spam.",
+    "sending": "Sending…",
+    "linkSentTo": "Link sent to",
+    "checkInbox": "Check your inbox. No email? Check spam.",
+    "useDifferentEmail": "Use a different email",
+    "invalidEmail": "Please enter a valid email address.",
+    "genericError": "Something went wrong. Try again.",
     "username": "Username"
   },
   "theme": {

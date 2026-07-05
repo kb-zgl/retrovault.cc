@@ -7,18 +7,18 @@
         <!-- Header -->
         <div class="auth-header">
           <span class="auth-icon">🎮</span>
-          <h3>Sign in to RetroVault</h3>
+          <h3>{{ t('auth.header') }}</h3>
         </div>
 
         <!-- Email input -->
         <div v-if="step === 'email'" class="auth-body">
-          <p class="auth-desc">Enter your email to receive a sign-in link.</p>
+          <p class="auth-desc">{{ t('auth.desc') }}</p>
 
           <div class="auth-input-wrap">
             <input
               v-model="email"
               type="email"
-              placeholder="you@example.com"
+              :placeholder="t('auth.emailPlaceholder')"
               class="auth-input"
               :disabled="sending"
               @keyup.enter="sendMagicLink"
@@ -29,7 +29,7 @@
 
           <button class="auth-btn" :disabled="sending || !email.trim()" @click="sendMagicLink">
             <span v-if="sending" class="auth-spinner"></span>
-            {{ sending ? 'Sending…' : 'Send Magic Link' }}
+            {{ sending ? t('auth.sending') : t('auth.sendLink') }}
           </button>
         </div>
 
@@ -37,12 +37,12 @@
         <div v-else class="auth-body">
           <div class="auth-sent-icon">✉️</div>
           <p class="auth-sent-text">
-            Link sent to<br />
+            {{ t('auth.linkSentTo') }}<br />
             <strong>{{ email }}</strong>
           </p>
-          <p class="auth-sent-hint">Check your inbox. No email? Check spam.</p>
+          <p class="auth-sent-hint">{{ t('auth.checkInbox') }}</p>
           <button class="auth-btn auth-btn-ghost" @click="step = 'email'">
-            ← Use a different email
+            ← {{ t('auth.useDifferentEmail') }}
           </button>
         </div>
       </div>
@@ -59,6 +59,7 @@ const emit = defineEmits<{
   close: []
 }>()
 
+const { t } = useAppI18n()
 const { post } = useApi()
 
 const step = ref<'email' | 'sent'>('email')
@@ -69,7 +70,7 @@ const errorMsg = ref('')
 async function sendMagicLink() {
   const addr = email.value.trim()
   if (!addr || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(addr)) {
-    errorMsg.value = 'Please enter a valid email address.'
+    errorMsg.value = t('auth.invalidEmail')
     return
   }
 
@@ -80,7 +81,7 @@ async function sendMagicLink() {
     await post('/api/auth/magic-link', { email: addr })
     step.value = 'sent'
   } catch (e: any) {
-    errorMsg.value = e?.data?.statusMessage || e?.message || 'Something went wrong. Try again.'
+    errorMsg.value = e?.data?.statusMessage || e?.message || t('auth.genericError')
   } finally {
     sending.value = false
   }

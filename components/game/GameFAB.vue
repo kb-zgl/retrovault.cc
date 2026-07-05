@@ -8,7 +8,7 @@
       <div class="fab-panel" :class="{ open: panelOpen }">
         <!-- Now Playing (only when game running/paused) -->
         <div v-if="engine.isRunning.value && engine.currentGame.value" class="fab-now">
-          <div class="fab-now-label">● Now Playing</div>
+          <div class="fab-now-label">{{ t('fab.nowPlaying') }}</div>
           <button class="fab-now-card" @click="selectGame(engine.currentGame.value)">
             <img
               :src="`/covers/${engine.currentGame.value.slug}.webp`"
@@ -40,15 +40,15 @@
               @error="($event.target as HTMLImageElement).style.display = 'none'"
             />
             <span class="fab-cover-label">{{ g.title.slice(0, 10) }}</span>
-            <span v-if="isPlaying(g)" class="fab-cover-badge">▶ PLAYING</span>
+            <span v-if="isPlaying(g)" class="fab-cover-badge">▶ {{ t('fab.playing') }}</span>
           </button>
         </div>
 
         <!-- Actions -->
         <div class="fab-actions">
-          <button class="fab-action" @click="randomGame">🎲 Random</button>
-          <button v-if="queue.count.value > 0" class="fab-action" @click="queueNext">⏭ Queue ({{ queue.count.value }})</button>
-          <button class="fab-action" @click="resumeLast">🕹️ History</button>
+          <button class="fab-action" @click="randomGame">🎲 {{ t('fab.random') }}</button>
+          <button v-if="queue.count.value > 0" class="fab-action" @click="queueNext">⏭ {{ t('fab.queue', { count: queue.count.value }) }}</button>
+          <button class="fab-action" @click="resumeLast">🕹️ {{ t('fab.history') }}</button>
         </div>
       </div>
 
@@ -73,6 +73,8 @@ const router = useRouter()
 const engine = useGameEngine()
 const queue = useGameQueue()
 const history = useGameHistory()
+const { t } = useAppI18n()
+const { localePath } = useLocalePath()
 
 const panelOpen = ref(false)
 const gamePool = ref<GameSummary[]>([])
@@ -92,8 +94,8 @@ const fabIcon = computed(() => {
 })
 
 const fabTitle = computed(() => {
-  if (engine.isRunning.value) return engine.isPaused.value ? 'Resume' : 'Pause'
-  return 'Quick play'
+  if (engine.isRunning.value) return engine.isPaused.value ? t('fab.resume') : t('fab.pause')
+  return t('fab.quickPlay')
 })
 
 const showScore = computed(() => engine.isRunning.value && !engine.isPaused.value)
@@ -138,7 +140,7 @@ function selectGame(game: GameSummary | GameData) {
     history.saveSession(engine.currentGame.value.slug, { highScore: engine.score.value })
   }
   closePanel()
-  router.push(`/games/${game.slug}`)
+  router.push(localePath(`/games/${game.slug}`))
 }
 
 // ── Covers computation ──
@@ -227,7 +229,7 @@ function randomGame() {
 function queueNext() {
   const next = queue.consume()
   if (!next) {
-    alert('Queue is empty! Add games first.')
+    alert(t('fab.emptyQueue'))
     closePanel()
     return
   }

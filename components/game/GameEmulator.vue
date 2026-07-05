@@ -8,7 +8,7 @@
 
       <div v-if="loading" class="emulator-loading">
         <div class="emulator-loading-spinner"></div>
-        <span>Loading emulator...</span>
+        <span>{{ t('game.loadingEmulator') }}</span>
       </div>
 
       <div id="ejs-zone" ref="containerRef" class="emulator-zone" />
@@ -28,6 +28,7 @@ const emit = defineEmits<{
   close: []
 }>()
 
+const { t } = useAppI18n()
 const containerRef = ref<HTMLElement | null>(null)
 const loading = ref(true)
 const ejsInited = ref(false)

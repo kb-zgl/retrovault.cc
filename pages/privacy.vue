@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="section-title">
-      🔒 Privacy Policy
-      <span class="badge purple">Your Data</span>
+      🔒 {{ t('privacy.title') }}
+      <span class="badge purple">{{ t('privacy.badge') }}</span>
     </div>
 
     <div class="markdown-content" v-if="doc">
@@ -19,11 +19,13 @@ const { data: doc } = await useAsyncData('privacy', () =>
   queryContent('/privacy').findOne()
 )
 
+const { t } = useAppI18n()
+
 useSeoMeta({
-  title: 'Privacy Policy — RetroVault',
-  description: 'RetroVault privacy policy. Learn how we collect, use, and protect your data while you enjoy classic retro games online.',
-  ogTitle: 'Privacy Policy — RetroVault',
-  ogDescription: 'How RetroVault handles your data and privacy.',
+  title: t('seo.privacyTitle'),
+  description: t('seo.privacyDesc'),
+  ogTitle: t('seo.privacyTitle'),
+  ogDescription: t('seo.privacyDesc'),
   ogType: 'website',
 })
 </script>

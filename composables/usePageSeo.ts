@@ -1,7 +1,6 @@
 import type { MaybeRefOrGetter } from 'vue'
 
 const SITE_NAME = 'RetroVault'
-const TAGLINE = '2000+ Free Retro Games Online'
 const DESC_SEPARATOR = ' — '
 const TITLE_SEPARATOR = ' | '
 
@@ -23,8 +22,8 @@ interface PageSeoOptions {
   subtitle?: string
 }
 
-function buildTitle(opts: PageSeoOptions): string {
-  const t = opts.title || TAGLINE
+function buildTitle(opts: PageSeoOptions, tagline: string): string {
+  const t = opts.title || tagline
   switch (opts.template) {
     case 'category':
       return `Best ${opts.category || t}${TITLE_SEPARATOR}${SITE_NAME}`
@@ -36,34 +35,42 @@ function buildTitle(opts: PageSeoOptions): string {
     case 'prefix':
       return `${t}${TITLE_SEPARATOR}${SITE_NAME}`
     default:
-      return `${SITE_NAME}${DESC_SEPARATOR}${TAGLINE}`
+      return `${SITE_NAME}${DESC_SEPARATOR}${tagline}`
   }
 }
 
-function buildDescription(opts: PageSeoOptions): string {
+function buildDescription(opts: PageSeoOptions, tagline: string): string {
   return formatDescription(
-    opts.description || TAGLINE,
+    opts.description || tagline,
     opts.descMax ?? 158,
   )
 }
 
-const OG_TYPE_LABEL: Record<string, string> = {
-  default: 'Home',
-  category: 'Category',
-  detail: 'Detail',
-  blog: 'Blog',
-  prefix: 'Page',
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
 export function usePageSeo(opts: MaybeRefOrGetter<PageSeoOptions>) {
+  const route = useRoute()
+  const { t, locale } = useAppI18n()
+  const tagline = t('seo.tagline')
+
+  // Get clean path without /zh prefix for hreflang
+  const cleanPath = computed(() => {
+    const path = route.fullPath
+    return path.replace(/^\/zh/, '') || '/'
+  })
+
+  const ogLocaleMap: Record<string, string> = { en: 'en_US', zh: 'zh_CN' }
+
   const resolved = computed(() => {
     const o = toValue(opts)
     return {
-      title: buildTitle(o),
-      description: buildDescription(o),
-      ogTitle: o.title || TAGLINE,
-      ogDescription: o.description || TAGLINE,
-      ogType: OG_TYPE_LABEL[o.template || 'default'] || 'Page',
+      title: buildTitle(o, tagline),
+      description: buildDescription(o, tagline),
+      ogTitle: o.title || tagline,
+      ogDescription: o.description || tagline,
+      ogType: t(`seo.ogType${capitalize(o.template || 'default')}` as any),
     }
   })
 
@@ -76,6 +83,12 @@ export function usePageSeo(opts: MaybeRefOrGetter<PageSeoOptions>) {
       { name: 'twitter:description', content: resolved.value.description },
       { property: 'og:title', content: resolved.value.title },
       { property: 'og:description', content: resolved.value.description },
+      { property: 'og:locale', content: ogLocaleMap[locale.value] || 'en_US' },
+    ]),
+    link: computed(() => [
+      { rel: 'alternate', hreflang: 'en', href: `https://retrovault.cc${cleanPath.value}` },
+      { rel: 'alternate', hreflang: 'zh', href: `https://retrovault.cc/zh${cleanPath.value}` },
+      { rel: 'alternate', hreflang: 'x-default', href: `https://retrovault.cc${cleanPath.value}` },
     ]),
   })
 

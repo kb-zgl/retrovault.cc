@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="section-title">
-      📰 Articles
-      <span class="badge blue">Guides & News</span>
+      {{ t('news.title') }}
+      <span class="badge blue">{{ t('news.badge') }}</span>
     </div>
 
     <div class="article-list">
@@ -67,11 +67,13 @@ const articles: Article[] = [
   },
 ]
 
+const { t } = useAppI18n()
+
 useSeoMeta({
-  title: 'Retro Gaming News & Articles — RetroVault',
-  description: 'Latest retro gaming news, guides, tournament recaps, and development articles. Stay updated with the pixel gaming community.',
-  ogTitle: 'Retro Gaming News — RetroVault',
-  ogDescription: 'Latest retro gaming news, guides, and community articles.',
+  title: t('seo.newsTitle'),
+  description: t('seo.newsDesc'),
+  ogTitle: t('seo.newsTitle'),
+  ogDescription: t('seo.newsDesc'),
   ogType: 'article',
 })
 </script>

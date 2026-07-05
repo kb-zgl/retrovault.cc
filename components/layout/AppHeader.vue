@@ -18,7 +18,10 @@
       <NuxtLink class="nav-btn" :class="{ active: route.path === '/about' }" :to="localePath('/about')">{{ t('nav.about') }}</NuxtLink>
     </nav>
 
-    <div class="hidden sm:flex"><ThemeToggle /></div>
+    <div class="hidden sm:flex items-center gap-2">
+      <LocaleSwitcher />
+      <ThemeToggle />
+    </div>
 
     <!-- Mobile hamburger -->
     <button class="hamburger-btn" @click="mobileMenuOpen = true" aria-label="Menu">

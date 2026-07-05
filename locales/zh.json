@@ -56,6 +56,14 @@
     "title": "🏷️ 标签云",
     "description": "按标签浏览复古游戏。"
   },
+  "news": {
+    "title": "📰 文章",
+    "badge": "指南与资讯"
+  },
+  "privacy": {
+    "title": "隐私政策",
+    "badge": "你的数据"
+  },
   "fab": {
     "nowPlaying": "● 正在播放",
     "playing": "▶ 游戏中",
@@ -88,9 +96,16 @@
     "login": "登录",
     "logout": "退出登录",
     "magicLink": "魔法链接",
+    "header": "登录 RetroVault",
+    "desc": "输入您的邮箱，接收登录链接。",
     "emailPlaceholder": "输入你的邮箱",
     "sendLink": "发送魔法链接",
-    "checkEmail": "请查看您的收件箱。没有收到邮件？请检查垃圾邮件。",
+    "sending": "发送中…",
+    "linkSentTo": "登录链接已发送至",
+    "checkInbox": "请查看您的收件箱。没有收到邮件？请检查垃圾邮件。",
+    "useDifferentEmail": "使用其他邮箱",
+    "invalidEmail": "请输入有效的邮箱地址。",
+    "genericError": "出了点问题，请重试。",
     "username": "用户名"
   },
   "theme": {
