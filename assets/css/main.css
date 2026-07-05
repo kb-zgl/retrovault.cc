@@ -2238,6 +2238,11 @@ h1.hero-title em {
   margin-bottom: 0;
   flex: 1;
   min-width: 0;
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+.cabinet-header .cabinet-marquee .marquee-lamp {
+  flex-shrink: 0;
 }
 
 /* Desktop nav: inline in header, compact */
@@ -2309,6 +2314,10 @@ h1.hero-title em {
   border: 1px solid var(--color-border);
   white-space: nowrap;
   font-family: var(--font-pixel);
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .marquee-title span {
   color: var(--color-warning);
