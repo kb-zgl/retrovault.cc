@@ -43,7 +43,9 @@
     "year": "📅 Year",
     "all": "All",
     "clear": "Clear all",
-    "results": "{count} games"
+    "results": "{count} games",
+    "emptyTitle": "No games found",
+    "emptyHint": "Try different filter options or browse all games"
   },
   "platformPage": {
     "title": "{platform} Games",

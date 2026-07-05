@@ -43,7 +43,9 @@
     "year": "📅 年份",
     "all": "全部",
     "clear": "清除筛选",
-    "results": "{count} 款游戏"
+    "results": "{count} 款游戏",
+    "emptyTitle": "未找到游戏",
+    "emptyHint": "尝试其他筛选条件或浏览全部游戏"
   },
   "platformPage": {
     "title": "{platform} 游戏",

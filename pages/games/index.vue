@@ -12,7 +12,7 @@
       <!-- Filter bar (compact, two rows) -->
       <div class="filter-bar-compact">
         <div class="filter-group-scroll">
-          <span class="filter-label-pill">📂 Genre</span>
+          <span class="filter-label-pill">{{ t('filter.genre') }}</span>
           <button
             v-for="g in genres"
             :key="g"
@@ -22,7 +22,7 @@
           >{{ g }}</button>
         </div>
         <div class="filter-group-scroll">
-          <span class="filter-label-pill">🖥️ Platform</span>
+          <span class="filter-label-pill">{{ t('filter.platform') }}</span>
           <button
             v-for="plat in platforms"
             :key="plat"
@@ -32,7 +32,7 @@
           >{{ plat }}</button>
         </div>
         <div class="filter-group-scroll">
-          <span class="filter-label-pill">📅 Year</span>
+          <span class="filter-label-pill">{{ t('filter.year') }}</span>
           <button
             v-for="dec in decades"
             :key="dec"
@@ -72,16 +72,16 @@
             {{ selectedTag }}
             <button @click="selectedTag = ''; page = 1; updateUrl()" aria-label="Remove tag filter">✕</button>
           </span>
-          <button class="filter-active-clear" @click="clearFilters">Clear all</button>
-          <span class="filter-active-count">{{ total }} games</span>
+          <button class="filter-active-clear" @click="clearFilters">{{ t('filter.clear') }}</button>
+          <span class="filter-active-count">{{ t('filter.results', { count: total }) }}</span>
         </div>
       </div>
 
       <!-- Empty state -->
       <div v-if="games.length === 0" class="empty-state">
         <div class="icon" style="font-size:32px">🎮</div>
-        <h3>No games found</h3>
-        <p>Try a different filter combination</p>
+        <h3>{{ t('filter.emptyTitle') }}</h3>
+        <p>{{ t('filter.emptyHint') }}</p>
       </div>
 
       <!-- Game grid -->
@@ -91,8 +91,8 @@
           :key="g.slug"
           :game="g"
           size="mini"
-          :to="`/games/${g.slug}`"
-          @play="navigateTo(`/games/${g.slug}`)"
+          :to="localePath(`/games/${g.slug}`)"
+          @play="navigateTo(localePath(`/games/${g.slug}`))"
         />
       </div>
 
@@ -125,12 +125,14 @@ import type { GameListResponse } from '~/types/games'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useAppI18n()
+const { localePath } = useLocalePath()
 
 useSeoMeta({
-  title: 'All Retro Games — Play Online Free | RetroVault',
-  description: 'Browse 2000+ retro games. Filter by platform and genre. Play NES, SNES, GBA, Arcade games online in your browser.',
-  ogTitle: 'All Retro Games — RetroVault',
-  ogDescription: 'Browse and play 2000+ retro games online free.',
+  title: t('seo.gamesTitle'),
+  description: t('seo.gamesDesc'),
+  ogTitle: t('seo.gamesTitle'),
+  ogDescription: t('seo.gamesDesc'),
   ogType: 'website',
 })
 
