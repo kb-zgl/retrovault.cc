@@ -76,7 +76,7 @@
     "login": "登录",
     "logout": "退出登录",
     "magicLink": "魔法链接",
-    "emailPlaceholder": "you@example.com",
+    "emailPlaceholder": "输入你的邮箱",
     "sendLink": "发送魔法链接",
     "checkEmail": "请查看您的收件箱。没有收到邮件？请检查垃圾邮件。",
     "username": "用户名"
