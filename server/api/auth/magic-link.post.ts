@@ -1,3 +1,5 @@
+import { getEnv } from '../../utils/env'
+
 export default defineEventHandler(async (event) => {
   const { email } = await readBody<{ email: string }>(event)
 
@@ -15,12 +17,15 @@ export default defineEventHandler(async (event) => {
     expirationTtl: 900,
   })
 
-  // Build verify URL
-  const siteUrl = process.env.SITE_URL || 'http://localhost:3000'
+  // Get env vars via event context (CF) or fallback to process.env (dev)
+  let env: any
+  try { env = getEnv(event) } catch { env = process.env }
+
+  const siteUrl = env.SITE_URL || 'http://localhost:3000'
   const verifyUrl = `${siteUrl}/api/auth/verify?token=${token}`
 
   // Send email via Resend
-  const resendKey = process.env.RESEND_API_KEY
+  const resendKey = env.RESEND_API_KEY
   if (resendKey) {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',

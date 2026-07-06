@@ -1,4 +1,5 @@
 import { addAdmin, isAdmin } from '../../utils/admin'
+import { getEnv } from '../../utils/env'
 
 export default defineEventHandler(async (event) => {
   const { token } = getQuery(event)
@@ -59,7 +60,9 @@ a{color:#e02d7a;text-decoration:none}
     userData = JSON.stringify(newUser)
 
     // Auto-promote configured admin email
-    const initialAdmin = process.env.ADMIN_EMAIL
+    let env: any
+    try { env = getEnv(event) } catch { env = process.env }
+    const initialAdmin = env.ADMIN_EMAIL
     if (initialAdmin && email.toLowerCase().trim() === initialAdmin.toLowerCase().trim()) {
       await addAdmin(email)
     }
