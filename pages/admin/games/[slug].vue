@@ -19,10 +19,24 @@
           <div style="font-size:0.75rem;color:var(--color-text-muted)">{{ game.slug }} · {{ game.platform }} · {{ game.year }}</div>
         </div>
         <div style="margin-left:auto;display:flex;gap:8px">
+          <button @click="showJsonImport = !showJsonImport" class="btn-pixel" style="padding:8px 16px;font-size:0.7rem">
+            📥 JSON
+          </button>
           <button @click="save" :disabled="saving" class="btn-pixel-green" style="padding:8px 20px;font-size:0.75rem">
             {{ saving ? 'Saving...' : 'Save' }}
           </button>
         </div>
+      </div>
+
+      <!-- JSON Quick Import -->
+      <div v-if="showJsonImport" class="card" style="padding:16px;margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <h3 style="font-size:0.8rem;font-weight:600;color:var(--color-text-primary)">Quick Import JSON</h3>
+          <button @click="parseJsonImport" class="btn-pixel-green" style="padding:4px 12px;font-size:0.65rem">Parse & Fill</button>
+        </div>
+        <textarea v-model="jsonImportText" class="form-input" rows="8" placeholder='Paste game JSON here...&#10;&#10;{\n  "title": "...",\n  "platform": "NES",\n  ...}'></textarea>
+        <div v-if="jsonError" style="color:var(--color-accent);font-size:0.7rem;margin-top:4px">{{ jsonError }}</div>
+        <div style="font-size:0.65rem;color:var(--color-text-muted);margin-top:4px">JSON 字段会自动映射到表单，确认后手动保存</div>
       </div>
 
       <div v-if="saveSuccess" class="badge-green" style="margin-bottom:16px;padding:8px 16px">Saved successfully</div>
@@ -175,6 +189,9 @@ const saving = ref(false)
 const saveSuccess = ref(false)
 const saveError = ref('')
 const newTag = ref('')
+const showJsonImport = ref(false)
+const jsonImportText = ref('')
+const jsonError = ref('')
 
 // PART 1: Public fields (not language-specific)
 const form = reactive({
@@ -235,6 +252,45 @@ function addTag() {
   const t = newTag.value.trim()
   if (t && !form.tags.includes(t)) form.tags.push(t)
   newTag.value = ''
+}
+
+function parseJsonImport() {
+  jsonError.value = ''
+  try {
+    const data = JSON.parse(jsonImportText.value)
+
+    // Map JSON fields to form
+    const fieldMap = {
+      title: 'title', platform: 'platform', year: 'year',
+      genre: 'genre', developer: 'developer', publisher: 'publisher',
+      series: 'series', language: 'language',
+      defaultRom: 'defaultRom', ejsCore: 'ejsCore', ejsBiosUrl: 'ejsBiosUrl',
+      coverUrl: 'coverUrl', imageUrl: 'imageUrl',
+      description: 'description', source: 'source',
+      isHack: 'isHack', status: 'status',
+      tags: 'tags', langs: 'langs',
+    }
+
+    for (const [jsonKey, formKey] of Object.entries(fieldMap)) {
+      if (data[jsonKey] !== undefined) {
+        form[formKey] = data[jsonKey]
+      }
+    }
+
+    // Handle ejs object: ejs.core → ejsCore, ejs.biosUrl → ejsBiosUrl
+    if (data.ejs) {
+      if (data.ejs.core) form.ejsCore = data.ejs.core
+      if (data.ejs.biosUrl) form.ejsBiosUrl = data.ejs.biosUrl
+    }
+
+    // Sync locale form with active language
+    syncLocaleForm()
+
+    showJsonImport.value = false
+    jsonImportText.value = ''
+  } catch (e) {
+    jsonError.value = 'Invalid JSON: ' + (e.message || 'parse error')
+  }
 }
 
 const coverInput = ref(null)
