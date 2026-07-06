@@ -1,4 +1,5 @@
 import { isAdmin } from '../../utils/admin'
+import type { JwtPayload } from '../../utils/jwt'
 
 export default defineEventHandler(async (event) => {
   const auth = getHeader(event, 'authorization')
@@ -7,22 +8,19 @@ export default defineEventHandler(async (event) => {
   }
 
   const token = auth.slice(7)
-  let payload
+  let payload: JwtPayload
   try {
     payload = await verifyJwt(token)
   } catch {
     throw createError({ statusCode: 401, statusMessage: 'Invalid or expired token' })
   }
 
-  const kv = useKv()
-  const userKey = `user:${payload.email}`
-  const userData = await kv.get(userKey)
+  const role = (await isAdmin(payload.email)) ? 'admin' : 'user'
 
-  if (!userData) {
-    throw createError({ statusCode: 404, statusMessage: 'User not found' })
+  return {
+    id: payload.sub,
+    email: payload.email,
+    username: payload.username,
+    role,
   }
-
-  const user = JSON.parse(userData)
-  user.role = (await isAdmin(payload.email)) ? 'admin' : 'user'
-  return user
 })

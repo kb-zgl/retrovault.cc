@@ -7,7 +7,17 @@ const ADMIN_EMAILS_KEY = 'admin:emails'
 export async function getAdminEmails(): Promise<string[]> {
   const kv = useKv()
   const raw = await kv.get(ADMIN_EMAILS_KEY)
-  return raw ? JSON.parse(raw) : []
+  if (raw) return JSON.parse(raw)
+
+  // First call — seed from environment variable
+  const envAdmin = (typeof process !== 'undefined' && (process.env as any).ADMIN_EMAIL) as string | undefined
+  if (envAdmin) {
+    const normalized = envAdmin.toLowerCase().trim()
+    await kv.put(ADMIN_EMAILS_KEY, JSON.stringify([normalized]))
+    return [normalized]
+  }
+
+  return []
 }
 
 export async function isAdmin(email: string): Promise<boolean> {
