@@ -8,9 +8,11 @@ export default defineEventHandler(async (event) => {
   }
 
   const token = auth.slice(7)
+	console.info('token', token)
   let payload: JwtPayload
   try {
     payload = await verifyJwt(token)
+		console.info('payload', payload)
   } catch {
     throw createError({ statusCode: 401, statusMessage: 'Invalid or expired token' })
   }
