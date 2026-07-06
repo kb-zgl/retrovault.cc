@@ -13,7 +13,7 @@
       <button
         :class="size === 'grid' ? 'card-play-btn' : 'mini-play-btn'"
         @click.stop="$emit('play')"
-        :aria-label="`Play ${game.title}`"
+        :aria-label="`Play ${loc.title}`"
       >▶</button>
 
       <!-- Cover -->
@@ -21,7 +21,7 @@
         <img
           v-if="coverOk"
           :src="`/covers/${game.slug}.webp`"
-          :alt="game.title"
+          :alt="loc.title"
           loading="lazy"
           @error="coverOk = false"
         />
@@ -30,7 +30,7 @@
 
       <!-- Title + year -->
       <div :class="size === 'grid' ? 'game-title' : 'mini-title'">
-        {{ game.title }}
+        {{ loc.title }}
         <small>{{ game.year }}</small>
       </div>
     </NuxtLink>
@@ -42,7 +42,7 @@
       <button
         :class="size === 'grid' ? 'card-play-btn' : 'mini-play-btn'"
         @click.stop="$emit('play')"
-        :aria-label="`Play ${game.title}`"
+        :aria-label="`Play ${loc.title}`"
       >▶</button>
 
       <!-- Cover -->
@@ -50,7 +50,7 @@
         <img
           v-if="coverOk"
           :src="`/covers/${game.slug}.webp`"
-          :alt="game.title"
+          :alt="loc.title"
           loading="lazy"
           @error="coverOk = false"
         />
@@ -59,7 +59,7 @@
 
       <!-- Title + year -->
       <div :class="size === 'grid' ? 'game-title' : 'mini-title'">
-        {{ game.title }}
+        {{ loc.title }}
         <small>{{ game.year }}</small>
       </div>
     </div>
@@ -89,6 +89,8 @@ defineEmits<{
 
 const router = useRouter()
 const { localePath } = useLocalePath()
+const { localized } = useGameLocale()
+const loc = computed(() => localized(props.game))
 
 function goToGames(filter: 'platform' | 'genre', value: string) {
   router.push(localePath(`/games?${filter}=${encodeURIComponent(value)}`))

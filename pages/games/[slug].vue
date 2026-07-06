@@ -40,14 +40,14 @@
           <img
             v-if="coverLoaded"
             :src="`/${game.localCover}`"
-            :alt="game.title"
+            :alt="loc.title"
             @error="coverLoaded = false"
           />
           <span v-else>🎮</span>
         </div>
 
         <div class="detail-info">
-          <h1 class="detail-title">{{ game.title }}</h1>
+          <h1 class="detail-title">{{ loc.title }}</h1>
 
           <div class="detail-meta">
             <NuxtLink
@@ -63,7 +63,7 @@
             >🖥️ {{ game.platform }}</NuxtLink>
           </div>
 
-          <div class="detail-desc">{{ game.description }}</div>
+          <div class="detail-desc">{{ loc.description }}</div>
 
           <div class="detail-actions">
             <button class="btn-pixel btn-pixel-green" @click="engine.loadGame(game!)">
@@ -134,7 +134,9 @@ const { t } = useAppI18n()
 const { localePath } = useLocalePath()
 
 const route = useRoute()
-const slug = computed(() => route.params.slug as string)
+const slug = computed(() => String(route.params.slug))
+const { localized } = useGameLocale()
+const loc = computed(() => localized(game.value))
 
 // Fetch game data
 const { data: game, pending, error } = useFetch<GameData>(`/api/games/${slug.value}`, {
@@ -144,12 +146,12 @@ const { data: game, pending, error } = useFetch<GameData>(`/api/games/${slug.val
 // SEO: title + description + VideoGame Schema.org
 const pageTitle = computed(() => {
   if (!game.value) return t('common.loading')
-  return `Play ${game.value.title} Online Free — RetroVault`
+  return `Play ${loc.value.title} Online Free — RetroVault`
 })
 
 const pageDesc = computed(() => {
   if (!game.value) return t('seo.tagline')
-  return game.value.description.slice(0, 158)
+  return (loc.value.description || game.value.description).slice(0, 158)
 })
 
 useSeoMeta({
@@ -163,14 +165,14 @@ useSeoMeta({
 const breadcrumbItems = useBreadcrumb(computed(() => [
   { label: t('nav.home'), to: localePath('/') },
   { label: t('nav.games'), to: localePath('/games') },
-  { label: game.value?.title || '…' },
+  { label: loc.value.title || game.value?.title || '…' },
 ]))
 
 useSchemaOrg([
   {
     '@type': 'VideoGame',
-    name: computed(() => game.value?.title || ''),
-    description: computed(() => game.value?.description || ''),
+    name: computed(() => loc.value.title || game.value?.title || ''),
+    description: computed(() => loc.value.description || game.value?.description || ''),
     genre: computed(() => game.value?.genre ? [game.value.genre] : []),
     platform: computed(() => game.value?.platform ? [game.value.platform] : []),
     datePublished: computed(() => game.value?.year ? String(game.value.year) : undefined),

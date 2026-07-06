@@ -1,90 +1,89 @@
 import { defineEventHandler, getQuery } from 'h3'
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 
-interface ListQuery {
-  platform?: string
-  genre?: string
-  year?: string
-  tag?: string
-  page?: string
-  limit?: string
-}
+export default defineEventHandler(async (event) => {
+  const query = getQuery(event)
+  const { platform, genre, page: pageStr = '1', limit: limitStr = '48' } = query
+  const tag = query.tag as string | undefined
+  const year = query.year as string | undefined
 
-// 标签→slug 映射缓存
-let tagSlugCache: Record<string, string[]> | null = null
-
-function getTagSlugs(targetTag: string): string[] {
-  if (!tagSlugCache) {
-    tagSlugCache = {}
-    const gamesDir = join(process.cwd(), 'retrovault-scraper', 'data', 'games')
-    const { readdirSync } = require('node:fs')
-    const entries = readdirSync(gamesDir, { withFileTypes: true })
-    for (const entry of entries) {
-      if (!entry.name.endsWith('.json')) continue
-      try {
-        const raw = readFileSync(join(gamesDir, entry.name), 'utf-8')
-        const game = JSON.parse(raw)
-        if (Array.isArray(game.tags) && game.slug) {
-          for (const t of game.tags) {
-            const tag = String(t).trim().toLowerCase()
-            if (!tagSlugCache[tag]) tagSlugCache[tag] = []
-            tagSlugCache[tag].push(game.slug)
-          }
-        }
-      } catch { /* skip */ }
-    }
-  }
-  return tagSlugCache[targetTag.toLowerCase()] || []
-}
-
-export default defineEventHandler((event) => {
-  const { games, total, platforms, genres } = loadGameList()
-
-  const query = getQuery(event) as ListQuery
-  const { platform, genre, page = '1', limit = '48' } = query
-
-  let filtered = Object.values(games)
+  let where = '1=1'
+  const params: any[] = []
 
   if (platform) {
-    filtered = filtered.filter(g => g.platform.toLowerCase() === platform.toLowerCase())
+    where += ' AND platform = ?'
+    params.push(platform)
   }
 
   if (genre) {
-    filtered = filtered.filter(g => g.genre.toLowerCase() === genre.toLowerCase())
+    where += ' AND genre = ?'
+    params.push(genre)
   }
 
-  if (query.year) {
-    const yearNum = parseInt(query.year)
+  if (year) {
+    const yearNum = parseInt(year)
     if (!isNaN(yearNum)) {
-      filtered = filtered.filter(g => g.year === yearNum)
-    } else if (query.year.endsWith('0s')) {
-      const decade = parseInt(query.year) || parseInt(query.year.slice(0, -1))
+      where += ' AND year = ?'
+      params.push(yearNum)
+    } else if (year.endsWith('0s')) {
+      const decade = parseInt(year) || parseInt(year.slice(0, -1))
       if (!isNaN(decade)) {
-        filtered = filtered.filter(g => g.year >= decade && g.year < decade + 10)
+        where += ' AND year >= ? AND year < ?'
+        params.push(decade, decade + 10)
       }
     }
   }
 
-  if (query.tag) {
-    const tagSlugs = getTagSlugs(query.tag)
-    const slugSet = new Set(tagSlugs)
-    filtered = filtered.filter(g => slugSet.has(g.slug))
+  // Tag filter: query all games, filter by tag on the fly
+  let tagSlugs: string[] | null = null
+  if (tag) {
+    const allGames = await sqlAll<any>(event, 'SELECT slug, tags FROM games')
+    const targetTag = tag.toLowerCase()
+    tagSlugs = allGames
+      .filter((g: any) => {
+        try {
+          const tags = typeof g.tags === 'string' ? JSON.parse(g.tags) : (g.tags || [])
+          return tags.some((t: string) => t.toLowerCase() === targetTag)
+        } catch { return false }
+      })
+      .map((g: any) => g.slug)
+    if (tagSlugs.length === 0) tagSlugs = ['__none__']
+    const placeholders = tagSlugs.map(() => '?').join(',')
+    where += ` AND slug IN (${placeholders})`
+    params.push(...tagSlugs)
   }
 
-  const pageNum = Math.max(1, parseInt(page) || 1)
-  const limitNum = Math.min(200, Math.max(1, parseInt(limit) || 48))
-  const start = (pageNum - 1) * limitNum
-  const paged = filtered.slice(start, start + limitNum)
+  const pageNum = Math.max(1, parseInt(pageStr) || 1)
+  const limitNum = Math.min(200, Math.max(1, parseInt(limitStr) || 48))
+  const offset = (pageNum - 1) * limitNum
+
+  const games = await sqlAll<any>(event,
+    `SELECT slug, title, platform, year, genre, series, coverUrl as coverImg, description, isHack, langs
+     FROM games WHERE ${where} ORDER BY title ASC LIMIT ? OFFSET ?`,
+    ...params, limitNum, offset
+  )
+
+  const [{ total }] = await sqlAll<any>(event,
+    `SELECT COUNT(*) as total FROM games WHERE ${where}`,
+    ...params
+  )
+
+  // Get filter options
+  const platformRows = await sqlAll<any>(event, 'SELECT DISTINCT platform FROM games ORDER BY platform')
+  const genreRows = await sqlAll<any>(event, 'SELECT DISTINCT genre FROM games WHERE genre IS NOT NULL AND genre != "" ORDER BY genre')
 
   return {
-    total: filtered.length,
+    total: total,
     totalAll: total,
     page: pageNum,
     limit: limitNum,
-    hasMore: start + limitNum < filtered.length,
-    platforms,
-    genres,
-    games: paged,
+    hasMore: offset + limitNum < total,
+    platforms: platformRows.map((r: any) => r.platform),
+    genres: genreRows.map((r: any) => r.genre),
+    games: games.map((g: any) => ({
+      ...g,
+      coverImg: g.coverImg || `/covers/${g.slug}.webp`,
+      isHack: g.isHack ? 'true' : '$undefined',
+      langs: typeof g.langs === 'string' ? JSON.parse(g.langs) : (g.langs || {}),
+    })),
   }
 })
