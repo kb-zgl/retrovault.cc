@@ -2,7 +2,7 @@
 // Global middleware — runs on every route navigation
 export default defineNuxtRouteMiddleware(async (to) => {
   // Skip API routes and static assets
-  if (to.path.startsWith('/api/') || to.path.startsWith('/roms/') || to.path.startsWith('/covers/') || to.path.startsWith('/_nuxt/') || to.path.startsWith('/favicon')) {
+  if (to.path.startsWith('/api/') || to.path.startsWith('/admin') || to.path.startsWith('/roms/') || to.path.startsWith('/covers/') || to.path.startsWith('/_nuxt/') || to.path.startsWith('/favicon')) {
     return
   }
 
