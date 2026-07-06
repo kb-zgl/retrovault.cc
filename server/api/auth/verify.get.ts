@@ -1,3 +1,5 @@
+import { addAdmin, isAdmin } from '../../utils/admin'
+
 export default defineEventHandler(async (event) => {
   const { token } = getQuery(event)
   if (!token || typeof token !== 'string') {
@@ -55,9 +57,16 @@ a{color:#e02d7a;text-decoration:none}
     }
     await kv.put(userKey, JSON.stringify(newUser))
     userData = JSON.stringify(newUser)
+
+    // Auto-promote configured admin email
+    const initialAdmin = process.env.ADMIN_EMAIL
+    if (initialAdmin && email.toLowerCase().trim() === initialAdmin.toLowerCase().trim()) {
+      await addAdmin(email)
+    }
   }
 
   const user = JSON.parse(userData)
+  user.role = (await isAdmin(email)) ? 'admin' : 'user'
 
   // Sign JWT
   const jwt = await signJwt({ sub: user.id, email: user.email, username: user.username })

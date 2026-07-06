@@ -1,3 +1,5 @@
+import { isAdmin } from '../../utils/admin'
+
 export default defineEventHandler(async (event) => {
   const auth = getHeader(event, 'authorization')
   if (!auth || !auth.startsWith('Bearer ')) {
@@ -20,5 +22,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'User not found' })
   }
 
-  return JSON.parse(userData)
+  const user = JSON.parse(userData)
+  user.role = (await isAdmin(payload.email)) ? 'admin' : 'user'
+  return user
 })
