@@ -74,6 +74,7 @@
 
 <script setup>
 definePageMeta({
+  layout: 'admin',
   middleware: ['admin-auth']
 })
 

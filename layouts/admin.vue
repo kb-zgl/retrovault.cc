@@ -12,16 +12,12 @@
 
     <!-- Main Content -->
     <main style="max-width:1200px;margin:0 auto;padding:32px 24px">
-      <NuxtPage />
+      <slot />
     </main>
   </div>
 </template>
 
 <script setup>
-definePageMeta({
-  middleware: ['admin-auth']
-})
-
 const router = useRouter()
 const route = useRoute()
 
