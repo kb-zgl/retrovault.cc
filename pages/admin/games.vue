@@ -35,9 +35,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="g in games" :key="g.slug" style="border-top:1px solid var(--color-border)">
+          <tr v-for="g in games" :key="g.slug" style="border-top:1px solid var(--color-border);cursor:pointer" @click="goGame(g.slug)">
             <td style="padding:12px 16px">
-              <NuxtLink :to="`/admin/games/${g.slug}`" style="color:var(--color-accent);text-decoration:none;font-weight:600">{{ g.title }}</NuxtLink>
+              <div style="font-size:0.8rem;font-weight:600;color:var(--color-accent)">{{ g.title }}</div>
               <div style="font-size:0.7rem;color:var(--color-text-muted)">{{ g.slug }}</div>
             </td>
             <td style="padding:12px 16px;color:var(--color-text-secondary)">{{ g.platform }}</td>
@@ -55,7 +55,7 @@
                 </span>
               </div>
             </td>
-            <td style="padding:12px 16px;text-align:right">
+            <td style="padding:12px 16px;text-align:right" @click.stop>
               <NuxtLink :to="`/admin/games/${g.slug}`" class="btn-pixel" style="padding:4px 12px;font-size:0.65rem">Edit</NuxtLink>
             </td>
           </tr>
@@ -118,6 +118,11 @@ const { pending, error, refresh } = useAsyncData('admin-games', () =>
     return r
   })
 , { watch: [page], server: false, lazy: true })
+
+const router = useRouter()
+function goGame(slug) {
+  router.push(`/admin/games/${slug}`)
+}
 
 async function load() { await refresh() }
 
