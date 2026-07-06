@@ -58,6 +58,10 @@ export default defineNuxtConfig({
     autoLastmod: true,
   },
 
+  routeRules: {
+    '/admin/**': { ssr: false },
+  },
+
   postcss: {
     plugins: {
       '@tailwindcss/postcss': {},
