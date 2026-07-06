@@ -79,7 +79,34 @@
                 <option value="published">Published</option>
               </select>
             </FormField>
+            <FormField label="ROM Path">
+              <input v-model="form.defaultRom" class="form-input" placeholder="roms/nes/xxx.nes" />
+            </FormField>
+            <FormField label="EJS Core">
+              <input v-model="form.ejsCore" class="form-input" placeholder="nes / snes / gba" />
+            </FormField>
+            <FormField label="BIOS URL">
+              <input v-model="form.ejsBiosUrl" class="form-input" />
+            </FormField>
+            <FormField label="Cover URL">
+              <input v-model="form.coverUrl" class="form-input" />
+            </FormField>
+            <FormField label="Is Hack">
+              <select v-model="form.isHack" class="form-input">
+                <option :value="0">No</option>
+                <option :value="1">Yes</option>
+              </select>
+            </FormField>
+            <FormField label="Source">
+              <input v-model="form.source" class="form-input" placeholder="scraped / manual" />
+            </FormField>
           </div>
+        </section>
+
+        <!-- English Description -->
+        <section style="margin-bottom:24px">
+          <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin-bottom:12px">English Description</h3>
+          <textarea v-model="form.description" class="form-input" rows="4" placeholder="Short description in English"></textarea>
         </section>
 
         <!-- Tags -->
@@ -146,7 +173,8 @@ const newTag = ref('')
 // Main form data (core fields)
 const form = reactive({
   title: '', platform: '', year: null, genre: '', developer: '', publisher: '', series: '',
-  status: 'draft', tags: [], langs: {}
+  status: 'draft', tags: [], langs: {},
+  isHack: 0, coverUrl: '', defaultRom: '', ejsCore: '', ejsBiosUrl: '', description: '', source: ''
 })
 
 // Active language sub-form
@@ -172,6 +200,13 @@ watch(game, (g) => {
   form.status = g.status || 'draft'
   form.tags = Array.isArray(g.tags) ? g.tags : []
   form.langs = (g.langs && typeof g.langs === 'object') ? g.langs : {}
+  form.isHack = g.isHack ? 1 : 0
+  form.coverUrl = g.coverUrl || ''
+  form.defaultRom = g.defaultRom || ''
+  form.ejsCore = g.ejsCore || ''
+  form.ejsBiosUrl = g.ejsBiosUrl || ''
+  form.description = g.description || ''
+  form.source = g.source || ''
   syncLocaleForm()
 }, { immediate: true })
 
@@ -251,6 +286,13 @@ async function save() {
         status: form.status,
         tags: form.tags,
         langs: form.langs,
+        isHack: form.isHack,
+        coverUrl: form.coverUrl,
+        defaultRom: form.defaultRom,
+        ejsCore: form.ejsCore,
+        ejsBiosUrl: form.ejsBiosUrl,
+        description: form.description,
+        source: form.source,
       }
     })
     saveSuccess.value = true

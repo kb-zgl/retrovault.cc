@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
 
   // Only allowlisted fields can be updated
   const allowed = ['title', 'platform', 'year', 'genre', 'developer', 'publisher', 'series',
-    'isHack', 'coverUrl', 'defaultRom', 'ejsCore', 'ejsBiosUrl', 'tags', 'description', 'langs', 'roms', 'status']
+    'isHack', 'coverUrl', 'defaultRom', 'ejsCore', 'ejsBiosUrl', 'tags', 'description', 'langs', 'roms', 'status', 'source']
 
   const updates: string[] = []
   const values: any[] = []
