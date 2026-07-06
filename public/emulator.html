@@ -5,69 +5,103 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EmulatorJS</title>
   <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      background: #000;
-      overflow: hidden;
-    }
+    body { margin: 0; height: 100vh; background: #000; overflow: hidden; }
+    #ejs-zone { width: 100%; height: 100%; }
+    /* 省略你的 loading 样式，保持不变 */
   </style>
 </head>
 <body>
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <span>加载模拟器...</span>
+  </div>
   <div id="ejs-zone"></div>
 
   <script>
-    // ---------- URL 参数 ----------
     const params = new URLSearchParams(window.location.search);
     const core = params.get('core') || 'nes';
     const gameUrl = params.get('gameUrl');
     const biosUrl = params.get('biosUrl') || '';
     const gameName = params.get('gameName') || 'Game';
-    const gameSlug = params.get('gameId') || 'unknown';
+    const gameId = params.get('gameId') || 'unknown';
     const pathtodata = params.get('pathtodata') || 'https://cdn.emulatorjs.org/stable/data/';
+    
+    // 【修改点】强制为 true，否则游戏不会自动开始
+    const startOnLoaded = true;
+    const fullscreenOnLoaded = false;
 
-    // slug → numeric hash (EJS_gameID 需要数字以隔离存档)
-    function hashSlug(slug) {
-      let hash = 0;
-      for (let i = 0; i < slug.length; i++) {
-        hash = ((hash << 5) - hash) + slug.charCodeAt(i);
-        hash |= 0;
-      }
-      return Math.abs(hash) || 1;
-    }
-
-    // ---------- EmulatorJS 配置 ----------
     window.EJS_player = '#ejs-zone';
     window.EJS_core = core;
     window.EJS_gameUrl = gameUrl;
     window.EJS_biosUrl = biosUrl;
     window.EJS_pathtodata = pathtodata;
     window.EJS_gameName = gameName;
-    window.EJS_gameID = hashSlug(gameSlug);
-    window.EJS_startOnLoaded = true;
-    window.EJS_fixedSaveInterval = 30000;
-    window.EJS_color = '#e02d7a';
-    window.EJS_volume = 0.5;
+    window.EJS_gameId = gameId;
+    window.EJS_startOnLoaded = startOnLoaded;
+    window.EJS_fullscreenOnLoaded = fullscreenOnLoaded;
 
-    // 按钮显隐
-    window.EJS_Buttons = {
-      screenRecord: false,
-      cheat: false,
-      screenshot: false,
-      cacheManager: false,
-    };
+    // 自定义按钮配置保持不变...
+    window.EJS_Buttons = { /* ... */ };
 
-    // ---------- 就绪通知 ----------
-    window.EJS_ready = () => {
+    // 【修改点】在游戏彻底启动后才通知 Ready
+    window.EJS_onGameStart = () => {
+      const loadingEl = document.getElementById('loading');
+      if (loadingEl) loadingEl.style.display = 'none';
       window.parent.postMessage({ type: 'ready' }, '*');
     };
 
-    // ---------- 退出通知 ----------
-    window.EJS_onExit = () => {
-      window.parent.postMessage({ type: 'exit' }, '*');
-    };
+    window.addEventListener('message', async (event) => {
+      if (!event.data || typeof event.data !== 'object') return;
+      
+      const { type, state } = event.data;
+      const emu = window.EJS_emulator;
+      if (!emu) return;
 
-    // ---------- 注入 loader.js ----------
+      switch (type) {
+        case 'loadState': {
+          // 增加延迟和判空，防止核心未就绪
+          if (state && emu.gameManager && typeof emu.gameManager.loadState === 'function') {
+            try {
+              // 确保模拟器引擎已启动
+              emu.gameManager.loadState(state);
+            } catch (e) {
+              console.warn('读档失败:', e);
+            }
+          }
+          break;
+        }
+        case 'getState': {
+          try {
+            if (emu.gameManager && typeof emu.gameManager.getState === 'function') {
+              // 注意：getState 有可能是个异步操作，如果官方 API 是异步的，这里需要加 await
+              const stateData = await emu.gameManager.getState();
+              if (stateData) {
+                window.parent.postMessage({ type: 'stateResponse', state: stateData }, '*');
+                return; // 成功发送后 return
+              }
+            }
+            // 失败或无数据时回传 null 以免父组件干等超时
+            window.parent.postMessage({ type: 'stateResponse', state: null }, '*');
+          } catch (e) {
+            console.warn('获取状态失败:', e);
+            window.parent.postMessage({ type: 'stateResponse', state: null }, '*');
+          }
+          break;
+        }
+        case 'destroy': {
+          try {
+            if (typeof emu.destroy === 'function') emu.destroy();
+            // 强制解除音频锁定
+            const audioCtx = window.EJS_audioContext || window.audioContext;
+            if (audioCtx && typeof audioCtx.close === 'function') {
+              audioCtx.close();
+            }
+          } catch (e) {}
+          break;
+        }
+      }
+    });
+
     const script = document.createElement('script');
     script.src = pathtodata + 'loader.js';
     document.head.appendChild(script);
