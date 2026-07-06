@@ -79,7 +79,11 @@ definePageMeta({
 })
 
 const { adminFetch } = useAdmin()
-const debouncedLoad = useDebounceFn(() => { page.value = 1; load() }, 300)
+let debounceTimer
+const debouncedLoad = () => {
+  clearTimeout(debounceTimer)
+  debounceTimer = setTimeout(() => { page.value = 1; load() }, 300)
+}
 
 const route = useRoute()
 const page = ref(1)
