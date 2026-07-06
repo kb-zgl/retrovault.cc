@@ -14,7 +14,7 @@
  *   D1_DB=retro-vault   # D1 database name (default: retro-vault)
  */
 
-import { readFileSync, readdirSync } from 'node:fs'
+import { readFileSync, readdirSync, writeFileSync, unlinkSync } from 'node:fs'
 import { join } from 'node:path'
 import { execSync } from 'node:child_process'
 
@@ -86,12 +86,14 @@ process.stdout.write(`\r[import] Done. ${count}/${targetFiles.length} games impo
 
 function flushBatch(statements) {
   const sql = statements.join('\n')
+  const tmpFile = `/tmp/d1-import-${Date.now()}.sql`
   try {
-    execSync(`echo ${JSON.stringify(sql)} | npx wrangler d1 execute ${D1_DB}`, {
+    writeFileSync(tmpFile, sql, 'utf-8')
+    execSync(`wrangler d1 execute ${D1_DB} --remote --file="${tmpFile}"`, {
       stdio: 'pipe',
       timeout: 60000,
-      shell: true,
     })
+    unlinkSync(tmpFile)
   } catch (e) {
     console.error(`\n[import] BATCH FAILED: ${e.message}`)
   }
