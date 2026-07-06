@@ -28,109 +28,115 @@
       <div v-if="saveSuccess" class="badge-green" style="margin-bottom:16px;padding:8px 16px">Saved successfully</div>
       <div v-if="saveError" class="badge-pink" style="margin-bottom:16px;padding:8px 16px">Save failed: {{ saveError }}</div>
 
-      <!-- Language Tabs -->
-      <div style="display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--color-border);padding-bottom:8px">
-        <button v-for="lang in availableLangs" :key="lang"
-          @click="activeLang = lang"
-          :style="{
-            padding: '6px 16px',
-            borderRadius: 'var(--radius-sm) var(--radius-sm) 0 0',
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: '0.75rem',
-            fontWeight: 600,
-            background: activeLang === lang ? 'var(--color-accent)' : 'var(--color-bg-elevated)',
-            color: activeLang === lang ? '#fff' : 'var(--color-text-secondary)',
-          }">
-          {{ langLabels[lang] || lang.toUpperCase() }}
-        </button>
-      </div>
+      <!-- ════════════════════════════════════════════════
+           PART 1: Public Fields (language-independent)
+           ════════════════════════════════════════════════ -->
+      <div class="card" style="padding:24px;margin-bottom:24px">
+        <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin-bottom:16px">General Info</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+          <FormField label="Title (EN)" required>
+            <input v-model="form.title" class="form-input" />
+          </FormField>
+          <FormField label="Platform" required>
+            <input v-model="form.platform" class="form-input" />
+          </FormField>
+          <FormField label="Year">
+            <input v-model.number="form.year" type="number" class="form-input" />
+          </FormField>
+          <FormField label="Genre">
+            <input v-model="form.genre" class="form-input" />
+          </FormField>
+          <FormField label="Developer">
+            <input v-model="form.developer" class="form-input" />
+          </FormField>
+          <FormField label="Publisher">
+            <input v-model="form.publisher" class="form-input" />
+          </FormField>
+          <FormField label="Series">
+            <input v-model="form.series" class="form-input" />
+          </FormField>
+          <FormField label="Language">
+            <input v-model="form.language" class="form-input" placeholder="English" />
+          </FormField>
+          <FormField label="Source">
+            <input v-model="form.source" class="form-input" placeholder="scraped / manual" />
+          </FormField>
+          <FormField label="Is Hack">
+            <select v-model="form.isHack" class="form-input">
+              <option :value="0">No</option>
+              <option :value="1">Yes</option>
+            </select>
+          </FormField>
+          <FormField label="Status">
+            <select v-model="form.status" class="form-input">
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+            </select>
+          </FormField>
+        </div>
 
-      <!-- Form -->
-      <div class="card" style="padding:24px">
-        <!-- Core Fields (always shown, independent of language tab) -->
-        <section style="margin-bottom:24px">
-          <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin-bottom:12px">Core Fields</h3>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-            <FormField label="Title (EN)" required>
-              <input v-model="form.title" class="form-input" />
-            </FormField>
-            <FormField label="Platform" required>
-              <input v-model="form.platform" class="form-input" />
-            </FormField>
-            <FormField label="Year">
-              <input v-model.number="form.year" type="number" class="form-input" />
-            </FormField>
-            <FormField label="Genre">
-              <input v-model="form.genre" class="form-input" />
-            </FormField>
-            <FormField label="Developer">
-              <input v-model="form.developer" class="form-input" />
-            </FormField>
-            <FormField label="Publisher">
-              <input v-model="form.publisher" class="form-input" />
-            </FormField>
-            <FormField label="Series">
-              <input v-model="form.series" class="form-input" />
-            </FormField>
-            <FormField label="Status">
-              <select v-model="form.status" class="form-input">
-                <option value="draft">Draft</option>
-                <option value="published">Published</option>
-              </select>
-            </FormField>
-            <FormField label="ROM Path">
-              <input v-model="form.defaultRom" class="form-input" placeholder="roms/nes/xxx.nes" />
-            </FormField>
-            <FormField label="EJS Core">
-              <input v-model="form.ejsCore" class="form-input" placeholder="nes / snes / gba" />
-            </FormField>
-            <FormField label="BIOS URL">
-              <input v-model="form.ejsBiosUrl" class="form-input" />
-            </FormField>
-            <FormField label="Cover URL">
-              <input v-model="form.coverUrl" class="form-input" />
-            </FormField>
-            <FormField label="Is Hack">
-              <select v-model="form.isHack" class="form-input">
-                <option :value="0">No</option>
-                <option :value="1">Yes</option>
-              </select>
-            </FormField>
-            <FormField label="Source">
-              <input v-model="form.source" class="form-input" placeholder="scraped / manual" />
-            </FormField>
-          </div>
-        </section>
+        <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin:20px 0 12px">Emulator & Files</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+          <FormField label="ROM Path">
+            <input v-model="form.defaultRom" class="form-input" placeholder="roms/nes/xxx.nes" />
+          </FormField>
+          <FormField label="EJS Core">
+            <input v-model="form.ejsCore" class="form-input" placeholder="nes / snes / gba" />
+          </FormField>
+          <FormField label="BIOS URL">
+            <input v-model="form.ejsBiosUrl" class="form-input" />
+          </FormField>
+          <FormField label="Cover URL">
+            <input v-model="form.coverUrl" class="form-input" />
+          </FormField>
+          <FormField label="Original Image URL">
+            <input v-model="form.imageUrl" class="form-input" />
+          </FormField>
+        </div>
 
         <!-- English Description -->
-        <section style="margin-bottom:24px">
-          <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin-bottom:12px">English Description</h3>
-          <textarea v-model="form.description" class="form-input" rows="4" placeholder="Short description in English"></textarea>
-        </section>
+        <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin:20px 0 12px">English Description</h3>
+        <textarea v-model="form.description" class="form-input" rows="3" placeholder="Short description in English"></textarea>
 
         <!-- Tags -->
-        <section style="margin-bottom:24px">
-          <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin-bottom:12px">Tags (EN)</h3>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
-            <span v-for="(tag, i) in form.tags" :key="i" class="badge-pink" style="font-size:0.65rem;padding:4px 10px;cursor:pointer" @click="form.tags.splice(i, 1)">{{ tag }} ✕</span>
-          </div>
-          <div style="display:flex;gap:8px">
-            <input v-model="newTag" @keydown.enter.prevent="addTag" placeholder="Type tag and Enter" class="form-input" style="flex:1" />
-            <button @click="addTag" class="btn-pixel" style="padding:4px 16px;font-size:0.7rem">Add</button>
-          </div>
-        </section>
+        <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin:20px 0 12px">Tags</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+          <span v-for="(tag, i) in form.tags" :key="i" class="badge-pink" style="font-size:0.65rem;padding:4px 10px;cursor:pointer" @click="form.tags.splice(i, 1)">{{ tag }} ✕</span>
+        </div>
+        <div style="display:flex;gap:8px">
+          <input v-model="newTag" @keydown.enter.prevent="addTag" placeholder="Type tag and Enter" class="form-input" style="flex:1" />
+          <button @click="addTag" class="btn-pixel" style="padding:4px 16px;font-size:0.7rem">Add</button>
+        </div>
+      </div>
 
-        <!-- Language-specific fields -->
+      <!-- ════════════════════════════════════════════════
+           PART 2: Language Content (one tab per language)
+           ════════════════════════════════════════════════ -->
+      <div class="card" style="padding:24px">
+        <div style="display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--color-border);padding-bottom:8px">
+          <button v-for="lang in availableLangs" :key="lang"
+            @click="activeLang = lang"
+            :style="{
+              padding: '6px 16px',
+              borderRadius: 'var(--radius-sm) var(--radius-sm) 0 0',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              background: activeLang === lang ? 'var(--color-accent)' : 'var(--color-bg-elevated)',
+              color: activeLang === lang ? '#fff' : 'var(--color-text-secondary)',
+            }">
+            {{ langLabels[lang] || lang.toUpperCase() }}
+          </button>
+        </div>
+
         <section>
-          <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin-bottom:12px">{{ langLabels[activeLang] || activeLang.toUpperCase() }} Content</h3>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-            <FormField :label="'Title (' + activeLang.toUpperCase() + ')'">
-              <input v-model="localeForm.title" class="form-input" :placeholder="activeLang === 'en' ? form.title : ''" />
-            </FormField>
-          </div>
+          <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin-bottom:12px">{{ langLabels[activeLang] }} Content</h3>
+          <FormField :label="'Title (' + activeLang.toUpperCase() + ')'">
+            <input v-model="localeForm.title" class="form-input" :placeholder="activeLang === 'en' ? form.title : ''" />
+          </FormField>
           <FormField label="Short Description">
-            <textarea v-model="localeForm.description" class="form-input" rows="3" :placeholder="activeLang === 'en' ? 'English description' : ''"></textarea>
+            <textarea v-model="localeForm.description" class="form-input" rows="3" :placeholder="activeLang === 'en' ? form.description : ''"></textarea>
           </FormField>
           <FormField label="Long Description">
             <div v-for="(para, i) in localeForm.longDesc" :key="i" style="display:flex;gap:8px;margin-bottom:8px">
@@ -170,14 +176,17 @@ const saveSuccess = ref(false)
 const saveError = ref('')
 const newTag = ref('')
 
-// Main form data (core fields)
+// PART 1: Public fields (not language-specific)
 const form = reactive({
   title: '', platform: '', year: null, genre: '', developer: '', publisher: '', series: '',
-  status: 'draft', tags: [], langs: {},
-  isHack: 0, coverUrl: '', defaultRom: '', ejsCore: '', ejsBiosUrl: '', description: '', source: ''
+  isHack: 0, language: '', tags: [],
+  defaultRom: '', ejsCore: '', ejsBiosUrl: '',
+  coverUrl: '', imageUrl: '',
+  description: '', source: '', status: 'draft',
+  langs: {},
 })
 
-// Active language sub-form
+// PART 2: Active language content
 const localeForm = reactive({
   title: '', description: '', longDesc: [], controls: { 'D-Pad': '', 'A': '', 'B': '', 'Start': '' }
 })
@@ -197,16 +206,18 @@ watch(game, (g) => {
   form.developer = g.developer || ''
   form.publisher = g.publisher || ''
   form.series = g.series || ''
-  form.status = g.status || 'draft'
-  form.tags = Array.isArray(g.tags) ? g.tags : []
-  form.langs = (g.langs && typeof g.langs === 'object') ? g.langs : {}
   form.isHack = g.isHack ? 1 : 0
-  form.coverUrl = g.coverUrl || ''
+  form.language = g.language || ''
+  form.tags = Array.isArray(g.tags) ? g.tags : []
   form.defaultRom = g.defaultRom || ''
   form.ejsCore = g.ejsCore || ''
   form.ejsBiosUrl = g.ejsBiosUrl || ''
+  form.coverUrl = g.coverUrl || ''
+  form.imageUrl = g.imageUrl || ''
   form.description = g.description || ''
   form.source = g.source || ''
+  form.status = g.status || 'draft'
+  form.langs = (g.langs && typeof g.langs === 'object') ? g.langs : {}
   syncLocaleForm()
 }, { immediate: true })
 
@@ -228,7 +239,6 @@ function addTag() {
 
 const coverInput = ref(null)
 const coverPreview = ref('')
-const uploading = ref(false)
 
 function triggerCoverUpload() {
   coverInput.value?.click()
@@ -237,16 +247,12 @@ function triggerCoverUpload() {
 async function uploadCover(event) {
   const file = event.target?.files?.[0]
   if (!file) return
-
-  uploading.value = true
   try {
     const formData = new FormData()
     formData.append('file', file)
-
     const token = localStorage.getItem('app-token')
     const res = await $fetch(`/api/admin/upload/cover?slug=${slug}`, {
-      method: 'POST',
-      body: formData,
+      method: 'POST', body: formData,
       headers: { authorization: token ? `Bearer ${token}` : '' },
     })
     coverPreview.value = res.coverUrl
@@ -254,8 +260,6 @@ async function uploadCover(event) {
     setTimeout(() => { saveSuccess.value = false }, 3000)
   } catch (e) {
     saveError.value = 'Cover upload failed: ' + ((e && e.message) || 'Unknown error')
-  } finally {
-    uploading.value = false
   }
 }
 
@@ -264,7 +268,7 @@ async function save() {
   saveSuccess.value = false
   saveError.value = ''
 
-  // Sync current locale data back to langs
+  // Sync current locale back to langs
   form.langs[activeLang.value] = {
     title: localeForm.title || undefined,
     description: localeForm.description || undefined,
@@ -276,23 +280,13 @@ async function save() {
     await adminFetch(`/api/admin/games/${slug}`, {
       method: 'PUT',
       body: {
-        title: form.title,
-        platform: form.platform,
-        year: form.year,
-        genre: form.genre,
-        developer: form.developer,
-        publisher: form.publisher,
-        series: form.series,
-        status: form.status,
-        tags: form.tags,
-        langs: form.langs,
-        isHack: form.isHack,
-        coverUrl: form.coverUrl,
-        defaultRom: form.defaultRom,
-        ejsCore: form.ejsCore,
-        ejsBiosUrl: form.ejsBiosUrl,
-        description: form.description,
-        source: form.source,
+        title: form.title, platform: form.platform, year: form.year,
+        genre: form.genre, developer: form.developer, publisher: form.publisher,
+        series: form.series, isHack: form.isHack, language: form.language,
+        tags: form.tags, langs: form.langs,
+        defaultRom: form.defaultRom, ejsCore: form.ejsCore, ejsBiosUrl: form.ejsBiosUrl,
+        coverUrl: form.coverUrl, imageUrl: form.imageUrl,
+        description: form.description, source: form.source, status: form.status,
       }
     })
     saveSuccess.value = true
