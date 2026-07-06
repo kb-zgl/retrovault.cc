@@ -10,169 +10,66 @@
       height: 100vh;
       background: #000;
       overflow: hidden;
-      font-family: system-ui, sans-serif;
     }
-    #ejs-zone {
-      width: 100%;
-      height: 100%;
-    }
-    .loading {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #ccc;
-      font-size: 14px;
-      background: #111;
-      z-index: 999;
-      gap: 12px;
-    }
-    .spinner {
-      width: 32px;
-      height: 32px;
-      border: 3px solid #333;
-      border-top-color: #e02d7a;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
-  <div id="loading" class="loading">
-    <div class="spinner"></div>
-    <span>加载模拟器...</span>
-  </div>
   <div id="ejs-zone"></div>
 
   <script>
-    // ---------- 解析 URL 参数 ----------
+    // ---------- URL 参数 ----------
     const params = new URLSearchParams(window.location.search);
     const core = params.get('core') || 'nes';
     const gameUrl = params.get('gameUrl');
     const biosUrl = params.get('biosUrl') || '';
     const gameName = params.get('gameName') || 'Game';
-    const gameId = params.get('gameId') || 'unknown';
+    const gameSlug = params.get('gameId') || 'unknown';
     const pathtodata = params.get('pathtodata') || 'https://cdn.emulatorjs.org/stable/data/';
-    // 是否在加载后自动启动（我们手动控制）
-    const startOnLoaded = false;
-    const fullscreenOnLoaded = false;
 
-    // ---------- 全局 EJS 配置 ----------
+    // slug → numeric hash (EJS_gameID 需要数字以隔离存档)
+    function hashSlug(slug) {
+      let hash = 0;
+      for (let i = 0; i < slug.length; i++) {
+        hash = ((hash << 5) - hash) + slug.charCodeAt(i);
+        hash |= 0;
+      }
+      return Math.abs(hash) || 1;
+    }
+
+    // ---------- EmulatorJS 配置 ----------
     window.EJS_player = '#ejs-zone';
     window.EJS_core = core;
     window.EJS_gameUrl = gameUrl;
     window.EJS_biosUrl = biosUrl;
     window.EJS_pathtodata = pathtodata;
     window.EJS_gameName = gameName;
-    window.EJS_gameId = gameId;
-    window.EJS_startOnLoaded = startOnLoaded;
-    window.EJS_fullscreenOnLoaded = fullscreenOnLoaded;
+    window.EJS_gameID = hashSlug(gameSlug);
+    window.EJS_startOnLoaded = true;
+    window.EJS_fixedSaveInterval = 30000;
+    window.EJS_color = '#e02d7a';
+    window.EJS_volume = 0.5;
 
-    // ---------- 自定义按钮配置 ----------
+    // 按钮显隐
     window.EJS_Buttons = {
-      // 保留全屏、静音等默认按钮，隐藏不需要的
-      // 添加自定义按钮
-      customSave: {
-        icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"%3E%3Cpath d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4zM12 19a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm-2-9V5h4v5h-4z"/%3E%3C/svg%3E',
-        displayName: '保存进度',
-        callback: () => {
-          // 获取当前状态并发送给父窗口
-          const emu = window.EJS_emulator;
-          if (!emu) return;
-          try {
-            const state = emu.gameManager?.getState();
-            if (state) {
-              window.parent.postMessage({ type: 'save', state }, '*');
-            } else {
-              console.warn('无法获取存档数据');
-            }
-          } catch (e) {
-            console.warn('保存失败:', e);
-          }
-        }
-      },
-      customLoad: {
-        icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"%3E%3Cpath d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.59-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z"/%3E%3C/svg%3E',
-        displayName: '读取进度',
-        callback: () => {
-          // 通知父窗口请求加载存档
-          window.parent.postMessage({ type: 'load' }, '*');
-        }
-      }
+      screenRecord: false,
+      cheat: false,
+      screenshot: false,
+      cacheManager: false,
     };
 
-    // ---------- 加载完成回调 ----------
+    // ---------- 就绪通知 ----------
     window.EJS_ready = () => {
-      // 隐藏 loading
-      const loadingEl = document.getElementById('loading');
-      if (loadingEl) loadingEl.style.display = 'none';
-
-      // 通知父窗口模拟器已就绪
       window.parent.postMessage({ type: 'ready' }, '*');
-
-      // 如果父窗口自动发送了加载指令，将在此后处理
-      // （但加载存档需要用户手动或自动触发，我们在父组件中控制）
     };
 
-    // ---------- 监听父窗口消息 ----------
-    window.addEventListener('message', async (event) => {
-      // 限制来源，可验证，这里简单放行
-      const { type, state } = event.data;
-      const emu = window.EJS_emulator;
-      if (!emu) return;
-
-      switch (type) {
-        case 'loadState': {
-          // 加载父窗口下发的存档数据
-          if (state && typeof emu.gameManager?.loadState === 'function') {
-            try {
-              emu.gameManager.loadState(state);
-              console.log('✅ 读档成功');
-            } catch (e) {
-              console.warn('读档失败:', e);
-            }
-          }
-          break;
-        }
-        case 'getState': {
-          // 父窗口主动请求当前状态（用于退出时保存）
-          try {
-            const stateData = emu.gameManager?.getState();
-            if (stateData) {
-              window.parent.postMessage({ type: 'stateResponse', state: stateData }, '*');
-            }
-          } catch (e) {
-            console.warn('获取状态失败:', e);
-          }
-          break;
-        }
-        case 'destroy': {
-          // 父窗口通知销毁，清理资源
-          try {
-            if (typeof emu.destroy === 'function') emu.destroy();
-            // 关闭可能的 AudioContext
-            if (window.audioContext && window.audioContext.close) {
-              window.audioContext.close();
-            }
-          } catch (e) {
-            // ignore
-          }
-          break;
-        }
-        default:
-          break;
-      }
-    });
+    // ---------- 退出通知 ----------
+    window.EJS_onExit = () => {
+      window.parent.postMessage({ type: 'exit' }, '*');
+    };
 
     // ---------- 注入 loader.js ----------
     const script = document.createElement('script');
     script.src = pathtodata + 'loader.js';
-    script.onload = () => {
-      console.log('EmulatorJS loader 已加载');
-    };
     document.head.appendChild(script);
   </script>
 </body>
