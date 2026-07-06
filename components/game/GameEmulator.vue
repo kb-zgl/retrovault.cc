@@ -176,3 +176,67 @@ watch(() => props.visible, (newVal) => {
   }
 })
 </script>
+
+<style scoped>
+.emulator-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  background: var(--color-bg-base);
+  display: flex;
+  flex-direction: column;
+}
+.emulator-close-btn {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 5010;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
+  color: var(--color-accent);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  transition: all 0.1s ease;
+}
+.emulator-close-btn:hover {
+  background: rgba(224, 45, 122, 0.2);
+  border-color: var(--color-accent);
+}
+.emulator-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 5005;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+.emulator-loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: ejs-spin 0.8s linear infinite;
+}
+@keyframes ejs-spin { to { transform: rotate(360deg); } }
+.emulator-iframe {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #000;
+}
+</style>
