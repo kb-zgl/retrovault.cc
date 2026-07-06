@@ -1,4 +1,5 @@
 import Database from 'better-sqlite3'
+import { join } from 'node:path'
 
 let _db: D1Database | any = null
 
@@ -13,7 +14,6 @@ export function useD1(): D1Database {
 
   // 2. Local dev: use better-sqlite3 which is already in dependencies
   try {
-    const { join } = require('node:path')
     const dbPath = join(process.cwd(), '.data', 'retro-vault.sqlite')
     const sqlite = new Database(dbPath)
     sqlite.pragma('journal_mode = WAL')
