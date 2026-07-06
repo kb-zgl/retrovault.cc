@@ -24,11 +24,12 @@ export function useAdmin() {
   }
 
   function adminFetch(url: string, opts?: any) {
+    const t = localStorage.getItem('app-token')
     return $fetch(url, {
       ...opts,
       headers: {
         ...opts?.headers,
-        authorization: token.value ? `Bearer ${token.value}` : '',
+        authorization: t ? `Bearer ${t}` : '',
       }
     })
   }
