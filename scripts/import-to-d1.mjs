@@ -87,7 +87,7 @@ process.stdout.write(`\r[import] Done. ${count}/${targetFiles.length} games impo
 function flushBatch(statements) {
   const sql = statements.join('\n')
   try {
-    execSync(`echo ${JSON.stringify(sql)} | wrangler d1 execute ${D1_DB} --remote`, {
+    execSync(`echo ${JSON.stringify(sql)} | npx wrangler d1 execute ${D1_DB}`, {
       stdio: 'pipe',
       timeout: 60000,
       shell: true,

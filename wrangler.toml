@@ -1,19 +1,33 @@
-name = "retrovault"
+name = "retrovault-cc"
+keep_vars = true
 main = ".output/server/index.mjs"
 compatibility_date = "2026-05-07"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 
 assets = { directory = ".output/public" }
 
-[vars]
-SITE_URL = "https://retrovault.cc"
-# JWT_SECRET and RESEND_API_KEY should be set via `wrangler secret put`:
-#   wrangler secret put JWT_SECRET
-#   wrangler secret put RESEND_API_KEY
+routes = [
+  { pattern = "retrovault.cc", zone_name = "retrovault.cc", custom_domain = true },
+  { pattern = "www.retrovault.cc", zone_name = "retrovault.cc", custom_domain = true }
+]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "retrovault-cc"
+database_id = "60d830c8-c98c-43bd-9a9e-cb2864f14de1"
 
 [[kv_namespaces]]
-binding = "RETROVAULT_KV"
-# Set the ID after creating the namespace:
-#   wrangler kv namespace create RETROVAULT_KV
-# Then paste the returned id below.
-id = ""
+binding = "RETROVAULT"
+id = "6c000acaef05427eab3eefd994db15ac"
+
+# [[r2_buckets]]
+# binding = "CDN"
+# bucket_name = "aifindr-cdn"
+
+[vars]
+API_BASE = "https://retrovault.cc"
+# md5(retrovault.cc) = 273be4be4de0339309f670bee6789807
+NUXT_OG_IMAGE_SECRET = "273be4be4de0339309f670bee6789807"
+
+# [triggers]
+# crons = ["0 9 * * *"]
