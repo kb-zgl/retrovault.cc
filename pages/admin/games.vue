@@ -85,9 +85,9 @@ const route = useRoute()
 const page = ref(1)
 const limit = 48
 const filter = reactive({
-  platform: (route.query.platform as string) || '',
-  status: (route.query.status as string) || '',
-  search: (route.query.search as string) || '',
+  platform: String(route.query.platform || ''),
+  status: String(route.query.status || ''),
+  search: String(route.query.search || ''),
 })
 const games = ref([])
 const total = ref(0)
