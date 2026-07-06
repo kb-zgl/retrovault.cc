@@ -21,8 +21,17 @@ export async function getAdminEmails(): Promise<string[]> {
 }
 
 export async function isAdmin(email: string): Promise<boolean> {
+  const normalized = email.toLowerCase().trim()
+
+  // Always check env var directly as fallback (works even without KV)
+  const envAdmin = (typeof process !== 'undefined' && (process.env as any).ADMIN_EMAIL) as string | undefined
+  if (envAdmin && envAdmin.toLowerCase().trim() === normalized) {
+    return true
+  }
+
+  // Also check KV whitelist
   const admins = await getAdminEmails()
-  return admins.includes(email.toLowerCase().trim())
+  return admins.includes(normalized)
 }
 
 export async function addAdmin(email: string): Promise<void> {
