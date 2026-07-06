@@ -28,6 +28,7 @@ id = "6c000acaef05427eab3eefd994db15ac"
 API_BASE = "https://retrovault.cc"
 # md5(retrovault.cc) = 273be4be4de0339309f670bee6789807
 NUXT_OG_IMAGE_SECRET = "273be4be4de0339309f670bee6789807"
+ADMIN_EMAIL="kbmjj123@gmail.com"
 
 # [triggers]
 # crons = ["0 9 * * *"]
