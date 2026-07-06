@@ -6,18 +6,27 @@
     >
       <button class="emulator-close-btn" @click="close" title="Close (Esc)">✕</button>
 
+      <!-- 加载状态 -->
       <div v-if="loading" class="emulator-loading">
         <div class="emulator-loading-spinner"></div>
         <span>{{ t('game.loadingEmulator') }}</span>
       </div>
 
-      <div id="ejs-zone" ref="containerRef" class="emulator-zone" />
+      <!-- 模拟器 iframe -->
+      <iframe
+        ref="iframeRef"
+        :src="iframeSrc"
+        class="emulator-iframe"
+        allowfullscreen
+        allow="autoplay; encrypted-media; fullscreen"
+      />
     </div>
   </Teleport>
 </template>
 
 <script setup lang="ts">
 import type { GameData } from '~/types/games'
+import { useGameSaves } from '~/composables/useGameSaves'
 
 const props = defineProps<{
   game: GameData
@@ -29,218 +38,151 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useAppI18n()
-const containerRef = ref<HTMLElement | null>(null)
-const loading = ref(true)
-const ejsInited = ref(false)
-const isClosing = ref(false)
 const saves = useGameSaves()
 
-// Esc key to close
+const iframeRef = ref<HTMLIFrameElement | null>(null)
+const loading = ref(true)
+const isClosing = ref(false)
+const emulatorReady = ref(false)
+const pendingStateResolve = ref<((value: ArrayBuffer) => void) | null>(null)
+
+// ---------- 构建 iframe URL ----------
+const iframeSrc = computed(() => {
+  const base = '/emulator.html'
+  const params = new URLSearchParams({
+    core: props.game.ejs.core,
+    gameUrl: '/' + props.game.defaultRom, // 确保路径正确
+    gameName: props.game.title,
+    gameId: props.game.slug,
+    pathtodata: 'https://cdn.emulatorjs.org/stable/data/',
+  })
+  if (props.game.ejs.biosUrl) {
+    params.set('biosUrl', props.game.ejs.biosUrl)
+  }
+  return `${base}?${params.toString()}`
+})
+
+// ---------- 与 iframe 通信 ----------
+function postToIframe(data: any) {
+  iframeRef.value?.contentWindow?.postMessage(data, '*')
+}
+
+// ---------- 监听来自 iframe 的消息 ----------
+function handleMessage(event: MessageEvent) {
+  const { type, state } = event.data
+  if (type === 'ready') {
+    emulatorReady.value = true
+    loading.value = false
+    // 自动尝试加载存档
+    tryLoadSave()
+    return
+  }
+
+  if (type === 'save') {
+    // iframe 发来存档数据，保存到 IndexedDB
+    if (state) {
+      saves.saveState(props.game.slug, state)
+    }
+    return
+  }
+
+  if (type === 'load') {
+    // iframe 请求读取存档
+    tryLoadSave()
+    return
+  }
+
+  if (type === 'stateResponse') {
+    // 响应 getState 请求，用于退出前保存
+    if (pendingStateResolve.value) {
+      pendingStateResolve.value(state)
+      pendingStateResolve.value = null
+    }
+    return
+  }
+}
+
+// ---------- 加载存档（从 IndexedDB 读取并发送给 iframe） ----------
+async function tryLoadSave() {
+  if (!emulatorReady.value) return
+  const saved = await saves.loadState(props.game.slug)
+  if (saved) {
+    postToIframe({ type: 'loadState', state: saved })
+  }
+}
+
+// ---------- 主动获取状态（用于退出时） ----------
+function requestState(): Promise<ArrayBuffer> {
+  return new Promise((resolve) => {
+    pendingStateResolve.value = resolve
+    postToIframe({ type: 'getState' })
+    // 超时处理
+    setTimeout(() => {
+      if (pendingStateResolve.value) {
+        pendingStateResolve.value(null as any)
+        pendingStateResolve.value = null
+      }
+    }, 3000)
+  })
+}
+
+// ---------- 关闭流程 ----------
+async function close() {
+  if (isClosing.value) return
+  isClosing.value = true
+  loading.value = true // 显示保存中
+
+  // 1. 请求 iframe 返回当前状态
+  const state = await requestState().catch(() => null)
+  if (state) {
+    await saves.saveState(props.game.slug, state)
+  }
+
+  // 2. 通知 iframe 销毁
+  postToIframe({ type: 'destroy' })
+
+  // 3. 移除 iframe 引用
+  iframeRef.value?.remove()
+
+  // 4. 重置状态
+  emulatorReady.value = false
+  loading.value = false
+  isClosing.value = false
+
+  emit('close')
+}
+
+// ---------- 快捷键 Esc 关闭 ----------
 function onKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') close()
 }
 
+// ---------- 生命周期 ----------
 onMounted(() => {
   document.addEventListener('keydown', onKeydown)
-  if (props.visible) initEmulator()
+  window.addEventListener('message', handleMessage)
 })
 
 onUnmounted(() => {
   document.removeEventListener('keydown', onKeydown)
-  destroyEmulator()
-})
-
-// 切换游戏 → 全量重建
-watch(() => props.game?.slug, (newSlug, oldSlug) => {
-  if (newSlug && oldSlug && newSlug !== oldSlug) {
-    destroyEmulator()
-    nextTick(() => initEmulator())
+  window.removeEventListener('message', handleMessage)
+  // 如果组件被意外卸载，尝试保存
+  if (!isClosing.value) {
+    close()
   }
 })
 
-// 显示/隐藏
+// 切换游戏时重置（父组件会控制 visible 变化，我们通过 watch 处理）
 watch(() => props.visible, (val) => {
-  if (val) {
-    if (!ejsInited.value) {
-      initEmulator()
-    }
+  if (!val && !isClosing.value) {
+    // 如果 visible 变为 false，主动关闭
+    close()
   }
 })
-
-// ==================== 初始化 ====================
-
-function initEmulator() {
-  if (!props.game) return
-  loading.value = true
-  ejsInited.value = true
-  isClosing.value = false
-
-  cleanupEJS()
-
-  const w = window as any
-  w.EJS_player = '#ejs-zone'
-  w.EJS_core = props.game.ejs.core
-  w.EJS_gameUrl = '/' + props.game.defaultRom
-  w.EJS_biosUrl = props.game.ejs.biosUrl || ''
-  w.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/'
-  w.EJS_gameName = props.game.title
-  w.EJS_gameId = props.game.slug
-  w.EJS_startOnLoaded = false  // 改为 false，等我们手动恢复状态后再启动
-  w.EJS_fullscreenOnLoaded = false
-
-  // ✅ 关键：ready 回调中从 IndexedDB 恢复状态
-  w.EJS_ready = () => {
-    loading.value = false
-    setTimeout(async () => {
-      await tryRestoreState()
-    }, 200)
-  }
-
-  const existing = document.getElementById('ejs-loader')
-  if (existing) existing.remove()
-
-  const script = document.createElement('script')
-  script.id = 'ejs-loader'
-  script.src = 'https://cdn.emulatorjs.org/stable/data/loader.js'
-  document.body.appendChild(script)
-}
-
-// ✅ 从 IndexedDB 读取存档并恢复
-async function tryRestoreState() {
-  const emu = (window as any).EJS_emulator
-  if (!emu) return
-
-  // 检查 gameManager API 是否可用
-  if (typeof emu.gameManager?.loadState !== 'function') {
-    // 不支持快照的核心（如 Arcade），正常启动
-    try { emu.resume?.() } catch { /* ignore */ }
-    return
-  }
-
-  const saved = await saves.loadState(props.game.slug)
-  if (saved) {
-    try {
-      emu.gameManager.loadState(saved)
-    } catch {
-      // 存档损坏，正常启动
-      try { emu.resume?.() } catch { /* ignore */ }
-    }
-  } else {
-    // 没有存档，正常启动
-    try { emu.resume?.() } catch { /* ignore */ }
-  }
-}
-
-// ==================== 销毁 ====================
-
-// ✅ 异步关闭：先保存，等一小段确认保存完成，再销毁
-async function close() {
-  if (isClosing.value) return
-  isClosing.value = true
-
-  await saveAndDestroy()
-  emit('close')
-}
-
-async function saveAndDestroy(): Promise<void> {
-  const emu = (window as any).EJS_emulator
-  const slug = props.game?.slug
-  let stateData: any = null
-
-  if (emu) {
-    // 1. 同步获取快照
-    if (slug && typeof emu.gameManager?.getState === 'function') {
-      try {
-        stateData = emu.gameManager.getState()
-      } catch { /* ignore */ }
-    }
-
-    // 2. 先暂停模拟器（暂停音频处理管线，destroy 才能干净关音频）
-    if (typeof emu.pause === 'function') {
-      try { emu.pause() } catch { /* ignore */ }
-    }
-
-    // 3. 关闭 AudioContext + 销毁 EJS
-    killResidualAudio(emu)
-    if (typeof emu.destroy === 'function') {
-      try { emu.destroy() } catch { /* ignore */ }
-    }
-  }
-
-  // 4. 清理 DOM 和全局变量
-  cleanupEJS()
-  ejsInited.value = false
-  loading.value = true
-
-  // 5. 后台写入 IndexedDB
-  if (slug && stateData) {
-    try {
-      await saves.saveState(slug, stateData)
-    } catch { /* ignore */ }
-  }
-
-  // 6. 重置关闭锁
-  isClosing.value = false
-}
-
-async function destroyEmulator() {
-  await saveAndDestroy()
-}
-
-// ==================== 清理 ====================
-
-function cleanupEJS() {
-  const script = document.getElementById('ejs-loader')
-  if (script) script.remove()
-
-  if (containerRef.value) {
-    containerRef.value.innerHTML = ''
-  }
-
-  const keys = [
-    'EJS_player', 'EJS_core', 'EJS_gameUrl', 'EJS_biosUrl',
-    'EJS_pathtodata', 'EJS_gameName', 'EJS_gameId',
-    'EJS_startOnLoaded', 'EJS_fullscreenOnLoaded',
-    'EJS_ready', 'EJS_emulator', 'EJS_adBlocked',
-  ]
-  keys.forEach(k => { delete (window as any)[k] })
-}
-
-// ==================== AudioContext 清理 ====================
-
-function killResidualAudio(obj: Record<string, any>) {
-  // 遍历 EJS 对象关闭 AudioContext
-  const paths = [
-    'audioContext', 'audioCtx', 'core.audioContext',
-    'emulator.audioContext', 'runtime.audioContext',
-    'modules.audioContext', 'FS.audioContext',
-  ]
-  for (const path of paths) {
-    try {
-      let cur = obj
-      for (const key of path.split('.')) {
-        if (!cur) break
-        cur = cur[key]
-      }
-      if (cur && typeof cur.state !== 'undefined' && typeof cur.close === 'function') {
-        if (cur.state !== 'closed') cur.close()
-      }
-    } catch { /* ignore */ }
-  }
-
-  // 清理 window 上的 AudioContext
-  const w = window as any
-  ;['audioContext', 'audioCtx', 'ejsAudio', 'gameAudio', 'EJS_audioContext'].forEach(k => {
-    try {
-      if (w[k] && typeof w[k].close === 'function' && w[k].state !== 'closed') {
-        w[k].close()
-      }
-    } catch {}
-  })
-}
 </script>
 
 <style scoped>
+/* 保持原有样式，修改 .emulator-zone 为 iframe 样式 */
 .emulator-overlay {
   position: fixed;
   inset: 0;
@@ -296,13 +238,12 @@ function killResidualAudio(obj: Record<string, any>) {
   animation: ejs-spin 0.8s linear infinite;
 }
 @keyframes ejs-spin { to { transform: rotate(360deg); } }
-.emulator-zone {
+
+.emulator-iframe {
   flex: 1;
-  position: relative;
-  overflow: hidden;
-}
-.emulator-zone :deep(.ejs_emulator_wrapper) {
-  width: 100% !important;
-  height: 100% !important;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #000;
 }
 </style>
