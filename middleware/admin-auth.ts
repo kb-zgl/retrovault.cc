@@ -8,7 +8,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
       const res = await $fetch('/api/auth/me', {
         headers: { authorization: `Bearer ${token}` }
       })
-      console.log('[admin-auth] me response:', res)
       if (!res.role || res.role !== 'admin') return navigateTo('/')
     } catch (e) {
       console.error('[admin-auth] me failed:', e)
