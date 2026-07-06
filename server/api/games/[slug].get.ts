@@ -16,14 +16,21 @@ export default defineEventHandler(async (event) => {
   if (typeof game.langs === 'string') game.langs = JSON.parse(game.langs)
   if (typeof game.roms === 'string') game.roms = JSON.parse(game.roms)
 
-  // Map fields for frontend compatibility (the frontend expects localCover, not coverUrl)
+  // Map fields for frontend compatibility
   game.localCover = game.coverUrl?.startsWith('covers/')
     ? game.coverUrl
     : `covers/${game.slug}.webp`
   game.imageUrl = game.imageUrl || ''
+  // EmulatorJS expects game.ejs.core / game.ejs.biosUrl
+  game.ejs = {
+    core: game.ejsCore || '',
+    biosUrl: game.ejsBiosUrl || '',
+  }
 
   // Remove D1-only fields not needed by frontend
   delete game.coverUrl
+  delete game.ejsCore
+  delete game.ejsBiosUrl
   delete game.roms
   delete game.status
   delete game.source
