@@ -23,6 +23,7 @@ const D1_DB = process.env.D1_DB || 'retro-vault'
 const ARGS = new Set(process.argv.slice(2))
 const SLUG = [...ARGS].find(a => a.startsWith('--slug='))?.split('=')[1]
 const LIMIT = parseInt([...ARGS].find(a => a.startsWith('--limit='))?.split('=')[1] || '0')
+const TARGET = ARGS.has('--remote') ? '--remote' : '--local'
 
 const files = readdirSync(DATA_DIR).filter(f => f.endsWith('.json'))
 let targetFiles = SLUG
@@ -89,7 +90,7 @@ function flushBatch(statements) {
   const tmpFile = `/tmp/d1-import-${Date.now()}.sql`
   try {
     writeFileSync(tmpFile, sql, 'utf-8')
-    execSync(`npx wrangler d1 execute ${D1_DB} --file="${tmpFile}"`, {
+    execSync(`npx wrangler d1 execute ${D1_DB} ${TARGET} --file="${tmpFile}"`, {
       stdio: 'pipe',
       timeout: 60000,
     })
