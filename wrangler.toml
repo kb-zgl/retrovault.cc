@@ -13,8 +13,8 @@ routes = [
 
 [[d1_databases]]
 binding = "DB"
-database_name = "retrovault-cc"
-database_id = "60d830c8-c98c-43bd-9a9e-cb2864f14de1"
+database_name = "retro-vault"
+database_id = "24086795-335c-4fbc-92dc-6e5d5350ecea"
 
 [[kv_namespaces]]
 binding = "RETROVAULT"
