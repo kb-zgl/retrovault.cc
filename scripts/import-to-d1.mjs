@@ -89,7 +89,7 @@ function flushBatch(statements) {
   const tmpFile = `/tmp/d1-import-${Date.now()}.sql`
   try {
     writeFileSync(tmpFile, sql, 'utf-8')
-    execSync(`wrangler d1 execute ${D1_DB} --remote --file="${tmpFile}"`, {
+    execSync(`wrangler d1 execute ${D1_DB} --file="${tmpFile}"`, {
       stdio: 'pipe',
       timeout: 60000,
     })
