@@ -41,9 +41,9 @@ function getProdKv(): KvStore {
   if (prodKv) return prodKv
 
   // In Cloudflare Workers, the KV binding is on process.env
-  const binding = (process.env as any).RETROVAULT_KV
+  const binding = (process.env as any).RETROVAULT
   if (!binding) {
-    console.warn('[kv] RETROVAULT_KV binding not found, falling back to dev store')
+    console.warn('[kv] RETROVAULT binding not found, falling back to dev store')
     return getDevStore()
   }
 
@@ -57,6 +57,6 @@ function getProdKv(): KvStore {
 }
 
 export function useKv(): KvStore {
-  const isCf = typeof process !== 'undefined' && (process.env as any).RETROVAULT_KV
+  const isCf = typeof process !== 'undefined' && (process.env as any).RETROVAULT
   return isCf ? getProdKv() : getDevStore()
 }
