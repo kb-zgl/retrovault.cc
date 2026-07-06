@@ -197,7 +197,7 @@ function triggerCoverUpload() {
   coverInput.value?.click()
 }
 
-async function uploadCover(event: any) {
+async function uploadCover(event) {
   const file = event.target?.files?.[0]
   if (!file) return
 
@@ -215,8 +215,8 @@ async function uploadCover(event: any) {
     coverPreview.value = res.coverUrl
     saveSuccess.value = true
     setTimeout(() => { saveSuccess.value = false }, 3000)
-  } catch (e: any) {
-    saveError.value = 'Cover upload failed: ' + (e.message || 'Unknown error')
+  } catch (e) {
+    saveError.value = 'Cover upload failed: ' + ((e && e.message) || 'Unknown error')
   } finally {
     uploading.value = false
   }

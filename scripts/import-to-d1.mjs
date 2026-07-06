@@ -7,7 +7,11 @@
  *   node scripts/import-to-d1.mjs --limit=100   # Import first 100
  *
  * Requires: wrangler CLI, authenticated Cloudflare session
+ *   wrangler d1 create retro-vault               # Create DB first
  *   wrangler d1 execute retro-vault --remote --file=scripts/init-d1.sql
+ *
+ * Environment:
+ *   D1_DB=retro-vault   # D1 database name (default: retro-vault)
  */
 
 import { readFileSync, readdirSync } from 'node:fs'
@@ -15,6 +19,7 @@ import { join } from 'node:path'
 import { execSync } from 'node:child_process'
 
 const DATA_DIR = join(process.cwd(), 'retrovault-scraper', 'data', 'games')
+const D1_DB = process.env.D1_DB || 'retro-vault'
 const ARGS = new Set(process.argv.slice(2))
 const SLUG = [...ARGS].find(a => a.startsWith('--slug='))?.split('=')[1]
 const LIMIT = parseInt([...ARGS].find(a => a.startsWith('--limit='))?.split('=')[1] || '0')
@@ -82,7 +87,7 @@ process.stdout.write(`\r[import] Done. ${count}/${targetFiles.length} games impo
 function flushBatch(statements) {
   const sql = statements.join('\n')
   try {
-    execSync(`echo ${JSON.stringify(sql)} | wrangler d1 execute retro-vault --remote`, {
+    execSync(`echo ${JSON.stringify(sql)} | wrangler d1 execute ${D1_DB} --remote`, {
       stdio: 'pipe',
       timeout: 60000,
       shell: true,

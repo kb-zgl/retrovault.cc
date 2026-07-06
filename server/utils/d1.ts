@@ -1,5 +1,3 @@
-import { defineEventHandler } from 'h3'
-
 let _db: D1Database | null = null
 
 export function useD1(): D1Database {
@@ -11,7 +9,7 @@ export function useD1(): D1Database {
     throw createError({ statusCode: 500, statusMessage: 'D1 database not configured' })
   }
   _db = binding
-  return _db
+  return binding
 }
 
 export async function sql(query: string, ...bindings: any[]) {
@@ -35,5 +33,5 @@ export async function sqlOne<T = any>(query: string, ...bindings: any[]): Promis
   const stmt = db.prepare(query)
   if (bindings.length) stmt.bind(...bindings)
   const { results } = await stmt.all<T>()
-  return results.length ? results[0] : null
+  return (results.length ? results[0] : null) as T | null
 }

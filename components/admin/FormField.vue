@@ -8,6 +8,6 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineProps<{ label: string; required?: boolean }>()
 </script>
