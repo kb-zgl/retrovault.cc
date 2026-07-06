@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
       httpMetadata: { contentType: file.type || `image/${ext}` },
     })
     // Update game record with R2 path
-    const db = useD1()
+    const db = useD1(event)
     const baseUrl = (getEnv(event).R2_PUBLIC_URL || '').replace(/\/+$/, '')
     const coverUrl = baseUrl ? `${baseUrl}/${key}` : `/${key}`
     await db.prepare('UPDATE games SET coverUrl = ?, updatedAt = ? WHERE slug = ?')
@@ -48,7 +48,7 @@ export default defineEventHandler(async (event) => {
   const coverUrl = `/_uploads/${safeKey}`
 
   // Update game record with local URL
-  const db = useD1()
+  const db = useD1(event)
   await db.prepare('UPDATE games SET coverUrl = ?, updatedAt = ? WHERE slug = ?')
     .bind(coverUrl, new Date().toISOString(), slug)
     .run()

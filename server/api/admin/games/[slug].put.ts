@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
 
   const now = new Date().toISOString()
-  const db = useD1()
+  const db = useD1(event)
 
   // Only allowlisted fields can be updated
   const allowed = ['title', 'platform', 'year', 'genre', 'developer', 'publisher', 'series',
