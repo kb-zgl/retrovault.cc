@@ -36,5 +36,8 @@ definePageMeta({
 })
 
 const { adminFetch } = useAdmin()
-const { data: stats, pending, error } = useAsyncData('admin-stats', () => adminFetch('/api/admin/stats'))
+const { data: stats, pending, error } = useAsyncData('admin-stats', () => adminFetch('/api/admin/stats'), {
+  server: false,
+  lazy: true,
+})
 </script>

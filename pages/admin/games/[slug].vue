@@ -156,7 +156,8 @@ const localeForm = reactive({
 
 // Load game data
 const { data: game, pending, error } = useAsyncData(`admin-game-${slug}`, () =>
-  adminFetch(`/api/admin/games/${slug}`)
+  adminFetch(`/api/admin/games/${slug}`),
+  { server: false, lazy: true }
 )
 
 watch(game, (g) => {

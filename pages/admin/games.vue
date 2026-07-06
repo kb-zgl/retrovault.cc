@@ -108,7 +108,7 @@ const { pending, error, refresh } = useAsyncData('admin-games', () =>
     filterOptions.value = r.filters
     return r
   })
-, { watch: [page] })
+, { watch: [page], server: false, lazy: true })
 
 async function load() { await refresh() }
 
