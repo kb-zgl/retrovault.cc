@@ -226,7 +226,7 @@ function addTag() {
   newTag.value = ''
 }
 
-const coverInput = ref<HTMLInputElement | null>(null)
+const coverInput = ref(null)
 const coverPreview = ref('')
 const uploading = ref(false)
 
