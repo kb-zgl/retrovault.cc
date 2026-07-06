@@ -9,7 +9,11 @@
     <template v-else>
       <!-- Header -->
       <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px">
-        <img v-if="game.coverUrl" :src="game.coverUrl" alt="" style="width:60px;height:60px;border-radius:var(--radius-sm);object-fit:cover;border:1px solid var(--color-border)">
+        <div style="position:relative;width:60px;height:60px;flex-shrink:0">
+          <img v-if="coverPreview || game.coverUrl" :src="coverPreview || game.coverUrl" alt="" style="width:60px;height:60px;border-radius:var(--radius-sm);object-fit:cover;border:1px solid var(--color-border)">
+          <button @click="triggerCoverUpload" class="btn-pixel" style="position:absolute;bottom:-6px;right:-6px;padding:2px 6px;font-size:0.5rem;line-height:1">📷</button>
+          <input ref="coverInput" type="file" accept="image/*" style="display:none" @change="uploadCover" />
+        </div>
         <div>
           <h1 style="font-size:1.1rem;font-weight:700;color:var(--color-text-primary)">{{ game.title }}</h1>
           <div style="font-size:0.75rem;color:var(--color-text-muted)">{{ game.slug }} · {{ game.platform }} · {{ game.year }}</div>
@@ -183,6 +187,39 @@ function addTag() {
   const t = newTag.value.trim()
   if (t && !form.tags.includes(t)) form.tags.push(t)
   newTag.value = ''
+}
+
+const coverInput = ref<HTMLInputElement | null>(null)
+const coverPreview = ref('')
+const uploading = ref(false)
+
+function triggerCoverUpload() {
+  coverInput.value?.click()
+}
+
+async function uploadCover(event: any) {
+  const file = event.target?.files?.[0]
+  if (!file) return
+
+  uploading.value = true
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const token = localStorage.getItem('app-token')
+    const res = await $fetch(`/api/admin/upload/cover?slug=${slug}`, {
+      method: 'POST',
+      body: formData,
+      headers: { authorization: token ? `Bearer ${token}` : '' },
+    })
+    coverPreview.value = res.coverUrl
+    saveSuccess.value = true
+    setTimeout(() => { saveSuccess.value = false }, 3000)
+  } catch (e: any) {
+    saveError.value = 'Cover upload failed: ' + (e.message || 'Unknown error')
+  } finally {
+    uploading.value = false
+  }
 }
 
 async function save() {
