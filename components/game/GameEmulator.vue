@@ -49,7 +49,7 @@ const pendingStateResolve = ref<((value: ArrayBuffer | null) => void) | null>(nu
 
 // ---------- 构建 iframe URL ----------
 const iframeSrc = computed(() => {
-  const base = '/frame.html' // 确保这里与你实际的文件名一致
+  const base = '/emulator.html' // 确保这里与你实际的文件名一致
   const params = new URLSearchParams({
     core: props.game.ejs.core,
     gameUrl: '/' + props.game.defaultRom, // 确保这个路径可以在 iframe 所在的域被跨域访问
