@@ -4,7 +4,7 @@
 
     <div v-if="pending" class="skeleton" style="height:400px;border-radius:var(--radius-md)" />
 
-    <div v-else-if="error" style="color:var(--color-accent);padding:20px;text-align:center">Failed to load game: {{ error.message }}</div>
+    <div v-else-if="error && slug !== '__new__'" style="color:var(--color-accent);padding:20px;text-align:center">Failed to load game: {{ error.message }}</div>
 
     <template v-else>
       <!-- Header -->

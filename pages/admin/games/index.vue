@@ -12,6 +12,7 @@
           <option v-for="s in filterOptions.statuses" :key="s" :value="s">{{ s }}</option>
         </select>
         <input v-model="filter.search" @input="debouncedLoad" placeholder="Search..." style="padding:6px 12px;border-radius:var(--radius-sm);background:var(--color-bg-surface);border:1px solid var(--color-border);color:var(--color-text-primary);width:200px">
+        <button @click="createGame" class="btn-pixel-green" style="padding:6px 16px;font-size:0.7rem">+ New</button>
       </div>
     </div>
 
@@ -122,6 +123,12 @@ const { pending, error, refresh } = useAsyncData('admin-games', () =>
 const router = useRouter()
 function goGame(slug) {
   router.push(`/admin/games/${slug}`)
+}
+function createGame() {
+  const name = prompt('Enter game slug (e.g. my-new-game):')
+  if (name && name.trim()) {
+    router.push(`/admin/games/${name.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-')}`)
+  }
 }
 
 async function load() { await refresh() }

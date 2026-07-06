@@ -1,19 +1,42 @@
 import { requireAdmin } from '../../../utils/admin'
 import { useD1 } from '../../../utils/d1'
+import { sqlOne } from '../../../utils/d1'
 
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)
   const { slug } = getRouterParams(event)
   const body = await readBody(event)
-
   const now = new Date().toISOString()
   const db = useD1(event)
 
-  // Only allowlisted fields can be updated
+  // Allowed fields
   const allowed = ['title', 'platform', 'year', 'genre', 'developer', 'publisher', 'series',
     'isHack', 'language', 'coverUrl', 'imageUrl', 'defaultRom', 'ejsCore', 'ejsBiosUrl',
     'tags', 'description', 'langs', 'roms', 'status', 'source']
 
+  // Check if game exists
+  const existing = await sqlOne(event, 'SELECT slug FROM games WHERE slug = ?', slug)
+  const isNew = !existing
+
+  if (isNew) {
+    // INSERT new game
+    const fields = ['slug', 'createdAt', 'updatedAt']
+    const placeholders = ['?', '?', '?']
+    const vals = [slug, now, now]
+
+    for (const key of allowed) {
+      if (body[key] !== undefined) {
+        fields.push(key)
+        placeholders.push('?')
+        vals.push(typeof body[key] === 'object' ? JSON.stringify(body[key]) : body[key])
+      }
+    }
+
+    await db.prepare(`INSERT INTO games (${fields.join(',')}) VALUES (${placeholders.join(',')})`).bind(...vals).run()
+    return { success: true, slug, isNew: true }
+  }
+
+  // UPDATE existing game
   const updates: string[] = []
   const values: any[] = []
 
@@ -30,8 +53,6 @@ export default defineEventHandler(async (event) => {
   values.push(now)
   values.push(slug)
 
-  const stmt = db.prepare(`UPDATE games SET ${updates.join(', ')} WHERE slug = ?`)
-  await stmt.bind(...values).run()
-
-  return { success: true, slug }
+  await db.prepare(`UPDATE games SET ${updates.join(', ')} WHERE slug = ?`).bind(...values).run()
+  return { success: true, slug, isNew: false }
 })
