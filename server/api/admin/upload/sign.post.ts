@@ -24,12 +24,19 @@ export default defineEventHandler(async (event) => {
   const ext = EXT_MAP[mimeType] || 'png'
   const key = `covers/${slug}.${ext}`
 
-  const env = getEnv(event)
-  const bucket = env.CDN
-  const isProduction = !!(event.context as any)?.cloudflare?.env?.R2_PUBLIC_URL
+  // Try to get CF bindings — fall back to proxy if unavailable (local dev)
+  let bucket: any
+  let env: any
+  try {
+    env = getEnv(event)
+    bucket = env.CDN
+  } catch {
+    return { mode: 'proxy', uploadUrl: '/api/upload', key }
+  }
+
+  const isProduction = !!env.R2_PUBLIC_URL
 
   if (!isProduction) {
-    // Local dev — client uploads via proxy
     return { mode: 'proxy', uploadUrl: '/api/upload', key }
   }
 
@@ -42,7 +49,6 @@ export default defineEventHandler(async (event) => {
     const publicUrl = `${env.R2_PUBLIC_URL.replace(/\/+$/, '')}/${key}`
     return { mode: 'direct', uploadUrl, publicUrl, key }
   } catch {
-    // Mock R2 doesn't support createSignedUrl — fall back to proxy
     return { mode: 'proxy', uploadUrl: '/api/upload', key }
   }
 })
