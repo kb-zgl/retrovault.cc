@@ -129,7 +129,7 @@
       <div class="card" style="padding:24px">
         <div style="display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--color-border);padding-bottom:8px">
           <button v-for="lang in availableLangs" :key="lang"
-            @click="activeLang = lang"
+            @click="switchLang(lang)"
             :style="{
               padding: '6px 16px',
               borderRadius: 'var(--radius-sm) var(--radius-sm) 0 0',
@@ -174,7 +174,8 @@
 <script setup>
 definePageMeta({
   layout: 'admin',
-  middleware: ['admin-auth']
+  middleware: ['admin-auth'],
+  pageTransition: false,
 })
 
 const route = useRoute()
@@ -238,7 +239,17 @@ watch(game, (g) => {
   syncLocaleForm()
 }, { immediate: true })
 
-watch(activeLang, () => syncLocaleForm())
+function switchLang(lang) {
+  // Save current tab edits before switching
+  form.langs[activeLang.value] = {
+    title: localeForm.title || undefined,
+    description: localeForm.description || undefined,
+    longDesc: localeForm.longDesc.filter(p => p.trim()) || undefined,
+    controls: localeForm.controls || undefined,
+  }
+  activeLang.value = lang
+  syncLocaleForm()
+}
 
 function syncLocaleForm() {
   const l = form.langs[activeLang.value] || {}
