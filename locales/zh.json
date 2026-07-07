@@ -80,7 +80,12 @@
     "login": "🔑 登录",
     "about": "📖 关于我们",
     "privacy": "🔒 隐私政策",
-    "guestbook": "💬 留言板"
+    "guestbook": "💬 留言板",
+    "tagline": "经典游戏档案馆",
+    "stats": "{games} 款游戏 · {platforms} 个平台",
+    "platforms": "平台",
+    "disclaimer": "本站所有游戏 ROM 仅供存档和教育目的。如果您是版权所有者并希望移除任何内容，请联系我们。",
+    "poweredBy": "技术支持：{tech}"
   },
   "about": {
     "title": "ℹ️ 关于",

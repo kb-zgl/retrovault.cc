@@ -10,21 +10,7 @@
       </main>
 
       <!-- Footer -->
-      <div class="footer">
-        <div class="footer-top">
-          <div class="pixel-counter">
-            <span class="dot"></span>
-            <span>{{ t('footer.playersOnline', { count: onlineCount }) }}</span>
-          </div>
-        </div>
-        <div class="footer-links">
-          <button class="link-btn" @click="authAction">
-            {{ isLoggedIn ? '👤 ' + user?.username : t('footer.login') }}
-          </button>
-          <NuxtLink class="link-btn" :to="localePath('/about')">{{ t('footer.about') }}</NuxtLink>
-          <NuxtLink class="link-btn" :to="localePath('/privacy')">{{ t('footer.privacy') }}</NuxtLink>
-        </div>
-      </div>
+      <AppFooter />
     </div>
 
     <!-- Global emulator overlay (app-level, survives page navigation) -->
@@ -69,18 +55,10 @@ useHead({
 
 useKeyboardShortcuts()
 
-const { t } = useAppI18n()
-const { localePath } = useLocalePath()
-
-const { isLoggedIn, user, login, logout, handleUrlToken, showAuthModal } = useAuth()
+const { handleUrlToken, showAuthModal } = useAuth()
 
 // 恢复 localStorage 中的认证令牌
 handleUrlToken()
-
-function authAction() {
-  if (isLoggedIn.value) logout()
-  else login()
-}
 
 // Global game engine state
 const engine = useGameEngine()
@@ -94,6 +72,4 @@ function closeEmulator() {
   engine.closeGame()
 }
 
-// Footer: online count
-const onlineCount = Math.floor(Math.random() * 50) + 32
 </script>

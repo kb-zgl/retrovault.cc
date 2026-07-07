@@ -12,7 +12,7 @@ type TranslationKey =
   | `news.${'title' | 'badge'}`
   | `privacy.${'title' | 'badge'}`
   | `fab.${'nowPlaying' | 'playing' | 'random' | 'queue' | 'history' | 'resume' | 'pause' | 'quickPlay' | 'emptyQueue'}`
-  | `footer.${'playersOnline' | 'login' | 'about' | 'privacy' | 'guestbook'}`
+  | `footer.${'playersOnline' | 'login' | 'about' | 'privacy' | 'guestbook' | 'tagline' | 'stats' | 'platforms' | 'disclaimer' | 'poweredBy'}`
   | `auth.${'login' | 'logout' | 'magicLink' | 'header' | 'desc' | 'emailPlaceholder' | 'sendLink' | 'sending' | 'linkSentTo' | 'checkInbox' | 'useDifferentEmail' | 'invalidEmail' | 'genericError' | 'username'}`
   | `theme.${'light' | 'dark'}`
   | `common.${'loading' | 'error' | 'notFound' | 'notFoundDesc'}`

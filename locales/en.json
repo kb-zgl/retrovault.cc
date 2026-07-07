@@ -80,7 +80,12 @@
     "login": "🔑 Login",
     "about": "📖 About",
     "privacy": "🔒 Privacy",
-    "guestbook": "💬 Guestbook"
+    "guestbook": "💬 Guestbook",
+    "tagline": "Classic Game Archive",
+    "stats": "{games} games · {platforms} platforms",
+    "platforms": "Platforms",
+    "disclaimer": "All game ROMs are provided for archival and educational purposes. If you are a copyright holder and wish for content to be removed, please contact us.",
+    "poweredBy": "Powered by {tech}"
   },
   "about": {
     "title": "ℹ️ About",
