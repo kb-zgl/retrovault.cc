@@ -160,10 +160,7 @@
             <button @click="localeForm.longDesc.push('')" class="btn-pixel" style="padding:4px 12px;font-size:0.65rem">+ Add paragraph</button>
           </FormField>
           <FormField label="Controls">
-            <div v-for="(val, key) in localeForm.controls" :key="key" style="display:flex;gap:8px;margin-bottom:6px;align-items:center">
-              <span style="font-size:0.7rem;color:var(--color-text-secondary);min-width:60px">{{ key }}</span>
-              <input v-model="localeForm.controls[key]" class="form-input" style="flex:1" />
-            </div>
+            <textarea v-model="controlsText" class="form-input" rows="5" placeholder="D-Pad: Move&#10;A: Jump&#10;B: Run&#10;Start: Pause"></textarea>
           </FormField>
         </section>
       </div>
@@ -206,8 +203,9 @@ const form = reactive({
 
 // PART 2: Active language content
 const localeForm = reactive({
-  title: '', description: '', longDesc: [], controls: { 'D-Pad': '', 'A': '', 'B': '', 'Start': '' }
+  title: '', description: '', longDesc: []
 })
+const controlsText = ref('')
 
 // Load game data
 const { data: game, pending, error } = useAsyncData(`admin-game-${slug}`, () =>
@@ -245,7 +243,7 @@ function switchLang(lang) {
     title: localeForm.title || undefined,
     description: localeForm.description || undefined,
     longDesc: localeForm.longDesc.filter(p => p.trim()) || undefined,
-    controls: localeForm.controls || undefined,
+    controls: textToControls(controlsText.value) || undefined,
   }
   activeLang.value = lang
   syncLocaleForm()
@@ -256,7 +254,29 @@ function syncLocaleForm() {
   localeForm.title = l.title || ''
   localeForm.description = l.description || ''
   localeForm.longDesc = Array.isArray(l.longDesc) ? l.longDesc : []
-  localeForm.controls = (l.controls && typeof l.controls === 'object') ? l.controls : { 'D-Pad': '', 'A': '', 'B': '', 'Start': '' }
+  controlsText.value = controlsToText(l.controls)
+}
+
+function controlsToText(controls) {
+  if (!controls || typeof controls !== 'object') return ''
+  return Object.entries(controls)
+    .filter(([, v]) => v)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join('\n')
+}
+
+function textToControls(text) {
+  if (!text || !text.trim()) return {}
+  const obj = {}
+  text.trim().split('\n').forEach(line => {
+    const idx = line.indexOf(':')
+    if (idx > 0) {
+      const key = line.slice(0, idx).trim()
+      const val = line.slice(idx + 1).trim()
+      if (key && val) obj[key] = val
+    }
+  })
+  return obj
 }
 
 function addTag() {
@@ -340,7 +360,7 @@ async function save() {
     title: localeForm.title || undefined,
     description: localeForm.description || undefined,
     longDesc: localeForm.longDesc.filter(p => p.trim()) || undefined,
-    controls: localeForm.controls || undefined,
+    controls: textToControls(controlsText.value) || undefined,
   }
 
   try {
