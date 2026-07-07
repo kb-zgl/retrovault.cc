@@ -4,19 +4,19 @@
 
     <div v-if="pending" class="skeleton" style="height:400px;border-radius:var(--radius-md)" />
 
-    <div v-else-if="error && slug !== '__new__'" style="color:var(--color-accent);padding:20px;text-align:center">Failed to load game: {{ error.message }}</div>
+    <div v-else-if="error && rawSlug !== '__new__'" style="color:var(--color-accent);padding:20px;text-align:center">Failed to load game: {{ error.message }}</div>
 
     <template v-else>
       <!-- Header -->
       <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px">
         <div style="position:relative;width:60px;height:60px;flex-shrink:0">
-          <img v-if="coverPreview || game.coverUrl" :src="coverPreview || game.coverUrl" alt="" style="width:60px;height:60px;border-radius:var(--radius-sm);object-fit:cover;border:1px solid var(--color-border)">
+          <img v-if="coverPreview || form.coverUrl" :src="coverPreview || form.coverUrl" alt="" style="width:60px;height:60px;border-radius:var(--radius-sm);object-fit:cover;border:1px solid var(--color-border)">
           <button @click="triggerCoverUpload" class="btn-pixel" style="position:absolute;bottom:-6px;right:-6px;padding:2px 6px;font-size:0.5rem;line-height:1">📷</button>
           <input ref="coverInput" type="file" accept="image/*" style="display:none" @change="uploadCover" />
         </div>
         <div>
-          <h1 style="font-size:1.1rem;font-weight:700;color:var(--color-text-primary)">{{ game.title }}</h1>
-          <div style="font-size:0.75rem;color:var(--color-text-muted)">{{ game.slug }} · {{ game.platform }} · {{ game.year }}</div>
+          <h1 style="font-size:1.1rem;font-weight:700;color:var(--color-text-primary)">{{ form.title || 'New Game' }}</h1>
+          <div v-if="form.slug" style="font-size:0.75rem;color:var(--color-text-muted)">{{ form.slug }} · {{ form.platform }} · {{ form.year }}</div>
         </div>
         <div style="margin-left:auto;display:flex;gap:8px">
           <button @click="showJsonImport = !showJsonImport" class="btn-pixel" style="padding:8px 16px;font-size:0.7rem">
@@ -48,6 +48,9 @@
       <div class="card-static" style="padding:24px;margin-bottom:24px">
         <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin-bottom:16px">General Info</h3>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+          <FormField label="Slug" :required="isNew">
+            <input v-model="form.slug" class="form-input" :readonly="!isNew" :style="!isNew ? 'opacity:0.6' : ''" placeholder="my-game-slug" />
+          </FormField>
           <FormField label="Title (EN)" required>
             <input v-model="form.title" class="form-input" />
           </FormField>
@@ -176,8 +179,10 @@ definePageMeta({
 })
 
 const route = useRoute()
+const router = useRouter()
 const { adminFetch } = useAdmin()
-const slug = route.params.slug
+const rawSlug = route.params.slug
+const isNew = computed(() => rawSlug === '__new__')
 
 const availableLangs = ['en', 'zh', 'ja']
 const langLabels = { en: 'English', zh: '中文', ja: '日本語' }
@@ -193,7 +198,7 @@ const jsonError = ref('')
 
 // PART 1: Public fields (not language-specific)
 const form = reactive({
-  title: '', platform: '', year: null, genre: '', developer: '', publisher: '', series: '',
+  slug: '', title: '', platform: '', year: null, genre: '', developer: '', publisher: '', series: '',
   isHack: 0, language: '', tags: [],
   defaultRom: '', ejsCore: '', ejsBiosUrl: '',
   coverUrl: '', imageUrl: '',
@@ -208,13 +213,14 @@ const localeForm = reactive({
 const controlsText = ref('')
 
 // Load game data
-const { data: game, pending, error } = useAsyncData(`admin-game-${slug}`, () =>
-  adminFetch(`/api/admin/games/${slug}`),
+const { data: game, pending, error } = useAsyncData(`admin-game-${rawSlug}`, () =>
+  adminFetch(`/api/admin/games/${rawSlug}`),
   { server: false, lazy: true }
 )
 
 watch(game, (g) => {
   if (!g) return
+  form.slug = g.slug || ''
   form.title = g.title || ''
   form.platform = g.platform || ''
   form.year = g.year || null
@@ -292,7 +298,7 @@ function parseJsonImport() {
 
     // Map JSON fields to form
     const fieldMap = {
-      title: 'title', platform: 'platform', year: 'year',
+      slug: 'slug', title: 'title', platform: 'platform', year: 'year',
       genre: 'genre', developer: 'developer', publisher: 'publisher',
       series: 'series', language: 'language',
       defaultRom: 'defaultRom', ejsCore: 'ejsCore', ejsBiosUrl: 'ejsBiosUrl',
@@ -338,7 +344,7 @@ async function uploadCover(event) {
     const formData = new FormData()
     formData.append('file', file)
     const token = localStorage.getItem('app-token')
-    const res = await $fetch(`/api/admin/upload/cover?slug=${slug}`, {
+    const res = await $fetch(`/api/admin/upload/cover?slug=${rawSlug}`, {
       method: 'POST', body: formData,
       headers: { authorization: token ? `Bearer ${token}` : '' },
     })
@@ -364,19 +370,21 @@ async function save() {
   }
 
   try {
-    await adminFetch(`/api/admin/games/${slug}`, {
-      method: 'PUT',
-      body: {
-        title: form.title, platform: form.platform, year: form.year,
-        genre: form.genre, developer: form.developer, publisher: form.publisher,
-        series: form.series, isHack: form.isHack, language: form.language,
-        tags: form.tags, langs: form.langs,
-        defaultRom: form.defaultRom, ejsCore: form.ejsCore, ejsBiosUrl: form.ejsBiosUrl,
-        coverUrl: form.coverUrl, imageUrl: form.imageUrl,
-        description: form.description, source: form.source, status: form.status,
-      }
-    })
+    const body = {
+      slug: form.slug, title: form.title, platform: form.platform, year: form.year,
+      genre: form.genre, developer: form.developer, publisher: form.publisher,
+      series: form.series, isHack: form.isHack, language: form.language,
+      tags: form.tags, langs: form.langs,
+      defaultRom: form.defaultRom, ejsCore: form.ejsCore, ejsBiosUrl: form.ejsBiosUrl,
+      coverUrl: form.coverUrl, imageUrl: form.imageUrl,
+      description: form.description, source: form.source, status: form.status,
+    }
+    await adminFetch(`/api/admin/games/${rawSlug}`, { method: 'PUT', body })
     saveSuccess.value = true
+    // Redirect to proper slug after creating a new game
+    if (isNew.value && form.slug) {
+      router.replace(`/admin/games/${form.slug}`)
+    }
     setTimeout(() => { saveSuccess.value = false }, 3000)
   } catch (e) {
     saveError.value = e.message || 'Save failed'

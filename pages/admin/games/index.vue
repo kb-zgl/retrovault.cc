@@ -126,10 +126,7 @@ function goGame(slug) {
   router.push(`/admin/games/${slug}`)
 }
 function createGame() {
-  const name = prompt('Enter game slug (e.g. my-new-game):')
-  if (name && name.trim()) {
-    router.push(`/admin/games/${name.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-')}`)
-  }
+  router.push('/admin/games/__new__')
 }
 
 async function load() { await refresh() }
