@@ -9,7 +9,7 @@
     <template v-else>
       <!-- Header -->
       <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px">
-        <div style="position:relative;width:120px;height:120px;flex-shrink:0;border-radius:var(--radius-md);border:2px dashed var(--color-border);overflow:hidden;cursor:pointer;background:var(--color-bg-elevated)" @click="triggerCoverUpload">
+        <div style="position:relative;width:375px;height:518px;flex-shrink:0;border-radius:var(--radius-md);border:2px dashed var(--color-border);overflow:hidden;cursor:pointer;background:var(--color-bg-elevated)" @click="triggerCoverUpload">
           <img v-if="coverPreview || form.coverUrl" :src="coverPreview || form.coverUrl" alt="" style="width:100%;height:100%;object-fit:cover">
           <div v-else style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;font-size:0.65rem;color:var(--color-text-muted);gap:4px">
             <span style="font-size:1.5rem">🎮</span>
