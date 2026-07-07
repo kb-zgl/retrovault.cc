@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 style="font-size:1.2rem;font-weight:700;color:var(--color-text-primary);margin-bottom:24px">Dashboard</h1>
+    <h1 style="font-size:1.2rem;font-weight:700;color:var(--color-text-primary);margin-bottom:24px">控制台</h1>
 
     <div v-if="pending && !stats" class="flex gap-4">
       <div v-for="i in 4" :key="i" class="skeleton" style="flex:1;height:100px;border-radius:var(--radius-md)" />
@@ -8,24 +8,24 @@
 
     <div v-else-if="stats" class="stats-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:32px">
       <NuxtLink to="/admin/games" class="card-static" style="padding:20px;text-decoration:none;display:block;cursor:pointer">
-        <div style="font-size:0.7rem;color:var(--color-text-secondary);margin-bottom:8px">Total Games</div>
+        <div style="font-size:0.7rem;color:var(--color-text-secondary);margin-bottom:8px">游戏总数</div>
         <div style="font-size:1.8rem;font-weight:700;color:var(--color-text-primary)">{{ stats.total }}</div>
       </NuxtLink>
       <NuxtLink to="/admin/games?status=published" class="card-static" style="padding:20px;text-decoration:none;display:block;cursor:pointer">
-        <div style="font-size:0.7rem;color:var(--color-text-secondary);margin-bottom:8px">Published</div>
+        <div style="font-size:0.7rem;color:var(--color-text-secondary);margin-bottom:8px">已发布</div>
         <div style="font-size:1.8rem;font-weight:700;color:var(--color-success)">{{ stats.published }}</div>
       </NuxtLink>
       <NuxtLink to="/admin/games?status=draft" class="card-static" style="padding:20px;text-decoration:none;display:block;cursor:pointer">
-        <div style="font-size:0.7rem;color:var(--color-text-secondary);margin-bottom:8px">Drafts</div>
+        <div style="font-size:0.7rem;color:var(--color-text-secondary);margin-bottom:8px">草稿</div>
         <div style="font-size:1.8rem;font-weight:700;color:var(--color-warning)">{{ stats.draft }}</div>
       </NuxtLink>
       <NuxtLink to="/admin/games?status=published" class="card-static" style="padding:20px;text-decoration:none;display:block;cursor:pointer">
-        <div style="font-size:0.7rem;color:var(--color-text-secondary);margin-bottom:8px">With 中文</div>
+        <div style="font-size:0.7rem;color:var(--color-text-secondary);margin-bottom:8px">含中文</div>
         <div style="font-size:1.8rem;font-weight:700;color:var(--color-accent-secondary)">{{ stats.withZh }}</div>
       </NuxtLink>
     </div>
 
-    <div v-if="error" style="color:var(--color-accent);font-size:0.85rem;padding:12px">Failed to load stats: {{ error?.message || error }}</div>
+    <div v-if="error" style="color:var(--color-accent);font-size:0.85rem;padding:12px">统计数据加载失败：{{ error?.message || error }}</div>
   </div>
 </template>
 

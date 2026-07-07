@@ -1,10 +1,10 @@
 <template>
   <div>
-    <NuxtLink to="/admin/games" style="color:var(--color-text-secondary);font-size:0.8rem;text-decoration:none;display:inline-block;margin-bottom:16px">← Back to Games</NuxtLink>
+    <NuxtLink to="/admin/games" style="color:var(--color-text-secondary);font-size:0.8rem;text-decoration:none;display:inline-block;margin-bottom:16px">← 返回游戏列表</NuxtLink>
 
     <div v-if="pending" class="skeleton" style="height:400px;border-radius:var(--radius-md)" />
 
-    <div v-else-if="error && rawSlug !== '__new__'" style="color:var(--color-accent);padding:20px;text-align:center">Failed to load game: {{ error.message }}</div>
+    <div v-else-if="error && rawSlug !== '__new__'" style="color:var(--color-accent);padding:20px;text-align:center">游戏加载失败：{{ error.message }}</div>
 
     <template v-else>
       <!-- Header -->
@@ -13,12 +13,12 @@
           <img v-if="coverPreview || form.coverUrl" :src="coverPreview || form.coverUrl" alt="" style="width:100%;height:100%;object-fit:cover">
           <div v-else style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;font-size:0.65rem;color:var(--color-text-muted);gap:4px">
             <span style="font-size:1.5rem">🎮</span>
-            <span>Click to add cover</span>
+            <span>点击上传封面</span>
           </div>
           <input ref="coverInput" type="file" accept="image/*" style="display:none" @change="uploadCover" />
         </div>
         <div>
-          <h1 style="font-size:1.1rem;font-weight:700;color:var(--color-text-primary)">{{ localeForm.title || form.slug || 'New Game' }}</h1>
+          <h1 style="font-size:1.1rem;font-weight:700;color:var(--color-text-primary)">{{ localeForm.title || form.slug || '新建游戏' }}</h1>
           <div v-if="form.slug" style="font-size:0.75rem;color:var(--color-text-muted)">{{ form.slug }} · {{ form.platform }} · {{ form.year }}</div>
         </div>
         <div style="margin-left:auto;display:flex;gap:8px">
@@ -26,7 +26,7 @@
             📥 JSON
           </button>
           <button @click="save" :disabled="saving" class="btn-pixel-green" style="padding:8px 20px;font-size:0.75rem">
-            {{ saving ? 'Saving...' : 'Save' }}
+            {{ saving ? '保存中...' : '保存' }}
           </button>
         </div>
       </div>
@@ -34,95 +34,94 @@
       <!-- JSON Quick Import -->
       <div v-if="showJsonImport" class="card-static" style="padding:16px;margin-bottom:20px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <h3 style="font-size:0.8rem;font-weight:600;color:var(--color-text-primary)">Quick Import JSON</h3>
-          <button @click="parseJsonImport" class="btn-pixel-green" style="padding:4px 12px;font-size:0.65rem">Parse & Fill</button>
+          <h3 style="font-size:0.8rem;font-weight:600;color:var(--color-text-primary)">快速导入 JSON</h3>
+          <button @click="parseJsonImport" class="btn-pixel-green" style="padding:4px 12px;font-size:0.65rem">解析并填充</button>
         </div>
-        <textarea v-model="jsonImportText" class="form-input" rows="8" placeholder='Paste game JSON here...&#10;&#10;{\n  "title": "...",\n  "platform": "NES",\n  ...}'></textarea>
+        <textarea v-model="jsonImportText" class="form-input" rows="8" placeholder='在此粘贴游戏 JSON...&#10;&#10;{\n  "title": "...",\n  "platform": "NES",\n  ...}'></textarea>
         <div v-if="jsonError" style="color:var(--color-accent);font-size:0.7rem;margin-top:4px">{{ jsonError }}</div>
         <div style="font-size:0.65rem;color:var(--color-text-muted);margin-top:4px">JSON 字段会自动映射到表单，确认后手动保存</div>
       </div>
 
-      <div v-if="saveSuccess" class="badge-green" style="margin-bottom:16px;padding:8px 16px">Saved successfully</div>
-      <div v-if="saveError" class="badge-pink" style="margin-bottom:16px;padding:8px 16px">Save failed: {{ saveError }}</div>
+      <div v-if="saveSuccess" class="badge-green" style="margin-bottom:16px;padding:8px 16px">保存成功</div>
+      <div v-if="saveError" class="badge-pink" style="margin-bottom:16px;padding:8px 16px">保存失败：{{ saveError }}</div>
 
       <!-- ════════════════════════════════════════════════
            PART 1: Public Fields (language-independent)
            ════════════════════════════════════════════════ -->
       <div class="card-static" style="padding:24px;margin-bottom:24px">
-        <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin-bottom:16px">General Info</h3>
+        <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin-bottom:16px">基本信息</h3>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
-          <FormField label="Slug" :required="isNew">
+          <FormField label="标识" :required="isNew">
             <input v-model="form.slug" class="form-input" :readonly="!isNew" :style="!isNew ? 'opacity:0.6' : ''" placeholder="my-game-slug" />
           </FormField>
-          <FormField label="Platform" required>
+          <FormField label="平台" required>
             <input v-model="form.platform" class="form-input" />
           </FormField>
-          <FormField label="Year">
+          <FormField label="年份">
             <input v-model.number="form.year" type="number" class="form-input" />
           </FormField>
-          <FormField label="Genre">
+          <FormField label="类型">
             <input v-model="form.genre" class="form-input" />
           </FormField>
-          <FormField label="Developer">
+          <FormField label="开发商">
             <input v-model="form.developer" class="form-input" />
           </FormField>
-          <FormField label="Publisher">
+          <FormField label="发行商">
             <input v-model="form.publisher" class="form-input" />
           </FormField>
-          <FormField label="Series">
+          <FormField label="系列">
             <input v-model="form.series" class="form-input" />
           </FormField>
-          <FormField label="Language">
-            <input v-model="form.language" class="form-input" placeholder="English" />
+          <FormField label="语言">
+            <input v-model="form.language" class="form-input" placeholder="英语" />
           </FormField>
-          <FormField label="Source">
-            <input v-model="form.source" class="form-input" placeholder="scraped / manual" />
+          <FormField label="来源">
+            <input v-model="form.source" class="form-input" placeholder="抓取 / 手动" />
           </FormField>
-          <FormField label="Is Hack">
+          <FormField label="是否改版">
             <select v-model="form.isHack" class="form-input">
-              <option :value="0">No</option>
-              <option :value="1">Yes</option>
+              <option :value="0">否</option>
+              <option :value="1">是</option>
             </select>
           </FormField>
-          <FormField label="Status">
+          <FormField label="状态">
             <select v-model="form.status" class="form-input">
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
+              <option value="draft">草稿</option>
+              <option value="published">已发布</option>
             </select>
           </FormField>
         </div>
 
-        <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin:20px 0 12px">Emulator & Files</h3>
+        <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin:20px 0 12px">模拟器与文件</h3>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
-          <FormField label="ROM Path">
+          <FormField label="ROM 路径">
             <input v-model="form.defaultRom" class="form-input" placeholder="roms/nes/xxx.nes" />
           </FormField>
-          <FormField label="EJS Core">
+          <FormField label="模拟器核心">
             <input v-model="form.ejsCore" class="form-input" placeholder="nes / snes / gba" />
           </FormField>
-          <FormField label="BIOS URL">
+          <FormField label="BIOS 地址">
             <input v-model="form.ejsBiosUrl" class="form-input" />
           </FormField>
-          <FormField label="Cover URL">
+          <FormField label="封面地址">
             <input v-model="form.coverUrl" class="form-input" />
           </FormField>
-          <FormField label="Original Image URL">
+          <FormField label="原图地址">
             <input v-model="form.imageUrl" class="form-input" />
           </FormField>
         </div>
 
-        <!-- English Description -->
-        <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin:20px 0 12px">English Description</h3>
-        <textarea v-model="form.description" class="form-input" rows="3" placeholder="Short description in English"></textarea>
+        <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin:20px 0 12px">英文描述</h3>
+        <textarea v-model="form.description" class="form-input" rows="3" placeholder="英文简短描述"></textarea>
 
         <!-- Tags -->
-        <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin:20px 0 12px">Tags</h3>
+        <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin:20px 0 12px">标签</h3>
         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
           <span v-for="(tag, i) in form.tags" :key="i" class="badge-pink" style="font-size:0.65rem;padding:4px 10px;cursor:pointer" @click="form.tags.splice(i, 1)">{{ tag }} ✕</span>
         </div>
         <div style="display:flex;gap:8px">
-          <input v-model="newTag" @keydown.enter.prevent="addTag" placeholder="Type tag and Enter" class="form-input" style="flex:1" />
-          <button @click="addTag" class="btn-pixel" style="padding:4px 16px;font-size:0.7rem">Add</button>
+          <input v-model="newTag" @keydown.enter.prevent="addTag" placeholder="输入标签后回车" class="form-input" style="flex:1" />
+          <button @click="addTag" class="btn-pixel" style="padding:4px 16px;font-size:0.7rem">添加</button>
         </div>
       </div>
 
@@ -148,22 +147,22 @@
         </div>
 
         <section>
-          <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin-bottom:12px">{{ langLabels[activeLang] }} Content</h3>
-          <FormField :label="'Title (' + activeLang.toUpperCase() + ')'">
-            <input v-model="localeForm.title" class="form-input" :placeholder="activeLang === 'en' ? form.title : ''" />
+          <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin-bottom:12px">{{ langLabels[activeLang] }} 内容</h3>
+          <FormField label="标题">
+            <input v-model="localeForm.title" class="form-input" />
           </FormField>
-          <FormField label="Short Description">
+          <FormField label="简短描述">
             <textarea v-model="localeForm.description" class="form-input" rows="3" :placeholder="activeLang === 'en' ? form.description : ''"></textarea>
           </FormField>
-          <FormField label="Long Description">
+          <FormField label="详细描述">
             <div v-for="(para, i) in localeForm.longDesc" :key="i" style="display:flex;gap:8px;margin-bottom:8px">
               <textarea v-model="localeForm.longDesc[i]" class="form-input" rows="2" style="flex:1"></textarea>
               <button @click="localeForm.longDesc.splice(i, 1)" style="color:var(--color-accent);background:none;border:none;cursor:pointer;font-size:1rem">✕</button>
             </div>
-            <button @click="localeForm.longDesc.push('')" class="btn-pixel" style="padding:4px 12px;font-size:0.65rem">+ Add paragraph</button>
+            <button @click="localeForm.longDesc.push('')" class="btn-pixel" style="padding:4px 12px;font-size:0.65rem">+ 添加段落</button>
           </FormField>
-          <FormField label="Controls">
-            <textarea v-model="controlsText" class="form-input" rows="5" placeholder="D-Pad: Move&#10;A: Jump&#10;B: Run&#10;Start: Pause"></textarea>
+          <FormField label="操作说明">
+            <textarea v-model="controlsText" class="form-input" rows="5" placeholder="D-Pad: 方向&#10;A: 跳跃&#10;B: 攻击&#10;Start: 暂停"></textarea>
           </FormField>
         </section>
       </div>
@@ -185,7 +184,7 @@ const rawSlug = route.params.slug
 const isNew = computed(() => rawSlug === '__new__')
 
 const availableLangs = ['en', 'zh', 'ja']
-const langLabels = { en: 'English', zh: '中文', ja: '日本語' }
+const langLabels = { en: '英语', zh: '中文', ja: '日语' }
 const activeLang = ref('zh')
 
 const saving = ref(false)
@@ -325,7 +324,7 @@ function parseJsonImport() {
     showJsonImport.value = false
     jsonImportText.value = ''
   } catch (e) {
-    jsonError.value = 'Invalid JSON: ' + (e.message || 'parse error')
+    jsonError.value = 'JSON 格式错误：' + (e.message || '解析失败')
   }
 }
 
@@ -351,7 +350,7 @@ async function uploadCover(event) {
     saveSuccess.value = true
     setTimeout(() => { saveSuccess.value = false }, 3000)
   } catch (e) {
-    saveError.value = 'Cover upload failed: ' + ((e && e.message) || 'Unknown error')
+    saveError.value = '封面上传失败：' + ((e && e.message) || '未知错误')
   }
 }
 
@@ -386,7 +385,7 @@ async function save() {
     }
     setTimeout(() => { saveSuccess.value = false }, 3000)
   } catch (e) {
-    saveError.value = e.message || 'Save failed'
+    saveError.value = e.message || '保存失败'
   } finally {
     saving.value = false
   }

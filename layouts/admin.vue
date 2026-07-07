@@ -2,12 +2,12 @@
   <div class="admin-layout" style="background:var(--color-bg-base);min-height:100vh">
     <!-- Admin Nav -->
     <header class="admin-nav" style="background:var(--color-bg-elevated);border-bottom:1px solid var(--color-border);padding:12px 24px;display:flex;align-items:center;gap:24px">
-      <NuxtLink to="/admin" class="font-pixel" style="color:var(--color-accent);font-size:0.75rem;text-decoration:none">RetroVault Admin</NuxtLink>
+      <NuxtLink to="/admin" class="font-pixel" style="color:var(--color-accent);font-size:0.75rem;text-decoration:none">RetroVault 管理后台</NuxtLink>
       <nav style="display:flex;gap:16px;flex:1">
-        <NuxtLink to="/admin" class="font-body" :style="navStyle('/admin', true)">Dashboard</NuxtLink>
-        <NuxtLink to="/admin/games" class="font-body" :style="navStyle('/admin/games')">Games</NuxtLink>
+        <NuxtLink to="/admin" class="font-body" :style="navStyle('/admin', true)">控制台</NuxtLink>
+        <NuxtLink to="/admin/games" class="font-body" :style="navStyle('/admin/games')">游戏管理</NuxtLink>
       </nav>
-      <button @click="logout" class="font-body" style="color:var(--color-text-muted);font-size:0.75rem;background:none;border:none;cursor:pointer">Sign Out</button>
+      <button @click="logout" class="font-body" style="color:var(--color-text-muted);font-size:0.75rem;background:none;border:none;cursor:pointer">退出登录</button>
     </header>
 
     <!-- Main Content -->
