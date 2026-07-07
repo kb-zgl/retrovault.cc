@@ -58,7 +58,10 @@
             <SearchableSelect v-model="form.platform" :options="refData.platforms" placeholder="选择平台..." />
           </FormField>
           <FormField label="年份">
-            <input v-model.number="form.year" type="number" class="form-input" />
+            <select v-model.number="form.year" class="form-input">
+              <option value="">—</option>
+              <option v-for="y in yearOptions" :key="y" :value="y">{{ y }}</option>
+            </select>
           </FormField>
           <FormField label="类型">
             <SearchableSelect v-model="form.genre" :options="refData.genres" placeholder="选择类型..." />
@@ -110,9 +113,6 @@
             <input v-model="form.imageUrl" class="form-input" />
           </FormField>
         </div>
-
-        <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin:20px 0 12px">英文描述</h3>
-        <textarea v-model="form.description" class="form-input" rows="3" placeholder="英文简短描述"></textarea>
 
         <!-- Tags -->
         <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin:20px 0 12px">标签</h3>
@@ -189,6 +189,12 @@ const jsonImportText = ref('')
 const jsonError = ref('')
 
 const refData = getReferenceData('zh')
+
+const yearOptions = computed(() => {
+  const years: number[] = []
+  for (let y = new Date().getFullYear(); y >= 1970; y--) years.push(y)
+  return years
+})
 
 // PART 1: Public fields (not language-specific)
 const form = reactive({
