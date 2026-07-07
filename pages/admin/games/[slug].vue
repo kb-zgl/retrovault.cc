@@ -9,9 +9,12 @@
     <template v-else>
       <!-- Header -->
       <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px">
-        <div style="position:relative;width:60px;height:60px;flex-shrink:0">
-          <img v-if="coverPreview || form.coverUrl" :src="coverPreview || form.coverUrl" alt="" style="width:60px;height:60px;border-radius:var(--radius-sm);object-fit:cover;border:1px solid var(--color-border)">
-          <button @click="triggerCoverUpload" class="btn-pixel" style="position:absolute;bottom:-6px;right:-6px;padding:2px 6px;font-size:0.5rem;line-height:1">📷</button>
+        <div style="position:relative;width:120px;height:120px;flex-shrink:0;border-radius:var(--radius-md);border:2px dashed var(--color-border);overflow:hidden;cursor:pointer;background:var(--color-bg-elevated)" @click="triggerCoverUpload">
+          <img v-if="coverPreview || form.coverUrl" :src="coverPreview || form.coverUrl" alt="" style="width:100%;height:100%;object-fit:cover">
+          <div v-else style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;font-size:0.65rem;color:var(--color-text-muted);gap:4px">
+            <span style="font-size:1.5rem">🎮</span>
+            <span>Click to add cover</span>
+          </div>
           <input ref="coverInput" type="file" accept="image/*" style="display:none" @change="uploadCover" />
         </div>
         <div>
