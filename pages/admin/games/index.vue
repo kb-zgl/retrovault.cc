@@ -76,7 +76,8 @@
 <script setup>
 definePageMeta({
   layout: 'admin',
-  middleware: ['admin-auth']
+  middleware: ['admin-auth'],
+  pageTransition: false,
 })
 
 const { adminFetch } = useAdmin()
