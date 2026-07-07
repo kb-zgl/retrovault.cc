@@ -18,7 +18,7 @@
           <input ref="coverInput" type="file" accept="image/*" style="display:none" @change="uploadCover" />
         </div>
         <div>
-          <h1 style="font-size:1.1rem;font-weight:700;color:var(--color-text-primary)">{{ form.title || 'New Game' }}</h1>
+          <h1 style="font-size:1.1rem;font-weight:700;color:var(--color-text-primary)">{{ localeForm.title || form.slug || 'New Game' }}</h1>
           <div v-if="form.slug" style="font-size:0.75rem;color:var(--color-text-muted)">{{ form.slug }} · {{ form.platform }} · {{ form.year }}</div>
         </div>
         <div style="margin-left:auto;display:flex;gap:8px">
@@ -53,9 +53,6 @@
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
           <FormField label="Slug" :required="isNew">
             <input v-model="form.slug" class="form-input" :readonly="!isNew" :style="!isNew ? 'opacity:0.6' : ''" placeholder="my-game-slug" />
-          </FormField>
-          <FormField label="Title (EN)" required>
-            <input v-model="form.title" class="form-input" />
           </FormField>
           <FormField label="Platform" required>
             <input v-model="form.platform" class="form-input" />
@@ -201,7 +198,7 @@ const jsonError = ref('')
 
 // PART 1: Public fields (not language-specific)
 const form = reactive({
-  slug: '', title: '', platform: '', year: null, genre: '', developer: '', publisher: '', series: '',
+  slug: '', platform: '', year: null, genre: '', developer: '', publisher: '', series: '',
   isHack: 0, language: '', tags: [],
   defaultRom: '', ejsCore: '', ejsBiosUrl: '',
   coverUrl: '', imageUrl: '',
@@ -224,7 +221,6 @@ const { data: game, pending, error } = useAsyncData(`admin-game-${rawSlug}`, () 
 watch(game, (g) => {
   if (!g) return
   form.slug = g.slug || ''
-  form.title = g.title || ''
   form.platform = g.platform || ''
   form.year = g.year || null
   form.genre = g.genre || ''
@@ -301,7 +297,7 @@ function parseJsonImport() {
 
     // Map JSON fields to form
     const fieldMap = {
-      slug: 'slug', title: 'title', platform: 'platform', year: 'year',
+      slug: 'slug', platform: 'platform', year: 'year',
       genre: 'genre', developer: 'developer', publisher: 'publisher',
       series: 'series', language: 'language',
       defaultRom: 'defaultRom', ejsCore: 'ejsCore', ejsBiosUrl: 'ejsBiosUrl',
@@ -374,7 +370,7 @@ async function save() {
 
   try {
     const body = {
-      slug: form.slug, title: form.title, platform: form.platform, year: form.year,
+      slug: form.slug, platform: form.platform, year: form.year,
       genre: form.genre, developer: form.developer, publisher: form.publisher,
       series: form.series, isHack: form.isHack, language: form.language,
       tags: form.tags, langs: form.langs,
