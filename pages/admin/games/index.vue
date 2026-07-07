@@ -22,7 +22,7 @@
 
     <div v-else-if="error" style="color:var(--color-accent);padding:12px">Error: {{ error.message }}</div>
 
-    <div v-else class="card" style="overflow:hidden">
+    <div v-else class="card-static" style="overflow:hidden">
       <table style="width:100%;border-collapse:collapse;font-size:0.8rem">
         <thead>
           <tr style="background:var(--color-bg-elevated);color:var(--color-text-secondary)">

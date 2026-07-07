@@ -29,7 +29,7 @@
       </div>
 
       <!-- JSON Quick Import -->
-      <div v-if="showJsonImport" class="card" style="padding:16px;margin-bottom:20px">
+      <div v-if="showJsonImport" class="card-static" style="padding:16px;margin-bottom:20px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <h3 style="font-size:0.8rem;font-weight:600;color:var(--color-text-primary)">Quick Import JSON</h3>
           <button @click="parseJsonImport" class="btn-pixel-green" style="padding:4px 12px;font-size:0.65rem">Parse & Fill</button>
@@ -45,7 +45,7 @@
       <!-- ════════════════════════════════════════════════
            PART 1: Public Fields (language-independent)
            ════════════════════════════════════════════════ -->
-      <div class="card" style="padding:24px;margin-bottom:24px">
+      <div class="card-static" style="padding:24px;margin-bottom:24px">
         <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin-bottom:16px">General Info</h3>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
           <FormField label="Title (EN)" required>
@@ -126,7 +126,7 @@
       <!-- ════════════════════════════════════════════════
            PART 2: Language Content (one tab per language)
            ════════════════════════════════════════════════ -->
-      <div class="card" style="padding:24px">
+      <div class="card-static" style="padding:24px">
         <div style="display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--color-border);padding-bottom:8px">
           <button v-for="lang in availableLangs" :key="lang"
             @click="switchLang(lang)"
