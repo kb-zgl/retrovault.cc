@@ -5,11 +5,11 @@
       <div style="display:flex;gap:8px">
         <select v-model="filter.platform" @change="load" class="filter-btn" style="padding:6px 12px;border-radius:var(--radius-sm);background:var(--color-bg-surface);border:1px solid var(--color-border);color:var(--color-text-primary)">
           <option value="">全部平台</option>
-          <option v-for="p in filterOptions.platforms" :key="p" :value="p">{{ p }}</option>
+          <option v-for="p in filterOptions.platforms" :key="p.key" :value="p.key">{{ p.label }}</option>
         </select>
         <select v-model="filter.status" @change="load" class="filter-btn" style="padding:6px 12px;border-radius:var(--radius-sm);background:var(--color-bg-surface);border:1px solid var(--color-border);color:var(--color-text-primary)">
           <option value="">全部状态</option>
-          <option v-for="s in filterOptions.statuses" :key="s" :value="s">{{ s }}</option>
+          <option v-for="s in filterOptions.statuses" :key="s.key" :value="s.key">{{ s.label }}</option>
         </select>
         <input v-model="filter.search" @input="debouncedLoad" placeholder="搜索..." style="padding:6px 12px;border-radius:var(--radius-sm);background:var(--color-bg-surface);border:1px solid var(--color-border);color:var(--color-text-primary);width:200px">
         <button @click="createGame" class="btn-pixel-green" style="padding:6px 16px;font-size:0.7rem">+ 新增</button>
@@ -41,9 +41,9 @@
               <div style="font-size:0.8rem;font-weight:600;color:var(--color-accent)">{{ g.title }}</div>
               <div style="font-size:0.7rem;color:var(--color-text-muted)">{{ g.slug }}</div>
             </td>
-            <td style="padding:12px 16px;color:var(--color-text-secondary)">{{ g.platform }}</td>
+            <td style="padding:12px 16px;color:var(--color-text-secondary)">{{ g.platformDisplay || g.platform }}</td>
             <td style="padding:12px 16px;color:var(--color-text-secondary)">{{ g.year }}</td>
-            <td style="padding:12px 16px;color:var(--color-text-secondary)">{{ g.genre }}</td>
+            <td style="padding:12px 16px;color:var(--color-text-secondary)">{{ g.genreDisplay || g.genre }}</td>
             <td style="padding:12px 16px">
               <span :class="g.status === 'published' ? 'badge-green' : 'badge-yellow'" style="font-size:0.65rem">{{ g.status === 'published' ? '已发布' : '草稿' }}</span>
             </td>

@@ -55,22 +55,22 @@
             <input v-model="form.slug" class="form-input" :readonly="!isNew" :style="!isNew ? 'opacity:0.6' : ''" placeholder="my-game-slug" />
           </FormField>
           <FormField label="平台" required>
-            <input v-model="form.platform" class="form-input" />
+            <SearchableSelect v-model="form.platform" :options="refData.platforms" placeholder="选择平台..." />
           </FormField>
           <FormField label="年份">
             <input v-model.number="form.year" type="number" class="form-input" />
           </FormField>
           <FormField label="类型">
-            <input v-model="form.genre" class="form-input" />
+            <SearchableSelect v-model="form.genre" :options="refData.genres" placeholder="选择类型..." />
           </FormField>
           <FormField label="开发商">
-            <input v-model="form.developer" class="form-input" />
+            <SearchableSelect v-model="form.developer" :options="refData.developers" placeholder="选择开发商..." />
           </FormField>
           <FormField label="发行商">
-            <input v-model="form.publisher" class="form-input" />
+            <SearchableSelect v-model="form.publisher" :options="refData.publishers" placeholder="选择发行商..." />
           </FormField>
           <FormField label="系列">
-            <input v-model="form.series" class="form-input" />
+            <SearchableSelect v-model="form.series" :options="refData.series" placeholder="选择系列..." />
           </FormField>
           <FormField label="语言">
             <input v-model="form.language" class="form-input" placeholder="英语" />
@@ -116,13 +116,7 @@
 
         <!-- Tags -->
         <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin:20px 0 12px">标签</h3>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
-          <span v-for="(tag, i) in form.tags" :key="i" class="badge-pink" style="font-size:0.65rem;padding:4px 10px;cursor:pointer" @click="form.tags.splice(i, 1)">{{ tag }} ✕</span>
-        </div>
-        <div style="display:flex;gap:8px">
-          <input v-model="newTag" @keydown.enter.prevent="addTag" placeholder="输入标签后回车" class="form-input" style="flex:1" />
-          <button @click="addTag" class="btn-pixel" style="padding:4px 16px;font-size:0.7rem">添加</button>
-        </div>
+        <MultiSelect v-model="form.tags" :options="refData.tags" placeholder="搜索标签..." />
       </div>
 
       <!-- ════════════════════════════════════════════════
@@ -190,10 +184,11 @@ const activeLang = ref('zh')
 const saving = ref(false)
 const saveSuccess = ref(false)
 const saveError = ref('')
-const newTag = ref('')
 const showJsonImport = ref(false)
 const jsonImportText = ref('')
 const jsonError = ref('')
+
+const refData = getReferenceData('zh')
 
 // PART 1: Public fields (not language-specific)
 const form = reactive({
@@ -281,12 +276,6 @@ function textToControls(text) {
     }
   })
   return obj
-}
-
-function addTag() {
-  const t = newTag.value.trim()
-  if (t && !form.tags.includes(t)) form.tags.push(t)
-  newTag.value = ''
 }
 
 function parseJsonImport() {

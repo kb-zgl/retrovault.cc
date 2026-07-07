@@ -1,9 +1,11 @@
 import { requireAdmin } from '../../utils/admin'
 import { sqlAll } from '../../utils/d1'
+import { lookupDisplayName } from '../../../utils/reference-data'
 
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)
   const query = getQuery(event)
+  const locale = (query.locale as string) || 'zh'
 
   let where = '1=1'
   const params: any[] = []
@@ -26,15 +28,22 @@ export default defineEventHandler(async (event) => {
   const platformRows = await sqlAll(event, 'SELECT DISTINCT platform FROM games ORDER BY platform')
   const genreRows = await sqlAll(event, 'SELECT DISTINCT genre FROM games WHERE genre IS NOT NULL AND genre != "" ORDER BY genre')
 
+  // Add display-name resolution to each game
+  const enriched = games.map(g => ({
+    ...g,
+    platformDisplay: lookupDisplayName('platforms', g.platform as string, locale),
+    genreDisplay: lookupDisplayName('genres', g.genre as string, locale),
+  }))
+
   return {
     total: total,
     page,
     limit,
-    games,
+    games: enriched,
     filters: {
-      platforms: platformRows.map(r => r.platform),
-      genres: genreRows.map(r => r.genre),
-      statuses: ['draft', 'published'],
+      platforms: platformRows.map(r => ({ key: r.platform, label: lookupDisplayName('platforms', r.platform, locale) })),
+      genres: genreRows.map(r => ({ key: r.genre, label: lookupDisplayName('genres', r.genre, locale) })),
+      statuses: [{ key: 'draft', label: '草稿' }, { key: 'published', label: '已发布' }],
     }
   }
 })

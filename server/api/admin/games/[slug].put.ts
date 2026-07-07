@@ -1,6 +1,7 @@
 import { requireAdmin } from '../../../utils/admin'
 import { useD1 } from '../../../utils/d1'
 import { sqlOne } from '../../../utils/d1'
+import { isValidKey } from '../../../../utils/reference-data'
 
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)
@@ -13,6 +14,16 @@ export default defineEventHandler(async (event) => {
   const allowed = ['title', 'platform', 'year', 'genre', 'developer', 'publisher', 'series',
     'isHack', 'language', 'coverUrl', 'imageUrl', 'defaultRom', 'ejsCore', 'ejsBiosUrl',
     'tags', 'description', 'langs', 'roms', 'status', 'source']
+
+  // Reference-backed fields — warn on unrecognized keys
+  const refCategories: Record<string, string> = {
+    platform: 'platforms',
+    genre: 'genres',
+    developer: 'developers',
+    publisher: 'publishers',
+    series: 'series',
+    tags: 'tags',
+  }
 
   // Check if game exists
   const existing = await sqlOne(event, 'SELECT slug FROM games WHERE slug = ?', slug)
@@ -32,6 +43,13 @@ export default defineEventHandler(async (event) => {
       }
     }
 
+    // Validate reference-backed fields
+    for (const [field, cat] of Object.entries(refCategories)) {
+      if (body[field] !== undefined && !isValidKey(cat, body[field])) {
+        console.warn(`[admin] Unrecognized ${field} key: "${body[field]}"`)
+      }
+    }
+
     await db.prepare(`INSERT INTO games (${fields.join(',')}) VALUES (${placeholders.join(',')})`).bind(...vals).run()
     return { success: true, slug, isNew: true }
   }
@@ -48,6 +66,13 @@ export default defineEventHandler(async (event) => {
   }
 
   if (updates.length === 0) throw createError({ statusCode: 400, statusMessage: 'No valid fields to update' })
+
+  // Validate reference-backed fields
+  for (const [field, cat] of Object.entries(refCategories)) {
+    if (body[field] !== undefined && !isValidKey(cat, body[field])) {
+      console.warn(`[admin] Unrecognized ${field} key: "${body[field]}"`)
+    }
+  }
 
   updates.push('updatedAt = ?')
   values.push(now)
