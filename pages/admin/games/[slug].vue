@@ -191,7 +191,7 @@ const jsonError = ref('')
 const refData = getReferenceData('zh')
 
 const yearOptions = computed(() => {
-  const years: number[] = []
+  const years = []
   for (let y = new Date().getFullYear(); y >= 1970; y--) years.push(y)
   return years
 })
