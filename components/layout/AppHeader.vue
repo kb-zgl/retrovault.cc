@@ -47,6 +47,7 @@
         <NuxtLink class="nav-overlay-btn" :class="{ active: activePath === '/about' }" :to="localePath('/about')" @click="mobileMenuOpen = false">{{ 'ℹ️ ' + t('nav.about') }}</NuxtLink>
       </div>
       <div class="nav-overlay-footer">
+        <AuthStatus />
         <button class="link-btn" @click="toggleTheme">
           {{ theme === 'dark' ? t('theme.light') : t('theme.dark') }}
         </button>
