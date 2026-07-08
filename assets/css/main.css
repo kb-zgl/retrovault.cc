@@ -1403,7 +1403,7 @@ h1.hero-title em {
 ═══════════════════════════════════════════════ */
 .game-list-full {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 14px;
 }
 
@@ -3121,8 +3121,7 @@ h1.hero-title em {
     --cover-size: 110px;
     --cover-size-lg: 140px;
   }
-  .category-grid,
-  .game-list-full {
+  .category-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 18px;
   }
@@ -3160,8 +3159,7 @@ h1.hero-title em {
     --cover-size: 140px;
     --cover-size-lg: 170px;
   }
-  .category-grid,
-  .game-list-full {
+  .category-grid {
     grid-template-columns: repeat(4, 1fr);
     gap: 22px;
   }
@@ -3196,14 +3194,6 @@ h1.hero-title em {
   }
   .detail-icon {
     width: 170px;
-  }
-}
-
-@media (min-width: 1400px) {
-  .category-grid,
-  .game-list-full {
-    grid-template-columns: repeat(5, 1fr);
-    gap: 22px;
   }
 }
 
