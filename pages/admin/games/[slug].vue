@@ -112,9 +112,6 @@
           <FormField label="封面地址">
             <input v-model="form.coverUrl" class="form-input" />
           </FormField>
-          <FormField label="原图地址">
-            <input v-model="form.imageUrl" class="form-input" />
-          </FormField>
         </div>
 
         <!-- Tags -->
@@ -229,7 +226,7 @@ const form = reactive({
   slug: '', platform: '', year: null, genre: '', developer: '', publisher: '', series: '',
   isHack: 0, language: '', tags: [],
   defaultRom: '', ejsCore: '', ejsBiosUrl: '',
-  coverUrl: '', imageUrl: '',
+  coverUrl: '',
   description: '', source: '', status: 'draft',
   langs: {},
 })
@@ -262,7 +259,6 @@ watch(game, (g) => {
   form.ejsCore = g.ejsCore || ''
   form.ejsBiosUrl = g.ejsBiosUrl || ''
   form.coverUrl = g.coverUrl || ''
-  form.imageUrl = g.imageUrl || ''
   form.description = g.description || ''
   form.source = g.source || ''
   form.status = g.status || 'draft'
@@ -336,7 +332,7 @@ function parseJsonImport() {
       genre: 'genre', developer: 'developer', publisher: 'publisher',
       series: 'series', language: 'language',
       defaultRom: 'defaultRom', ejsCore: 'ejsCore', ejsBiosUrl: 'ejsBiosUrl',
-      coverUrl: 'coverUrl', imageUrl: 'imageUrl',
+      coverUrl: 'coverUrl',
       description: 'description', source: 'source',
       isHack: 'isHack', status: 'status',
       tags: 'tags', langs: 'langs',
@@ -410,7 +406,7 @@ async function save() {
       series: form.series, isHack: form.isHack, language: form.language,
       tags: form.tags, langs: form.langs,
       defaultRom: form.defaultRom, ejsCore: form.ejsCore, ejsBiosUrl: form.ejsBiosUrl,
-      coverUrl: form.coverUrl, imageUrl: form.imageUrl,
+      coverUrl: form.coverUrl,
       description: form.description, source: form.source, status: form.status,
     }
     await adminFetch(`/api/admin/games/${rawSlug}`, { method: 'PUT', body })
