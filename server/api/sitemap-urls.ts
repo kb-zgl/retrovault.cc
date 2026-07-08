@@ -1,5 +1,4 @@
 import { defineEventHandler, getRequestProtocol, getRequestHost } from 'h3'
-import { loadGameList } from '~/server/utils/games'
 
 interface ImageEntry {
   loc: string
@@ -58,19 +57,17 @@ export default defineEventHandler(async (event) => {
   const entries: SitemapEntry[] = []
 
   // 1. Game detail pages (with cover images)
-  const list = loadGameList()
-  const games = Object.values(list.games)
+  const games = await sqlAll<any>(event, 'SELECT slug, title, platform, coverUrl FROM games ORDER BY slug')
 
   for (const game of games) {
     const entry: SitemapEntry = {
       loc: `/games/${game.slug}`,
-      lastmod: list.scrapedAt,
       changefreq: 'monthly',
       priority: 0.8,
     }
 
     // Add cover image if available
-    const filename = coverFilename(game.coverImg)
+    const filename = coverFilename(game.coverUrl)
     if (filename) {
       entry.images = [
         {
