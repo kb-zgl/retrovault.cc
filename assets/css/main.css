@@ -2343,6 +2343,9 @@ h1.hero-title em {
   flex-wrap: wrap;
   justify-content: flex-end;
   overflow: hidden;
+  background: none;
+  border: none;
+  border-radius: 0;
 }
 .cabinet-header .pixel-nav.desktop-nav .nav-btn {
   min-height: 36px;
