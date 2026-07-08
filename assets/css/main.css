@@ -2265,7 +2265,7 @@ h1.hero-title em {
   font-size: clamp(0.62rem, 2.2vw, 0.75rem);
   padding: 10px 14px;
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   background: transparent;
   color: var(--color-text-secondary);
   cursor: pointer;
@@ -2276,6 +2276,7 @@ h1.hero-title em {
   align-items: center;
   justify-content: center;
   flex: 0 1 auto;
+  position: relative;
 }
 .pixel-nav .nav-btn:hover {
   color: var(--color-text-primary);
@@ -2285,6 +2286,18 @@ h1.hero-title em {
   color: #fff;
   background: var(--color-accent);
   box-shadow: 0 0 16px rgba(224, 45, 122, 0.3);
+}
+.pixel-nav .nav-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40%;
+  height: 2px;
+  background: #fff;
+  border-radius: 1px;
+  opacity: 0.6;
 }
 .pixel-nav .nav-btn:active {
   transform: scale(0.96);
@@ -2333,8 +2346,8 @@ h1.hero-title em {
 }
 .cabinet-header .pixel-nav.desktop-nav .nav-btn {
   min-height: 36px;
-  padding: 6px 12px;
-  font-size: clamp(0.55rem, 1.6vw, 0.7rem);
+  padding: 8px 14px;
+  font-size: clamp(0.6rem, 1.8vw, 0.75rem);
 }
 
 /* ═══════════════════════════════════════════════
@@ -2532,6 +2545,9 @@ h1.hero-title em {
   }
   .hamburger-btn {
     display: flex;
+  }
+  .cabinet-header .cabinet-marquee {
+    flex: 1;
   }
 }
 
