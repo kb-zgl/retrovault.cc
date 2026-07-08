@@ -2302,7 +2302,7 @@ h1.hero-title em {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 18px;
+  border-bottom: 1px solid var(--color-border);
 }
 
 @media (min-width: 1024px) {
@@ -2313,7 +2313,7 @@ h1.hero-title em {
 
 .cabinet-header .cabinet-marquee {
   margin-bottom: 0;
-  flex: 1;
+  flex: 0 0 auto;
   min-width: 0;
   flex-wrap: nowrap;
   gap: 6px;
@@ -2326,7 +2326,7 @@ h1.hero-title em {
 .cabinet-header .pixel-nav.desktop-nav {
   margin: 0;
   padding: 4px 6px;
-  flex-shrink: 1;
+  flex: 1;
   flex-wrap: wrap;
   justify-content: flex-end;
   overflow: hidden;
