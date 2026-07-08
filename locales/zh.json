@@ -15,7 +15,20 @@
     "continuePlaying": "继续游玩",
     "yourQueue": "我的队列",
     "platforms": "平台",
-    "genres": "类型"
+    "genres": "类型",
+    "faqTitle": "常见问题",
+    "faqFree": "RetroVault 真的免费吗？",
+    "faqFreeA": "是的！所有游戏完全免费在线游玩——无需注册、无需订阅、没有任何隐藏费用。",
+    "faqAccount": "需要创建账号吗？",
+    "faqAccountA": "完全不需要。您可以立即开始游玩。游戏历史和队列会自动保存在您的浏览器中。",
+    "faqMobile": "可以在手机或平板上玩吗？",
+    "faqMobileA": "当然可以。RetroVault 采用移动端优先设计，在任何现代浏览器的设备上都能流畅运行，内置触控支持。",
+    "faqSave": "如何保存游戏进度？",
+    "faqSaveA": "切换游戏或关闭模拟器时会自动保存进度。存档保存在您的浏览器中，下次回来继续玩。",
+    "faqPlatforms": "有哪些平台可供选择？",
+    "faqPlatformsA": "我们拥有 23 个平台，包括 NES、SNES、Game Boy Advance、街机、Nintendo 64、PlayStation、Sega Genesis 等。",
+    "faqStuck": "游戏无法加载 / 模拟器卡住了",
+    "faqStuckA": "尝试刷新页面。如果问题仍然存在，可能是 ROM 暂时不可用——请尝试其他游戏并稍后再试。"
   },
   "section": {
     "recent": "🔄 最近添加",

@@ -139,6 +139,17 @@
           </NuxtLink>
         </div>
       </div>
+
+      <!-- FAQ -->
+      <section class="faq-section">
+        <h2 class="section-title">{{ t('home.faqTitle') }}</h2>
+        <div class="faq-list">
+          <div v-for="(item, i) in faqEntries" :key="i" class="faq-item">
+            <h3 class="faq-q">{{ t(item.q) }}</h3>
+            <p class="faq-a">{{ t(item.a) }}</p>
+          </div>
+        </div>
+      </section>
     </template>
   </div>
 </template>
@@ -317,10 +328,28 @@ function slugFor(platform: string): string {
   return map[platform] || platform.toLowerCase().replace(/\s+/g, '-')
 }
 
+const faqEntries = [
+  { q: 'home.faqFree', a: 'home.faqFreeA' },
+  { q: 'home.faqAccount', a: 'home.faqAccountA' },
+  { q: 'home.faqMobile', a: 'home.faqMobileA' },
+  { q: 'home.faqSave', a: 'home.faqSaveA' },
+  { q: 'home.faqPlatforms', a: 'home.faqPlatformsA' },
+  { q: 'home.faqStuck', a: 'home.faqStuckA' },
+]
+
 usePageSeo({
   title: t('seo.homeTitle'),
   description: t('seo.homeDesc'),
 })
+
+const schemaFaq = computed(() => faqEntries.map(item => ({
+  '@type': 'Question' as const,
+  name: t(item.q),
+  acceptedAnswer: {
+    '@type': 'Answer' as const,
+    text: t(item.a),
+  },
+})))
 
 useSchemaOrg([
   {
@@ -328,6 +357,10 @@ useSchemaOrg([
     name: 'RetroVault',
     url: 'https://retrovault.cc',
     description: t('seo.tagline'),
+  },
+  {
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq,
   },
 ])
 </script>

@@ -15,7 +15,20 @@
     "continuePlaying": "Continue Playing",
     "yourQueue": "Your Queue",
     "platforms": "Platforms",
-    "genres": "Genres"
+    "genres": "Genres",
+    "faqTitle": "Frequently Asked Questions",
+    "faqFree": "Is RetroVault really free?",
+    "faqFreeA": "Yes! All games are completely free to play online — no sign-up, no subscription, no hidden fees.",
+    "faqAccount": "Do I need to create an account?",
+    "faqAccountA": "Not at all. You can start playing immediately. Your game history and queue are saved automatically in your browser.",
+    "faqMobile": "Can I play on my phone or tablet?",
+    "faqMobileA": "Absolutely. RetroVault is mobile-first and works on any device with a modern browser. Touch controls are built in.",
+    "faqSave": "How do I save my progress?",
+    "faqSaveA": "Progress is saved automatically when you switch games or close the emulator. Your saves stay in your browser for next time.",
+    "faqPlatforms": "What platforms are available?",
+    "faqPlatformsA": "We have 23 platforms including NES, SNES, Game Boy Advance, Arcade, Nintendo 64, PlayStation, Sega Genesis, and more.",
+    "faqStuck": "A game isn't loading / the emulator is stuck",
+    "faqStuckA": "Try refreshing the page. If the issue persists, the ROM may be temporarily unavailable — try another game and check back later."
   },
   "section": {
     "recent": "🔄 Recent",

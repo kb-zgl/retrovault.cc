@@ -2736,6 +2736,45 @@ h1.hero-title em {
   transform: scale(0.96);
 }
 
+/* ── FAQ ──────────────────────────────────────────── */
+
+.faq-section {
+  margin-top: 36px;
+  margin-bottom: 36px;
+}
+.faq-section .section-title {
+  font-family: var(--font-pixel);
+  font-size: 0.8rem;
+  color: var(--color-text-primary);
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border);
+}
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.faq-item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.faq-item:last-child {
+  border-bottom: none;
+}
+.faq-q {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+.faq-a {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
 
 /* ═══════════════════════════════════════════════
    FAB - Floating Action Button（匹配 demo .fab-container）
