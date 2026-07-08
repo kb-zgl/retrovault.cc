@@ -13,9 +13,6 @@
           <span class="footer-stats-line">{{ t('footer.stats', { games: siteStats?.games?.toLocaleString() || '...', platforms: siteStats?.platforms || '...' }) }}</span>
           <p class="footer-about-text" style="margin-top:16px">{{ t('about.para1') }}</p>
           <p class="footer-powered">{{ t('footer.poweredBy', { tech: 'EmulatorJS, Nuxt & Cloudflare' }) }}</p>
-          <hr class="footer-divider" />
-          <p class="footer-copyright">&copy; {{ year }} RetroVault</p>
-          <p class="footer-disclaimer">{{ t('footer.disclaimer') }}</p>
         </div>
 
         <!-- Column: Platforms -->
@@ -41,6 +38,11 @@
             <NuxtLink :to="localePath('/privacy')">{{ t('footer.privacy') }}</NuxtLink>
           </div>
         </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p class="footer-copyright">&copy; {{ year }} RetroVault</p>
+        <p class="footer-disclaimer">{{ t('footer.disclaimer') }}</p>
       </div>
     </div>
   </footer>
