@@ -10,7 +10,7 @@
             <strong class="footer-brand">RETRO VAULT</strong>
           </div>
           <span class="footer-tagline">— {{ t('footer.tagline') }}</span>
-          <span class="footer-stats-line">{{ t('footer.stats', { games: '2,324', platforms: '23' }) }}</span>
+          <span class="footer-stats-line">{{ t('footer.stats', { games: siteStats?.games?.toLocaleString() || '...', platforms: siteStats?.platforms || '...' }) }}</span>
         </div>
 
         <!-- Column: Platforms -->
@@ -60,6 +60,8 @@ import { getReferenceData } from '~/utils/reference-data'
 const { t, locale } = useAppI18n()
 const { localePath } = useLocalePath()
 const year = new Date().getFullYear()
+
+const { data: siteStats } = useFetch('/api/stats')
 
 const platforms = [
   { slug: 'nes', refKey: 'nes' },
