@@ -1,26 +1,18 @@
 <template>
   <footer class="footer">
     <div class="footer-inner">
-      <!-- Brand + Tagline + Online -->
-      <div class="footer-top">
-        <div class="pixel-counter">
-          <span class="dot"></span>
-          <strong class="footer-brand">RETRO VAULT</strong>
-        </div>
-        <span>— {{ t('footer.tagline') }}</span>
-        <span class="pixel-counter" style="margin-left:2px">
-          <span class="dot"></span>
-          {{ t('footer.playersOnline', { count: onlineCount }) }}
-        </span>
-      </div>
-
-      <!-- Stats -->
-      <div class="footer-stats">
-        {{ t('footer.stats', { games: '2,324', platforms: '23' }) }}
-      </div>
-
-      <!-- Grid: 3 columns -->
+      <!-- Grid: 4 columns -->
       <div class="footer-grid">
+        <!-- Column: Brand -->
+        <div class="footer-col">
+          <div class="footer-brand-row">
+            <span class="dot"></span>
+            <strong class="footer-brand">RETRO VAULT</strong>
+          </div>
+          <span class="footer-tagline">— {{ t('footer.tagline') }}</span>
+          <span class="footer-stats-line">{{ t('footer.stats', { games: '2,324', platforms: '23' }) }}</span>
+        </div>
+
         <!-- Column: Platforms -->
         <div class="footer-col">
           <h4 class="footer-col-title">{{ t('footer.platforms') }}</h4>
@@ -69,8 +61,6 @@ const { t, locale } = useAppI18n()
 const { localePath } = useLocalePath()
 const year = new Date().getFullYear()
 
-const onlineCount = Math.floor(Math.random() * 50) + 32
-
 const platforms = [
   { slug: 'nes', refKey: 'nes' },
   { slug: 'snes', refKey: 'snes' },
@@ -87,10 +77,5 @@ const refData = computed(() => getReferenceData(locale.value))
 function platformLabel(refKey: string): string {
   const entry = refData.value.platforms.find(p => p.key === refKey)
   return entry?.label || refKey
-}
-
-function authAction() {
-  if (isLoggedIn.value) logout()
-  else login()
 }
 </script>
