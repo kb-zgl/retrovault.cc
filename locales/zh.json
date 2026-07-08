@@ -9,7 +9,8 @@
   "hero": {
     "title": "探索所有游戏",
     "sub": "— 轻点进入像素宝库 —",
-    "count": "📦 {count} 款游戏"
+    "count": "📦 {count} 款游戏",
+    "meta": "📦 {count} 款游戏 · {platforms} 个平台 · 免费畅玩"
   },
   "home": {
     "continuePlaying": "继续游玩",

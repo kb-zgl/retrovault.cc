@@ -12,7 +12,7 @@
           {{ t('section.viewAll') }}
         </NuxtLink>
       </div>
-      <p class="hero-meta">{{ t('hero.count', { count: totalAll }) }} · {{ platformCount }} platforms · Free to play</p>
+      <p class="hero-meta">{{ t('hero.meta', { count: totalAll, platforms: platformCount }) }}</p>
     </div>
 
     <!-- Loading skeleton -->

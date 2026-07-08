@@ -9,7 +9,8 @@
   "hero": {
     "title": "Explore All Games",
     "sub": "— Tap to enter the pixel vault —",
-    "count": "📦 {count} games"
+    "count": "📦 {count} games",
+    "meta": "📦 {count} games · {platforms} platforms · Free to play"
   },
   "home": {
     "continuePlaying": "Continue Playing",
