@@ -57,8 +57,6 @@ const { t, locale } = useAppI18n()
 const { localePath } = useLocalePath()
 const year = new Date().getFullYear()
 
-const { data: siteStats } = useFetch('/api/stats')
-
 const platforms = [
   { slug: 'nes', refKey: 'nes' },
   { slug: 'snes', refKey: 'snes' },
