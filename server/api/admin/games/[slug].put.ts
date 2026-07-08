@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
 
   // Allowed fields
   const allowed = ['title', 'platform', 'year', 'genre', 'developer', 'publisher', 'series',
-    'isHack', 'language', 'coverUrl', 'imageUrl', 'defaultRom', 'ejsCore', 'ejsBiosUrl',
+    'isHack', 'language', 'coverUrl', 'defaultRom', 'ejsCore', 'ejsBiosUrl',
     'tags', 'description', 'langs', 'roms', 'status', 'source']
 
   // Reference-backed fields — warn on unrecognized keys
