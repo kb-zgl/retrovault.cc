@@ -3199,6 +3199,14 @@ h1.hero-title em {
   }
 }
 
+@media (min-width: 1400px) {
+  .category-grid,
+  .game-list-full {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 22px;
+  }
+}
+
 /* ─── Admin Form Inputs ─────────────────────────── */
 .form-input {
   width: 100%;
