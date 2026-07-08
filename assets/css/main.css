@@ -226,7 +226,14 @@ main {
 ═══════════════════════════════════════════════ */
 .arcade-cabinet {
   width: 100%;
+  min-height: 100vh;
   background: var(--color-bg-surface);
+  display: flex;
+  flex-direction: column;
+}
+
+.arcade-cabinet main {
+  flex: 1;
 }
 
 /* ═══════════════════════════════════════════════
