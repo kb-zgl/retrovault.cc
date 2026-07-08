@@ -1,11 +1,8 @@
 <template>
   <div>
-    <!-- SEO: H1 站点描述 -->
-    <h1 class="sr-only">{{ t('seo.tagline') }}</h1>
-
     <!-- Hero -->
     <div class="hero-enter" @click="navigateTo(localePath('/games'))">
-      <img src="/logo.svg" alt="RetroVault" class="hero-logo" />
+      <h1 class="hero-headline">{{ t('seo.tagline') }}</h1>
       <p class="hero-sub">{{ t('hero.sub') }}</p>
       <div class="hero-actions">
         <button class="btn-pixel btn-pixel-green" @click.stop="playRandom">
@@ -15,6 +12,7 @@
           {{ t('section.viewAll') }}
         </NuxtLink>
       </div>
+      <p class="hero-meta">{{ t('hero.count', { count: totalAll }) }} · {{ platformCount }} platforms · Free to play</p>
     </div>
 
     <!-- Loading skeleton -->
@@ -169,6 +167,7 @@ const { data, pending } = useFetch<GameListResponse>('/api/games', {
 
 const allGames = computed(() => data.value?.games || [])
 const totalAll = computed(() => data.value?.totalAll || 0)
+const platformCount = computed(() => data.value?.platforms?.length || 0)
 
 // ── H2: Continue Playing ──────────────────────────
 
