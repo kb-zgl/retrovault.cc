@@ -3071,7 +3071,7 @@ h1.hero-title em {
   font-size: clamp(0.65rem, 1.4vw, 0.75rem);
   color: var(--color-text-muted);
   line-height: 1.6;
-  margin: 0;
+  margin: 12px 0 0;
 }
 .footer-powered {
   font-size: clamp(0.55rem, 1.2vw, 0.65rem);

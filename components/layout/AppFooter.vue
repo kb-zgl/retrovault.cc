@@ -11,7 +11,7 @@
           </div>
           <span class="footer-tagline">— {{ t('footer.tagline') }}</span>
           <span class="footer-stats-line">{{ t('footer.stats', { games: siteStats?.games?.toLocaleString() || '...', platforms: siteStats?.platforms || '...' }) }}</span>
-          <p class="footer-about-text" style="margin-top:16px">{{ t('about.para1') }}</p>
+          <p class="footer-about-text">{{ t('about.para1') }}</p>
           <p class="footer-powered">{{ t('footer.poweredBy', { tech: 'EmulatorJS, Nuxt & Cloudflare' }) }}</p>
         </div>
 
