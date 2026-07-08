@@ -103,8 +103,11 @@
           <FormField label="模拟器核心">
             <input v-model="form.ejsCore" class="form-input" placeholder="nes / snes / gba" />
           </FormField>
-          <FormField label="BIOS 地址">
-            <input v-model="form.ejsBiosUrl" class="form-input" />
+          <FormField label="BIOS">
+            <select v-model="form.ejsBiosUrl" class="form-input">
+              <option value="">无</option>
+              <option v-for="b in biosOptions" :key="b.value" :value="b.value">{{ b.label }}</option>
+            </select>
           </FormField>
           <FormField label="封面地址">
             <input v-model="form.coverUrl" class="form-input" />
@@ -204,6 +207,23 @@ const yearOptions = computed(() => {
   return years
 })
 
+// core → BIOS 映射（同步 GameEmulator.vue 里的 BIOS_MAP）
+const BIOS_MAP: Record<string, string> = {
+  psx:      '/bios/scph1001.bin',
+  pce:      '/bios/syscard3.pce',
+  segaCD:   '/bios/bios_CD_U.bin',
+  ngp:      '/bios/neogeo.zip',
+  segaSaturn: '/bios/saturn_bios.bin',
+  coleco:   '/bios/colecovision.rom',
+}
+
+const biosOptions = computed(() =>
+  Object.entries(BIOS_MAP).map(([core, url]) => ({
+    value: url,
+    label: `${url.replace('/bios/', '')} (${core})`,
+  })),
+)
+
 // PART 1: Public fields (not language-specific)
 const form = reactive({
   slug: '', platform: '', year: null, genre: '', developer: '', publisher: '', series: '',
@@ -291,6 +311,19 @@ function textToControls(text) {
   })
   return obj
 }
+
+// 核心 → BIOS 自动关联：仅当 BIOS 为空或跟随旧核心映射时自动更新，不覆盖用户手动选择
+watch(() => form.ejsCore, (core, oldCore) => {
+  if (core && BIOS_MAP[core]) {
+    const oldDefault = oldCore ? BIOS_MAP[oldCore] : undefined
+    if (
+      !form.ejsBiosUrl ||
+      (oldDefault && form.ejsBiosUrl === oldDefault)
+    ) {
+      form.ejsBiosUrl = BIOS_MAP[core]
+    }
+  }
+})
 
 function parseJsonImport() {
   jsonError.value = ''
