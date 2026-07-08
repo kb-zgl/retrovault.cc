@@ -30,7 +30,11 @@
     "year": "年份",
     "developer": "开发商",
     "publisher": "发行商",
-    "loadingEmulator": "模拟器加载中..."
+    "loadingEmulator": "模拟器加载中...",
+    "intro": "📖 游戏简介",
+    "controls": "🎮 游戏控制",
+    "rating": "⭐ 评分评价",
+    "related": "🎮 相关游戏推荐"
   },
   "comment": {
     "placeholderName": "您的昵称",

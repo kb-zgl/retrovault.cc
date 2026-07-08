@@ -30,7 +30,11 @@
     "year": "Year",
     "developer": "Developer",
     "publisher": "Publisher",
-    "loadingEmulator": "Loading emulator..."
+    "loadingEmulator": "Loading emulator...",
+    "intro": "📖 Introduction",
+    "controls": "🎮 Controls",
+    "rating": "⭐ Reviews & Ratings",
+    "related": "🎮 Related Games"
   },
   "comment": {
     "placeholderName": "Your name",

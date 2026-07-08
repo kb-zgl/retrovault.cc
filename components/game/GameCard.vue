@@ -28,11 +28,11 @@
         <span v-else>{{ emojiFallback }}</span>
       </div>
 
-      <!-- Title + year -->
-      <div :class="size === 'grid' ? 'game-title' : 'mini-title'">
+      <!-- Title + year (H3 for SEO heading hierarchy) -->
+      <h3 :class="size === 'grid' ? 'game-title' : 'mini-title'">
         {{ loc.title }}
         <small>{{ game.year }}</small>
-      </div>
+      </h3>
     </NuxtLink>
     <div
       v-else
@@ -57,11 +57,11 @@
         <span v-else>{{ emojiFallback }}</span>
       </div>
 
-      <!-- Title + year -->
-      <div :class="size === 'grid' ? 'game-title' : 'mini-title'">
+      <!-- Title + year (H3 for SEO heading hierarchy) -->
+      <h3 :class="size === 'grid' ? 'game-title' : 'mini-title'">
         {{ loc.title }}
         <small>{{ game.year }}</small>
-      </div>
+      </h3>
     </div>
 
     <!-- Tags: platform + genre (inside card wrapper but outside link, prevents nav) -->

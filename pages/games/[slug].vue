@@ -34,7 +34,7 @@
     <div v-else-if="game">
       <Breadcrumb :items="breadcrumbItems" />
 
-      <!-- TODO Header -->
+      <!-- Header: cover + H1 + meta + actions -->
       <div class="detail-header">
         <div class="detail-icon">
           <img
@@ -63,13 +63,10 @@
             >🖥️ {{ game.platform }}</NuxtLink>
           </div>
 
-          <div class="detail-desc">{{ loc.description }}</div>
-
           <div class="detail-actions">
             <button class="btn-pixel btn-pixel-green" @click="engine.loadGame(game!)">
               {{ t('game.playNow') }}
             </button>
-            <!-- TODO Queue -->
             <button
               class="btn-pixel"
               :class="inQueue ? 'btn-pixel-yellow in-queue' : 'btn-pixel-yellow'"
@@ -82,17 +79,54 @@
         </div>
       </div>
 
+      <!-- H2: 游戏简介 -->
+      <section class="detail-section">
+        <h2 class="detail-section-title">{{ t('game.intro') }}</h2>
+        <p class="detail-desc">{{ loc.description }}</p>
+      </section>
+
       <!-- Long description (Markdown) -->
       <div v-if="longDescHtml" class="markdown-content" style="margin-top:24px">
         <div v-html="longDescHtml" />
       </div>
 
+      <!-- H2: 游戏控制 -->
+      <section v-if="controlsKeys.length" class="detail-section">
+        <h2 class="detail-section-title">{{ t('game.controls') }}</h2>
+        <div class="controls-grid">
+          <div v-for="key in controlsKeys" :key="key" class="controls-row">
+            <span class="controls-key">{{ key }}</span>
+            <span class="controls-action">{{ controlsMap[key] }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- H2: 评分评价 -->
+      <section class="detail-section">
+        <h2 class="detail-section-title">{{ t('game.rating') }}</h2>
+        <p class="detail-placeholder">{{ t('game.noComments') }}</p>
+      </section>
+
+      <!-- H2: 相关游戏推荐 + H3 game cards -->
+      <section v-if="related.length" class="detail-section">
+        <h2 class="detail-section-title">{{ t('game.related') }}</h2>
+        <div class="scroll-row">
+          <GameCard
+            v-for="g in related"
+            :key="g.slug"
+            :game="g"
+            :to="localePath(`/games/${g.slug}`)"
+            @play="navigateTo(localePath(`/games/${g.slug}`))"
+          />
+        </div>
+      </section>
+
       <!-- TODO Comments -->
       <div class="comment-section">
-        <div class="cmt-title">
+        <h2 class="cmt-title">
           {{ t('game.comments') }}
           <span class="cmt-count">({{ comments.length }})</span>
-        </div>
+        </h2>
 
         <div class="cmt-form">
           <input
@@ -168,6 +202,13 @@ const longDescSource = computed(() => {
   return Array.isArray(raw) ? raw.join('\n\n') : (raw || '')
 })
 const longDescHtml = computed(() => renderMd(longDescSource.value))
+
+// Controls
+const controlsMap = computed(() => game.value?.controls || {})
+const controlsKeys = computed(() => Object.keys(controlsMap.value))
+
+// Related games (placeholder - slugs from game.relatedGames)
+const related = computed(() => [])
 
 usePageSeo(() => ({
   title: pageTitle.value,
