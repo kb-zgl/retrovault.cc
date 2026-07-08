@@ -42,9 +42,6 @@
             <NuxtLink :to="localePath('/games')">{{ t('nav.games') }}</NuxtLink>
             <NuxtLink :to="localePath('/tags')">{{ t('nav.tags') }}</NuxtLink>
             <NuxtLink :to="localePath('/privacy')">{{ t('footer.privacy') }}</NuxtLink>
-            <button class="link-btn" @click="authAction">
-              {{ isLoggedIn ? '👤 ' + user?.username : t('footer.login') }}
-            </button>
           </div>
         </div>
 
@@ -71,7 +68,6 @@ import { getReferenceData } from '~/utils/reference-data'
 const { t, locale } = useAppI18n()
 const { localePath } = useLocalePath()
 const year = new Date().getFullYear()
-const { isLoggedIn, user, login, logout } = useAuth()
 
 const onlineCount = Math.floor(Math.random() * 50) + 32
 

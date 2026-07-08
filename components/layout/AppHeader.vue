@@ -22,6 +22,7 @@
     </nav>
 
     <div class="hidden md:flex items-center gap-2">
+      <AuthStatus />
       <LocaleSwitcher />
       <ThemeToggle />
     </div>
@@ -46,9 +47,6 @@
         <NuxtLink class="nav-overlay-btn" :class="{ active: activePath === '/about' }" :to="localePath('/about')" @click="mobileMenuOpen = false">{{ 'ℹ️ ' + t('nav.about') }}</NuxtLink>
       </div>
       <div class="nav-overlay-footer">
-        <button class="link-btn" @click="authAction; mobileMenuOpen = false">
-          {{ isLoggedIn ? '👤 ' + user?.username : t('footer.login') }}
-        </button>
         <button class="link-btn" @click="toggleTheme">
           {{ theme === 'dark' ? t('theme.light') : t('theme.dark') }}
         </button>
@@ -69,11 +67,5 @@ const mobileMenuOpen = ref(false)
 // Strip /zh prefix for active route matching
 const activePath = computed(() => route.path.replace(/^\/zh/, '') || '/')
 
-const { isLoggedIn, user, login, logout } = useAuth()
 const { theme, toggle: toggleTheme } = useTheme()
-
-function authAction() {
-  if (isLoggedIn.value) logout()
-  else login()
-}
 </script>
