@@ -1166,6 +1166,87 @@ h1.hero-title em {
   border-radius: 4px;
 }
 
+/* ── Featured grid（精选推荐平铺） ──────────── */
+
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+}
+@media (max-width: 480px) {
+  .featured-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+.featured-grid .game-card {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  padding: 12px 10px 14px;
+  border-radius: var(--radius-md);
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.1s ease;
+  cursor: pointer;
+  position: relative;
+}
+.featured-grid .game-card:hover {
+  border-color: var(--color-accent);
+}
+.featured-grid .game-card .pixel-icon {
+  width: 100%;
+  aspect-ratio: 1/1;
+  max-width: 120px;
+  margin: 0 auto 10px;
+  background: #1e1b26;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(2rem, 8vw, 3rem);
+  overflow: hidden;
+}
+.featured-grid .game-card .pixel-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.featured-grid .game-card .card-play-btn {
+  position: absolute;
+  top: 14px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-success);
+  color: #0b0a0c;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(45, 217, 122, 0.3);
+  transition: all 0.1s ease;
+  z-index: 2;
+}
+.featured-grid .game-card .card-play-btn:hover { transform: scale(1.1); }
+.featured-grid .game-card .card-play-btn:active { transform: scale(0.9); }
+.featured-grid .game-card .game-title {
+  font-size: clamp(0.7rem, 2.5vw, 0.8rem);
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+.featured-grid .game-card .game-title small {
+  display: block;
+  font-size: 0.6rem;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
 /* ═══════════════════════════════════════════════
    游戏卡片 - 迷你（匹配 demo .game-card-mini）
 ═══════════════════════════════════════════════ */

@@ -47,12 +47,13 @@
           <div class="sec-title">{{ t('section.featured') }} <span class="count-badge">{{ featured.length }}</span></div>
           <button class="sec-more" @click="navigateTo(localePath('/games'))">{{ t('section.viewAll') }}</button>
         </div>
-        <div class="scroll-row">
+        <div class="featured-grid">
           <GameCard
             v-for="g in featured"
             :key="g.slug"
             :game="g"
             :to="localePath(`/games/${g.slug}`)"
+            size="grid"
             @play="navigateTo(localePath(`/games/${g.slug}`))"
           />
         </div>
