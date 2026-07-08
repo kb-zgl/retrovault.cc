@@ -8,10 +8,12 @@
           <div class="footer-brand-row">
             <span class="dot"></span>
             <strong class="footer-brand">RETRO VAULT</strong>
+						<span class="footer-tagline">— {{ t('footer.tagline') }}</span>
           </div>
-          <span class="footer-tagline">— {{ t('footer.tagline') }}</span>
-          <span class="footer-stats-line">{{ t('footer.stats', { games: siteStats?.games?.toLocaleString() || '...', platforms: siteStats?.platforms || '...' }) }}</span>
-          <p class="footer-about-text">{{ t('about.para1') }}</p>
+          
+					<p class="footer-about-text">{{ t('about.para1') }}</p>
+          <!-- <span class="footer-stats-line">{{ t('footer.stats', { games: siteStats?.games?.toLocaleString() || '...', platforms: siteStats?.platforms || '...' }) }}</span> -->
+          
           <p class="footer-powered">{{ t('footer.poweredBy', { tech: 'EmulatorJS, Nuxt & Cloudflare' }) }}</p>
         </div>
 
