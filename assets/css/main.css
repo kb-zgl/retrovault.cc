@@ -2311,17 +2311,19 @@ h1.hero-title em {
   top: 0;
   z-index: 100;
   background: var(--color-bg-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+.cabinet-header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
   padding: 10px 16px;
   display: flex;
   align-items: center;
   gap: 12px;
-  border-bottom: 1px solid var(--color-border);
-  max-width: 1400px;
-  margin: 0 auto;
 }
 
 @media (min-width: 1024px) {
-  .cabinet-header {
+  .cabinet-header-inner {
     padding: 10px 24px;
   }
 }

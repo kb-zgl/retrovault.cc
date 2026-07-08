@@ -1,38 +1,40 @@
 <template>
-  <!-- Header: Marquee + Nav (right) + Hamburger (mobile) -->
+  <!-- Header: full-width bg+border, inner content centered -->
   <div class="cabinet-header">
-    <!-- Marquee -->
-    <div class="cabinet-marquee">
-      <div class="marquee-lamp">
-        <span class="lamp"></span><span class="lamp"></span><span class="lamp"></span><span class="lamp"></span><span class="lamp"></span>
+    <div class="cabinet-header-inner">
+      <!-- Marquee -->
+      <div class="cabinet-marquee">
+        <div class="marquee-lamp">
+          <span class="lamp"></span><span class="lamp"></span><span class="lamp"></span><span class="lamp"></span><span class="lamp"></span>
+        </div>
+        <div class="marquee-title">
+          <img src="/logo.svg" alt="RetroVault" class="header-logo" />
+          <span>RETRO</span> VAULT
+        </div>
       </div>
-      <div class="marquee-title">
-        <img src="/logo.svg" alt="RetroVault" class="header-logo" />
-        <span>RETRO</span> VAULT
+
+      <!-- Desktop nav -->
+      <nav class="pixel-nav desktop-nav">
+        <NuxtLink class="nav-btn" :class="{ active: activePath === '/' }" :to="localePath('/')">{{ t('nav.home') }}</NuxtLink>
+        <NuxtLink class="nav-btn" :class="{ active: activePath.startsWith('/games') }" :to="localePath('/games')">{{ t('nav.games') }}</NuxtLink>
+        <NuxtLink class="nav-btn" :class="{ active: activePath === '/tags' }" :to="localePath('/tags')">{{ t('nav.tags') }}</NuxtLink>
+        <NuxtLink class="nav-btn" :class="{ active: activePath === '/news' }" :to="localePath('/news')">{{ t('nav.news') }}</NuxtLink>
+        <NuxtLink class="nav-btn" :class="{ active: activePath === '/about' }" :to="localePath('/about')">{{ t('nav.about') }}</NuxtLink>
+      </nav>
+
+      <div class="header-tools">
+        <AuthStatus />
+        <LocaleSwitcher />
+        <ThemeToggle />
       </div>
+
+      <!-- Mobile hamburger -->
+      <button class="hamburger-btn" @click="mobileMenuOpen = true" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 12h18M3 6h18M3 18h18" />
+        </svg>
+      </button>
     </div>
-
-    <!-- Desktop nav -->
-    <nav class="pixel-nav desktop-nav">
-      <NuxtLink class="nav-btn" :class="{ active: activePath === '/' }" :to="localePath('/')">{{ t('nav.home') }}</NuxtLink>
-      <NuxtLink class="nav-btn" :class="{ active: activePath.startsWith('/games') }" :to="localePath('/games')">{{ t('nav.games') }}</NuxtLink>
-      <NuxtLink class="nav-btn" :class="{ active: activePath === '/tags' }" :to="localePath('/tags')">{{ t('nav.tags') }}</NuxtLink>
-      <NuxtLink class="nav-btn" :class="{ active: activePath === '/news' }" :to="localePath('/news')">{{ t('nav.news') }}</NuxtLink>
-      <NuxtLink class="nav-btn" :class="{ active: activePath === '/about' }" :to="localePath('/about')">{{ t('nav.about') }}</NuxtLink>
-    </nav>
-
-    <div class="header-tools">
-      <AuthStatus />
-      <LocaleSwitcher />
-      <ThemeToggle />
-    </div>
-
-    <!-- Mobile hamburger -->
-    <button class="hamburger-btn" @click="mobileMenuOpen = true" aria-label="Menu">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M3 12h18M3 6h18M3 18h18" />
-      </svg>
-    </button>
   </div>
 
   <!-- Mobile Nav Overlay -->
