@@ -212,12 +212,12 @@ body {
 main {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 16px;
+  padding: 18px 16px 0;
 }
 
 @media (min-width: 1024px) {
   main {
-    padding: 0 24px;
+    padding: 28px 24px 0;
   }
 }
 
