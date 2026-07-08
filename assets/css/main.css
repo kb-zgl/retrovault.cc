@@ -210,16 +210,12 @@ body {
 }
 
 main {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 18px 16px 0;
+	width: 100%;
 }
 
-@media (min-width: 1024px) {
-  main {
-    padding: 28px 24px 0;
-  }
-}
 
 /* ═══════════════════════════════════════════════
    Arcade Cabinet（匹配 demo .arcade-cabinet）
@@ -2317,7 +2313,7 @@ h1.hero-title em {
   border-bottom: 1px solid var(--color-border);
 }
 .cabinet-header-inner {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 10px 16px;
   display: flex;
@@ -2949,7 +2945,7 @@ h1.hero-title em {
   padding-top: 16px;
 }
 .footer-inner {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
 }
