@@ -1,3 +1,10 @@
+---
+title: Privacy Policy
+description: RetroVault privacy policy — how we handle your data
+date: 2026-07-04
+lang: en
+---
+
 # Privacy Policy
 
 **Last updated: July 4, 2026**

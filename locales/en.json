@@ -82,7 +82,10 @@
   },
   "news": {
     "title": "📰 Articles",
-    "badge": "Guides & News"
+    "badge": "Guides & News",
+    "empty": "No articles yet. Check back soon!",
+    "notFoundDesc": "Article \"{slug}\" not found.",
+    "back": "← Back to Articles"
   },
   "privacy": {
     "title": "Privacy Policy",

@@ -82,7 +82,10 @@
   },
   "news": {
     "title": "📰 文章",
-    "badge": "指南与资讯"
+    "badge": "指南与资讯",
+    "empty": "暂无文章。敬请期待！",
+    "notFoundDesc": "文章 \"{slug}\" 未找到。",
+    "back": "← 返回文章列表"
   },
   "privacy": {
     "title": "隐私政策",

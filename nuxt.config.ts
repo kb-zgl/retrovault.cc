@@ -73,4 +73,14 @@ export default defineNuxtConfig({
       '@tailwindcss/postcss': {},
     },
   },
+	watchers: {
+		chokidar: {
+			ignored: /node_modules|\.git|\.nuxt|retrovault-scraper/,
+		},
+	},
+	vite: {
+		optimizeDeps: {
+			include: []
+		}
+	}
 })
