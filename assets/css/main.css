@@ -1881,10 +1881,6 @@ h1.hero-title em {
    关于页面（匹配 demo .about-content）
 ═══════════════════════════════════════════════ */
 .about-content {
-  background: var(--color-bg-elevated);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 20px 20px;
   line-height: 1.8;
 }
 .about-content p {
