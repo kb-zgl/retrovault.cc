@@ -11,6 +11,12 @@
     "sub": "— Tap to enter the pixel vault —",
     "count": "📦 {count} games"
   },
+  "home": {
+    "continuePlaying": "Continue Playing",
+    "yourQueue": "Your Queue",
+    "platforms": "Platforms",
+    "genres": "Genres"
+  },
   "section": {
     "recent": "🔄 Recent",
     "featured": "⭐ Featured",

@@ -11,6 +11,12 @@
     "sub": "— 轻点进入像素宝库 —",
     "count": "📦 {count} 款游戏"
   },
+  "home": {
+    "continuePlaying": "继续游玩",
+    "yourQueue": "我的队列",
+    "platforms": "平台",
+    "genres": "类型"
+  },
   "section": {
     "recent": "🔄 最近添加",
     "featured": "⭐ 精选推荐",

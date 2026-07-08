@@ -1,11 +1,20 @@
 <template>
   <div>
-    <!-- Hero enter block -->
+    <!-- SEO: H1 站点描述 -->
+    <h1 class="sr-only">{{ t('seo.tagline') }}</h1>
+
+    <!-- Hero -->
     <div class="hero-enter" @click="navigateTo(localePath('/games'))">
       <img src="/logo.svg" alt="RetroVault" class="hero-logo" />
-      <h1 class="hero-title">{{ t('hero.title') }}</h1>
-      <div class="hero-sub">{{ t('hero.sub') }}</div>
-      <div class="hero-count">{{ t('hero.count', { count: totalAll }) }}</div>
+      <p class="hero-sub">{{ t('hero.sub') }}</p>
+      <div class="hero-actions">
+        <button class="btn-pixel btn-pixel-green" @click.stop="playRandom">
+          🎲 {{ t('fab.random') }}
+        </button>
+        <NuxtLink :to="localePath('/games')" class="btn-pixel" @click.stop>
+          {{ t('section.viewAll') }}
+        </NuxtLink>
+      </div>
     </div>
 
     <!-- Loading skeleton -->
@@ -24,11 +33,43 @@
     </template>
 
     <template v-else>
-      <!-- Recent games -->
+      <!-- H2: Continue Playing -->
+      <div v-if="continueGames.length" class="home-section">
+        <div class="section-header">
+          <h2 class="sec-title">🔄 {{ t('home.continuePlaying') }}</h2>
+        </div>
+        <div class="scroll-row">
+          <GameCard
+            v-for="g in continueGames"
+            :key="g.slug"
+            :game="g"
+            :to="localePath(`/games/${g.slug}`)"
+            @play="navigateTo(localePath(`/games/${g.slug}`))"
+          />
+        </div>
+      </div>
+
+      <!-- H2: Queue -->
+      <div v-if="queueGames.length" class="home-section">
+        <div class="section-header">
+          <h2 class="sec-title">⏭ {{ t('home.yourQueue') }}</h2>
+        </div>
+        <div class="scroll-row">
+          <GameCard
+            v-for="g in queueGames"
+            :key="g.slug"
+            :game="g"
+            :to="localePath(`/games/${g.slug}`)"
+            @play="navigateTo(localePath(`/games/${g.slug}`))"
+          />
+        </div>
+      </div>
+
+      <!-- H2: New & Updated -->
       <div class="home-section">
         <div class="section-header">
-          <h2 class="sec-title">{{ t('section.recent') }} <span class="count-badge">{{ recent.length }}</span></h2>
-          <button class="sec-more" @click="navigateTo(localePath('/games'))">{{ t('section.viewAll') }}</button>
+          <h2 class="sec-title">🆕 {{ t('section.recent') }}</h2>
+          <NuxtLink :to="localePath('/games')" class="sec-more">{{ t('section.viewAll') }}</NuxtLink>
         </div>
         <div class="scroll-row">
           <GameCard
@@ -41,40 +82,61 @@
         </div>
       </div>
 
-      <!-- Featured -->
+      <!-- H2: Featured -->
       <div class="home-section">
         <div class="section-header">
-          <h2 class="sec-title">{{ t('section.featured') }} <span class="count-badge">{{ featured.length }}</span></h2>
-          <button class="sec-more" @click="navigateTo(localePath('/games'))">{{ t('section.viewAll') }}</button>
+          <h2 class="sec-title">⭐ {{ t('section.featured') }}</h2>
+          <NuxtLink :to="localePath('/games')" class="sec-more">{{ t('section.viewAll') }}</NuxtLink>
         </div>
         <div class="featured-grid">
           <GameCard
             v-for="g in featured"
             :key="g.slug"
             :game="g"
-            :to="localePath(`/games/${g.slug}`)"
             size="grid"
+            :to="localePath(`/games/${g.slug}`)"
             @play="navigateTo(localePath(`/games/${g.slug}`))"
           />
         </div>
       </div>
 
-      <!-- Emulators (by platform) -->
+      <!-- H2: Platforms -->
       <div class="home-section">
         <div class="section-header">
-          <h2 class="sec-title">{{ t('section.emulators') }} <span class="count-badge">{{ platformStats.length }}</span></h2>
-          <button class="sec-more" @click="navigateTo(localePath('/games'))">{{ t('section.viewAll') }}</button>
+          <h2 class="sec-title">🎮 {{ t('home.platforms') }}</h2>
+          <NuxtLink :to="localePath('/games')" class="sec-more">{{ t('section.viewAll') }}</NuxtLink>
         </div>
-        <div class="scroll-row">
-          <div
-            v-for="p in platformStats"
+        <div class="category-grid">
+          <NuxtLink
+            v-for="p in topPlatforms"
             :key="p.name"
-            class="game-card-mini"
-            @click="navigateTo(localePath(`/${slugFor(p.name)}-games`))"
+            :to="localePath(`/${slugFor(p.name)}-games`)"
+            class="category-card"
           >
-            <div class="mini-cover" style="font-size:28px">{{ emojiFor(p.name) }}</div>
-            <div class="mini-title">{{ p.name }}<small>{{ t('hero.count', { count: p.count }) }}</small></div>
-          </div>
+            <span class="emoji-big">{{ emojiFor(p.name) }}</span>
+            <span class="cat-name">{{ p.name }}</span>
+            <span class="cat-count">{{ t('hero.count', { count: p.count }) }}</span>
+          </NuxtLink>
+        </div>
+      </div>
+
+      <!-- H2: Genres -->
+      <div class="home-section">
+        <div class="section-header">
+          <h2 class="sec-title">📂 {{ t('home.genres') }}</h2>
+          <NuxtLink :to="localePath('/games')" class="sec-more">{{ t('section.viewAll') }}</NuxtLink>
+        </div>
+        <div class="category-grid">
+          <NuxtLink
+            v-for="g in topGenres"
+            :key="g.name"
+            :to="localePath(`/games?genre=${encodeURIComponent(g.name)}`)"
+            class="category-card"
+          >
+            <span class="emoji-big">{{ genreEmoji(g.name) }}</span>
+            <span class="cat-name">{{ g.name }}</span>
+            <span class="cat-count">{{ t('hero.count', { count: g.count }) }}</span>
+          </NuxtLink>
         </div>
       </div>
     </template>
@@ -86,6 +148,7 @@ import type { GameListResponse, GameSummary } from '~/types/games'
 
 const { t } = useAppI18n()
 const { localePath } = useLocalePath()
+const router = useRouter()
 
 // Fetch games for homepage sections
 const { data, pending } = useFetch<GameListResponse>('/api/games', {
@@ -95,15 +158,45 @@ const { data, pending } = useFetch<GameListResponse>('/api/games', {
 
 const allGames = computed(() => data.value?.games || [])
 const totalAll = computed(() => data.value?.totalAll || 0)
-const platforms = computed(() => data.value?.platforms || [])
 
-// Recent games (reversed)
+// ── H2: Continue Playing ──────────────────────────
+
+const { getRecent: getHistoryRecent, load: loadHistory } = useGameHistory()
+const { queue: queueRef, load: loadQueue } = useGameQueue()
+
+onMounted(() => {
+  loadHistory()
+  loadQueue()
+})
+
+const continueGames = computed(() => {
+  const slugs = getHistoryRecent(6)
+  if (!slugs.length) return []
+  return slugs
+    .map(slug => allGames.value.find(g => g.slug === slug))
+    .filter(Boolean) as GameSummary[]
+})
+
+// ── H2: Queue ─────────────────────────────────────
+
+const queueGames = computed(() => {
+  const slugs = queueRef.value
+  if (!slugs.length) return []
+  return slugs
+    .map(slug => allGames.value.find(g => g.slug === slug))
+    .filter(Boolean) as GameSummary[]
+})
+
+// ── H2: Recent（最新添加）────────────────────────
+
 const recent = computed(() => [...allGames.value].reverse().slice(0, 12))
 
-// Featured games (first 12)
+// ── H2: Featured（精选前12）──────────────────────
+
 const featured = computed(() => allGames.value.slice(0, 12))
 
-// Platform stats (sorted by game count)
+// ── H2: Platforms（前8 + View All）────────────────
+
 const platformStats = computed(() => {
   const counts: Record<string, number> = {}
   allGames.value.forEach((g: GameSummary) => {
@@ -112,10 +205,37 @@ const platformStats = computed(() => {
   return Object.entries(counts)
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count)
-    .slice(0, 12)
+    .slice(0, 8)
 })
 
-// Emoji for platform
+const topPlatforms = computed(() => platformStats.value)
+
+// ── H2: Genres（前8 + View All）──────────────────
+
+const genreStats = computed(() => {
+  const counts: Record<string, number> = {}
+  allGames.value.forEach((g: GameSummary) => {
+    if (g.genre) counts[g.genre] = (counts[g.genre] || 0) + 1
+  })
+  return Object.entries(counts)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 8)
+})
+
+const topGenres = computed(() => genreStats.value)
+
+// ── Random play ──────────────────────────────────
+
+function playRandom() {
+  const games = allGames.value
+  if (!games.length) return
+  const pick = games[Math.floor(Math.random() * games.length)]
+  if (pick) navigateTo(localePath(`/games/${pick.slug}`))
+}
+
+// ── Emoji helpers ────────────────────────────────
+
 function emojiFor(platform: string): string {
   const map: Record<string, string> = {
     'Arcade': '🕹️',
@@ -145,7 +265,29 @@ function emojiFor(platform: string): string {
   return map[platform] || '🖥️'
 }
 
-// Platform slug for URLs
+function genreEmoji(genre: string): string {
+  const map: Record<string, string> = {
+    'Platformer': '🦘',
+    'RPG': '⚔️',
+    'Fighting': '👊',
+    'Action': '💥',
+    'Action-Platformer': '🎯',
+    'Racing': '🏎️',
+    'Beat \'em up': '👊',
+    'Sports': '⚽',
+    'Action-Adventure': '🗡️',
+    'Shoot \'em up': '🔫',
+    'Puzzle': '🧩',
+    'Run and Gun': '🏃',
+    'Shooter': '🔫',
+    'Adventure': '🧭',
+    'Survival Horror': '🧟',
+    'Strategy': '♟️',
+    'Simulation': '🎮',
+  }
+  return map[genre] || '🎮'
+}
+
 function slugFor(platform: string): string {
   const map: Record<string, string> = {
     'NES': 'nes',
@@ -170,6 +312,7 @@ function slugFor(platform: string): string {
     'ColecoVision': 'colecovision',
     'Nintendo Famicom Disk System': 'nintendo-famicom',
     'MSX2': 'msx2',
+    'Arcade': 'arcade',
   }
   return map[platform] || platform.toLowerCase().replace(/\s+/g, '-')
 }
