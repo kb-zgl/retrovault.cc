@@ -208,7 +208,7 @@ const yearOptions = computed(() => {
 })
 
 // core → BIOS 映射（同步 GameEmulator.vue 里的 BIOS_MAP）
-const BIOS_MAP: Record<string, string> = {
+const BIOS_MAP = {
   psx:      '/bios/scph1001.bin',
   pce:      '/bios/syscard3.pce',
   segaCD:   '/bios/bios_CD_U.bin',
