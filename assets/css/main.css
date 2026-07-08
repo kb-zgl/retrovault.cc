@@ -209,6 +209,16 @@ body {
   z-index: 1;
 }
 
+main {
+  padding: 0 16px;
+}
+
+@media (min-width: 1024px) {
+  main {
+    padding: 0 24px;
+  }
+}
+
 /* ═══════════════════════════════════════════════
    Arcade Cabinet（匹配 demo .arcade-cabinet）
 ═══════════════════════════════════════════════ */
@@ -2288,12 +2298,17 @@ h1.hero-title em {
   top: 0;
   z-index: 100;
   background: var(--color-bg-surface);
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding: 10px 16px;
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 18px;
+}
+
+@media (min-width: 1024px) {
+  .cabinet-header {
+    padding: 10px 24px;
+  }
 }
 
 .cabinet-header .cabinet-marquee {
