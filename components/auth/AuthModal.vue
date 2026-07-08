@@ -7,7 +7,7 @@
         <!-- Header -->
         <div class="auth-header">
           <span class="auth-icon">🎮</span>
-          <h3>{{ t('auth.header') }}</h3>
+          <strong>{{ t('auth.header') }}</strong>
         </div>
 
         <!-- Email input -->
