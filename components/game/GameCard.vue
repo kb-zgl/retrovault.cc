@@ -28,11 +28,11 @@
         <span v-else>{{ emojiFallback }}</span>
       </div>
 
-      <!-- Title + year (H3 for SEO heading hierarchy) -->
-      <h3 :class="size === 'grid' ? 'game-title' : 'mini-title'">
+      <!-- Title + year (dynamic heading level) -->
+      <component :is="headingTag" :class="size === 'grid' ? 'game-title' : 'mini-title'">
         {{ loc.title }}
         <small>{{ game.year }}</small>
-      </h3>
+      </component>
     </NuxtLink>
     <div
       v-else
@@ -57,11 +57,11 @@
         <span v-else>{{ emojiFallback }}</span>
       </div>
 
-      <!-- Title + year (H3 for SEO heading hierarchy) -->
-      <h3 :class="size === 'grid' ? 'game-title' : 'mini-title'">
+      <!-- Title + year (dynamic heading level) -->
+      <component :is="headingTag" :class="size === 'grid' ? 'game-title' : 'mini-title'">
         {{ loc.title }}
         <small>{{ game.year }}</small>
-      </h3>
+      </component>
     </div>
 
     <!-- Tags: platform + genre (inside card wrapper but outside link, prevents nav) -->
@@ -79,13 +79,17 @@ const props = withDefaults(defineProps<{
   game: GameSummary
   to?: string
   size?: 'mini' | 'grid'
+  headingLevel?: 'h2' | 'h3' | 'h4'
 }>(), {
   size: 'mini',
+  headingLevel: 'h3',
 })
 
 defineEmits<{
   play: []
 }>()
+
+const headingTag = computed(() => props.headingLevel)
 
 const router = useRouter()
 const { localePath } = useLocalePath()

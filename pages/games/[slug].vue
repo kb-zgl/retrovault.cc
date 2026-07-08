@@ -115,6 +115,7 @@
             v-for="g in related"
             :key="g.slug"
             :game="g"
+            heading-level="h3"
             :to="localePath(`/games/${g.slug}`)"
             @play="navigateTo(localePath(`/games/${g.slug}`))"
           />

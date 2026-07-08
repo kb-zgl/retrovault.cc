@@ -9,10 +9,7 @@
     </div>
 
     <template v-else>
-      <h1 class="section-title">
-        {{ t('nav.games') }}
-        <span class="badge-green badge">{{ totalAll || total }} games</span>
-      </h1>
+      <h1 class="sr-only">{{ t('nav.games') }}</h1>
       <!-- Filter bar (compact, two rows) -->
       <div class="filter-bar-compact">
         <div class="filter-group-scroll">
@@ -95,6 +92,7 @@
           :key="g.slug"
           :game="g"
           size="mini"
+          heading-level="h2"
           :to="localePath(`/games/${g.slug}`)"
           @play="navigateTo(localePath(`/games/${g.slug}`))"
         />

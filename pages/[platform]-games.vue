@@ -30,6 +30,7 @@
         :key="g.slug"
         :game="g"
         size="mini"
+        heading-level="h2"
         :to="localePath(`/games/${g.slug}`)"
         @play="navigateTo(localePath(`/games/${g.slug}`))"
       />
