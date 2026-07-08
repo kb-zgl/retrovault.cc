@@ -2330,6 +2330,7 @@ h1.hero-title em {
   min-width: 0;
   flex-wrap: nowrap;
   gap: 6px;
+  justify-content: flex-start;
 }
 .cabinet-header .cabinet-marquee .marquee-lamp {
   flex-shrink: 0;
