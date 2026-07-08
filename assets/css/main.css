@@ -2853,6 +2853,11 @@ h1.hero-title em {
   border-top: 1px solid var(--color-border);
   padding-top: 16px;
 }
+.footer-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
 .footer-top {
   display: flex;
   justify-content: center;
@@ -2877,36 +2882,13 @@ h1.hero-title em {
   border-radius: 2px;
   animation: blink 1.8s infinite alternate;
 }
-.footer-links {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px 20px;
-  margin-top: 12px;
-  font-family: var(--font-body);
-  font-size: clamp(0.75rem, 1.8vw, 0.85rem);
-  color: var(--color-text-muted);
-  letter-spacing: 0;
-}
-.footer-links a,
-.footer-links .link-btn {
-  color: var(--color-text-muted);
-  text-decoration: none;
-  cursor: pointer;
-  background: none;
-  border: none;
-  font-family: var(--font-body);
-  font-size: inherit;
-  padding: 10px 14px;
-  letter-spacing: 0;
-}
-.footer-links a:hover,
-.footer-links .link-btn:hover {
+.footer-brand {
+  font-family: var(--font-pixel);
+  font-size: clamp(0.7rem, 1.8vw, 0.85rem);
   color: var(--color-text-primary);
+  letter-spacing: 1px;
 }
-.footer-links .login-status {
-  color: var(--color-success);
-}
+
 .footer-stats {
   display: flex;
   justify-content: center;
@@ -2918,48 +2900,103 @@ h1.hero-title em {
   color: var(--color-text-secondary);
   letter-spacing: 0.5px;
 }
-.footer-stats .stat-dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  background: var(--color-accent);
-  border-radius: 50%;
-  opacity: 0.6;
+
+/* ── 3-column grid ───────────────────── */
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 32px;
+  margin-top: 24px;
+  padding: 24px 0;
+  border-top: 1px solid var(--color-border);
 }
-.footer-platforms {
+@media (max-width: 640px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+.footer-col {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px 16px;
-  margin-top: 16px;
-  padding: 12px 16px;
+  flex-direction: column;
+  gap: 8px;
 }
-.footer-platforms-label {
-  width: 100%;
-  text-align: center;
+.footer-col-title {
   font-family: var(--font-pixel);
   font-size: clamp(0.55rem, 1.4vw, 0.65rem);
   color: var(--color-text-muted);
   letter-spacing: 2px;
   text-transform: uppercase;
-  margin-bottom: 4px;
+  margin: 0 0 12px 0;
+}
+
+/* ── Column: Platforms ───────────────── */
+
+.footer-platforms {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 .footer-platform-link {
-  font-family: var(--font-body);
-  font-size: clamp(0.75rem, 1.6vw, 0.85rem);
   color: var(--color-text-secondary);
   text-decoration: none;
-  padding: 6px 12px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  transition: border-color 0.15s, color 0.15s;
+  font-family: var(--font-body);
+  font-size: clamp(0.75rem, 1.6vw, 0.85rem);
+  font-weight: 400;
+  transition: color 0.15s;
+  padding: 2px 0;
+  border: none;
+  background: none;
 }
 .footer-platform-link:hover {
   color: var(--color-accent);
-  border-color: var(--color-accent);
+}
+
+/* ── Column: Page links ──────────────── */
+
+.footer-page-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.footer-page-links a,
+.footer-page-links .link-btn {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-size: clamp(0.75rem, 1.6vw, 0.85rem);
+  padding: 2px 0;
+  text-align: left;
+  font-weight: 400;
+  letter-spacing: 0;
+  transition: color 0.15s;
+}
+.footer-page-links a:hover,
+.footer-page-links .link-btn:hover {
+  color: var(--color-text-primary);
+}
+
+/* ── Column: About ───────────────────── */
+
+.footer-about-text {
+  font-family: var(--font-body);
+  font-size: clamp(0.65rem, 1.4vw, 0.75rem);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+.footer-powered {
+  font-size: clamp(0.55rem, 1.2vw, 0.65rem);
+  color: var(--color-text-muted);
+  opacity: 0.6;
+  margin-top: 8px;
 }
 .footer-bottom {
-  margin-top: 20px;
+  margin-top: 0;
   padding-top: 16px;
   border-top: 1px solid var(--color-border);
   text-align: center;
@@ -2980,11 +3017,6 @@ h1.hero-title em {
   max-width: 600px;
   margin: 8px auto;
   opacity: 0.7;
-}
-.footer-bottom .footer-powered {
-  font-size: clamp(0.55rem, 1.2vw, 0.65rem);
-  opacity: 0.6;
-  margin-top: 12px;
 }
 
 /* ═══════════════════════════════════════════════
