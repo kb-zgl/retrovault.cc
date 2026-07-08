@@ -3,7 +3,7 @@
     <!-- Hero enter block -->
     <div class="hero-enter" @click="navigateTo(localePath('/games'))">
       <img src="/logo.svg" alt="RetroVault" class="hero-logo" />
-      <div class="hero-title">{{ t('hero.title') }}</div>
+      <h1 class="hero-title">{{ t('hero.title') }}</h1>
       <div class="hero-sub">{{ t('hero.sub') }}</div>
       <div class="hero-count">{{ t('hero.count', { count: totalAll }) }}</div>
     </div>
@@ -27,7 +27,7 @@
       <!-- Recent games -->
       <div class="home-section">
         <div class="section-header">
-          <div class="sec-title">{{ t('section.recent') }} <span class="count-badge">{{ recent.length }}</span></div>
+          <h2 class="sec-title">{{ t('section.recent') }} <span class="count-badge">{{ recent.length }}</span></h2>
           <button class="sec-more" @click="navigateTo(localePath('/games'))">{{ t('section.viewAll') }}</button>
         </div>
         <div class="scroll-row">
@@ -44,7 +44,7 @@
       <!-- Featured -->
       <div class="home-section">
         <div class="section-header">
-          <div class="sec-title">{{ t('section.featured') }} <span class="count-badge">{{ featured.length }}</span></div>
+          <h2 class="sec-title">{{ t('section.featured') }} <span class="count-badge">{{ featured.length }}</span></h2>
           <button class="sec-more" @click="navigateTo(localePath('/games'))">{{ t('section.viewAll') }}</button>
         </div>
         <div class="featured-grid">
@@ -62,7 +62,7 @@
       <!-- Emulators (by platform) -->
       <div class="home-section">
         <div class="section-header">
-          <div class="sec-title">{{ t('section.emulators') }} <span class="count-badge">{{ platformStats.length }}</span></div>
+          <h2 class="sec-title">{{ t('section.emulators') }} <span class="count-badge">{{ platformStats.length }}</span></h2>
           <button class="sec-more" @click="navigateTo(localePath('/games'))">{{ t('section.viewAll') }}</button>
         </div>
         <div class="scroll-row">

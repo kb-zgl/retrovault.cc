@@ -3,10 +3,10 @@
     <Breadcrumb :items="breadcrumbItems" />
 
     <!-- Title -->
-    <div class="section-title">
+    <h1 class="section-title">
       {{ t('platformPage.title', { platform: displayName }) }}
       <span class="badge-purple badge">{{ total }} games</span>
-    </div>
+    </h1>
 
     <!-- Loading -->
     <div v-if="pending" class="game-list-full">

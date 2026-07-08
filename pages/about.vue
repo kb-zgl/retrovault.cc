@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="section-title">
+    <h1 class="section-title">
       {{ t('about.title') }}
       <span class="badge purple">{{ t('about.subtitle') }}</span>
-    </div>
+    </h1>
 
     <div class="about-content">
       <p>{{ t('about.para1') }}</p>
@@ -17,12 +17,12 @@
           class="team-member"
         >
           <span class="avatar">{{ member.avatar }}</span>
-          <div class="name">{{ member.name }}</div>
+          <h3 class="name">{{ member.name }}</h3>
           <div class="role">{{ member.role }}</div>
         </div>
       </div>
 
-      <p style="margin-top:14px;font-family:var(--font-body);font-size:clamp(0.65rem,1.5vw,0.75rem);color:var(--color-text-muted);letter-spacing:0;">
+      <p style="margin-top:14px;font-family:var(--font-body);font-size:0.75rem;color:var(--color-text-muted);letter-spacing:0;">
         📧 retro@vault.cc
       </p>
     </div>

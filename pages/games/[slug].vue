@@ -21,10 +21,10 @@
 
     <!-- TODO 404 -->
     <div v-else-if="error" class="pt-10 text-center">
-      <div style="font-size:clamp(3rem,12vw,5rem);margin-bottom:12px">🕹️</div>
-      <h1 class="font-pixel text-[clamp(0.8rem,3vw,1.2rem)]" style="color:var(--color-text-primary);margin-bottom:8px">
+      <div style="font-size:2.4rem;margin-bottom:12px">🕹️</div>
+      <h2 style="font-family:var(--font-pixel);font-size:1rem;color:var(--color-text-primary);margin-bottom:8px">
         {{ t('common.notFound') }}
-      </h1>
+      </h2>
       <p class="font-body text-[clamp(0.6rem,1.5vw,0.7rem)]" style="color:var(--color-text-muted)">
         {{ t('common.notFoundDesc', { slug }) }}
       </p>

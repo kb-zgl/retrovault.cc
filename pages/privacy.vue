@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="section-title">
+    <h1 class="section-title">
       🔒 {{ t('privacy.title') }}
       <span class="badge purple">{{ t('privacy.badge') }}</span>
-    </div>
+    </h1>
 
     <div class="markdown-content" v-if="doc">
       <ContentRenderer :value="doc" />

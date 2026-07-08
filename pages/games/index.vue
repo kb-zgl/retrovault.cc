@@ -9,6 +9,10 @@
     </div>
 
     <template v-else>
+      <h1 class="section-title">
+        {{ t('nav.games') }}
+        <span class="badge-green badge">{{ totalAll || total }} games</span>
+      </h1>
       <!-- Filter bar (compact, two rows) -->
       <div class="filter-bar-compact">
         <div class="filter-group-scroll">

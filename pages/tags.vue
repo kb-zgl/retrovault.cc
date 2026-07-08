@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="section-title">
+    <h1 class="section-title">
       {{ t('tagCloud.title') }}
       <span class="badge green">{{ total }} tags</span>
-    </div>
+    </h1>
 
     <div v-if="pending" class="tag-cloud">
       <span

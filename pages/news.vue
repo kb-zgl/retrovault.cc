@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="section-title">
+    <h1 class="section-title">
       {{ t('news.title') }}
       <span class="badge blue">{{ t('news.badge') }}</span>
-    </div>
+    </h1>
 
     <div class="article-list">
       <div
@@ -11,7 +11,7 @@
         :key="article.title"
         class="article-item"
       >
-        <div class="article-title">{{ article.title }}</div>
+        <h3 class="article-title">{{ article.title }}</h3>
         <div class="article-meta">
           <span class="author">{{ article.author }}</span>
           <span>{{ article.date }}</span>
