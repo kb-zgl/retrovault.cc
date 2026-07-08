@@ -47,18 +47,29 @@ const isClosing = ref(false)
 const emulatorReady = ref(false)
 const pendingStateResolve = ref<((value: ArrayBuffer | null) => void) | null>(null)
 
+// core → BIOS 映射（按平台归一，不再依赖单个游戏 JSON 字段）
+const BIOS_MAP: Record<string, string> = {
+  psx:      '/bios/scph1001.bin',    // PlayStation
+  pce:      '/bios/syscard3.pce',     // PC Engine CD
+  segaCD:   '/bios/bios_CD_U.bin',    // Sega CD
+  ngp:      '/bios/neogeo.zip',       // NeoGeo Pocket
+  segaSaturn: '/bios/saturn_bios.bin', // Sega Saturn
+  coleco:   '/bios/colecovision.rom',  // ColecoVision
+}
+
 // ---------- 构建 iframe URL ----------
 const iframeSrc = computed(() => {
-  const base = '/emulator.html' // 确保这里与你实际的文件名一致
+  const base = '/emulator.html'
+  const biosUrl = BIOS_MAP[props.game.ejs.core]
   const params = new URLSearchParams({
     core: props.game.ejs.core,
-    gameUrl: '/' + props.game.defaultRom, // 确保这个路径可以在 iframe 所在的域被跨域访问
+    gameUrl: '/' + props.game.defaultRom,
     gameName: props.game.title,
     gameId: props.game.slug,
     pathtodata: 'https://cdn.emulatorjs.org/stable/data/',
   })
-  if (props.game.ejs.biosUrl) {
-    params.set('biosUrl', props.game.ejs.biosUrl)
+  if (biosUrl) {
+    params.set('biosUrl', biosUrl)
   }
   return `${base}?${params.toString()}`
 })

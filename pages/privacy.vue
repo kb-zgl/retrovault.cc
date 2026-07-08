@@ -21,11 +21,8 @@ const { data: doc } = await useAsyncData('privacy', () =>
 
 const { t } = useAppI18n()
 
-useSeoMeta({
+usePageSeo({
   title: t('seo.privacyTitle'),
   description: t('seo.privacyDesc'),
-  ogTitle: t('seo.privacyTitle'),
-  ogDescription: t('seo.privacyDesc'),
-  ogType: 'website',
 })
 </script>

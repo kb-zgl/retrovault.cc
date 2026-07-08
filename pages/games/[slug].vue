@@ -82,6 +82,11 @@
         </div>
       </div>
 
+      <!-- Long description (Markdown) -->
+      <div v-if="longDescHtml" class="markdown-content" style="margin-top:24px">
+        <div v-html="longDescHtml" />
+      </div>
+
       <!-- TODO Comments -->
       <div class="comment-section">
         <div class="cmt-title">
@@ -137,6 +142,7 @@ const route = useRoute()
 const slug = computed(() => String(route.params.slug))
 const { localized } = useGameLocale()
 const loc = computed(() => localized(game.value))
+const { render: renderMd } = useMarkdown()
 
 // Fetch game data
 const { data: game, pending, error } = useFetch<GameData>(`/api/games/${slug.value}`, {
@@ -146,20 +152,44 @@ const { data: game, pending, error } = useFetch<GameData>(`/api/games/${slug.val
 // SEO: title + description + VideoGame Schema.org
 const pageTitle = computed(() => {
   if (!game.value) return t('common.loading')
-  return `Play ${loc.value.title} Online Free — RetroVault`
+  return t('seo.detailTitle', { title: loc.value.title })
 })
 
 const pageDesc = computed(() => {
   if (!game.value) return t('seo.tagline')
-  return (loc.value.description || game.value.description).slice(0, 158)
+  return t('seo.detailDesc', { description: (loc.value.description || game.value.description).slice(0, 158) })
 })
 
-useSeoMeta({
-  title: pageTitle,
-  description: pageDesc,
-  ogTitle: pageTitle,
-  ogDescription: pageDesc,
-  ogType: 'website',
+// Rendered Markdown content for SEO-rich game description
+const longDescSource = computed(() => {
+  if (!game.value) return ''
+  // Support both string (new MD format) and string[] (legacy format)
+  const raw = loc.value.longDesc || game.value.longDescription
+  return Array.isArray(raw) ? raw.join('\n\n') : (raw || '')
+})
+const longDescHtml = computed(() => renderMd(longDescSource.value))
+
+usePageSeo(() => ({
+  title: pageTitle.value,
+  description: pageDesc.value,
+  ogType: 'video.game',
+}))
+
+// Satori OG image (text-focused with cover thumbnail) + canonical URL
+const coverUrl = computed(() => game.value?.localCover ? `https://retrovault.cc/${game.value.localCover}` : null)
+
+defineOgImage('GameOgImage', () => ({
+  title: loc.value.title || game.value?.title || 'Retro Game',
+  description: (loc.value.description || game.value?.description || '').slice(0, 120),
+  cover: coverUrl.value || undefined,
+  platform: game.value?.platform || undefined,
+  genre: game.value?.genre || undefined,
+}))
+
+useHead({
+  link: computed(() => [
+    { rel: 'canonical', href: `https://retrovault.cc/games/${slug.value}` },
+  ]),
 })
 
 const breadcrumbItems = useBreadcrumb(computed(() => [

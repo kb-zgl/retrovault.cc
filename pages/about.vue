@@ -45,11 +45,16 @@ const team = computed<TeamMember[]>(() => [
   { avatar: '📝', name: 'RetroWriter', role: t('about.roleEditor') },
 ])
 
-useSeoMeta({
+usePageSeo({
   title: t('seo.aboutTitle'),
   description: t('seo.aboutDesc'),
-  ogTitle: t('seo.aboutTitle'),
-  ogDescription: t('seo.aboutDesc'),
-  ogType: 'website',
 })
+
+useSchemaOrg([
+  {
+    '@type': 'AboutPage',
+    name: t('seo.aboutTitle'),
+    description: t('seo.aboutDesc'),
+  },
+])
 </script>

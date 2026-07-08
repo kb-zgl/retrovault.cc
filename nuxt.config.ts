@@ -47,15 +47,21 @@ export default defineNuxtConfig({
 
   ogImage: {
     enabled: true,
-    runtimeCacheStorage: false
+    runtimeCacheStorage: false,
+    fonts: [
+      { path: '/fonts/Inter-Regular.ttf', weight: 400 },
+      { path: '/fonts/Inter-Bold.ttf', weight: 700 },
+    ],
   },
 
   robots: {
     allow: ['/'],
+    disallow: ['/admin/**', '/api/**'],
   },
 
   sitemap: {
     autoLastmod: true,
+    sources: ['/api/sitemap-urls'],
   },
 
   routeRules: {

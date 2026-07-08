@@ -137,6 +137,8 @@
     "privacyDesc": "RetroVault 隐私政策。了解我们如何在您畅玩经典复古游戏时收集、使用和保护您的数据。",
     "tagsTitle": "游戏标签 — 按标签浏览 | RetroVault",
     "tagsDesc": "按标签浏览复古游戏。按类型、主题、机制等查找游戏。",
+    "detailTitle": "在线免费畅玩 {title} | RetroVault",
+    "detailDesc": "{description}",
     "ogTypeHome": "首页",
     "ogTypeCategory": "分类",
     "ogTypeDetail": "详情",

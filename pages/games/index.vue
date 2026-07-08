@@ -128,13 +128,18 @@ const router = useRouter()
 const { t } = useAppI18n()
 const { localePath } = useLocalePath()
 
-useSeoMeta({
+usePageSeo({
   title: t('seo.gamesTitle'),
   description: t('seo.gamesDesc'),
-  ogTitle: t('seo.gamesTitle'),
-  ogDescription: t('seo.gamesDesc'),
-  ogType: 'website',
 })
+
+useSchemaOrg([
+  {
+    '@type': 'CollectionPage',
+    name: t('seo.gamesTitle'),
+    description: t('seo.gamesDesc'),
+  },
+])
 
 // Decades
 const decades = [1980, 1990, 2000, 2010, 2020]

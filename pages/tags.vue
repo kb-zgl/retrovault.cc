@@ -56,11 +56,16 @@ function tagLinkPath(tag: string): string {
   return localePath('/games') + '?tag=' + encodeURIComponent(tag)
 }
 
-useSeoMeta({
+usePageSeo({
   title: t('seo.tagsTitle'),
   description: t('seo.tagsDesc'),
-  ogTitle: t('seo.tagsTitle'),
-  ogDescription: t('seo.tagsDesc'),
-  ogType: 'website',
 })
+
+useSchemaOrg([
+  {
+    '@type': 'CollectionPage',
+    name: t('seo.tagsTitle'),
+    description: t('seo.tagsDesc'),
+  },
+])
 </script>

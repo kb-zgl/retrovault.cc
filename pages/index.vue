@@ -173,12 +173,9 @@ function slugFor(platform: string): string {
   return map[platform] || platform.toLowerCase().replace(/\s+/g, '-')
 }
 
-useSeoMeta({
+usePageSeo({
   title: t('seo.homeTitle'),
   description: t('seo.homeDesc'),
-  ogTitle: t('seo.homeTitle'),
-  ogDescription: t('seo.homeDesc'),
-  ogType: 'website',
 })
 
 useSchemaOrg([

@@ -69,11 +69,17 @@ const articles: Article[] = [
 
 const { t } = useAppI18n()
 
-useSeoMeta({
+usePageSeo({
   title: t('seo.newsTitle'),
   description: t('seo.newsDesc'),
-  ogTitle: t('seo.newsTitle'),
-  ogDescription: t('seo.newsDesc'),
   ogType: 'article',
 })
+
+useSchemaOrg([
+  {
+    '@type': 'Article',
+    headline: t('seo.newsTitle'),
+    description: t('seo.newsDesc'),
+  },
+])
 </script>

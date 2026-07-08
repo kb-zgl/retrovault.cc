@@ -137,6 +137,8 @@
     "privacyDesc": "RetroVault privacy policy. Learn how we collect, use, and protect your data while you enjoy classic retro games online.",
     "tagsTitle": "Game Tags — Browse by Tag | RetroVault",
     "tagsDesc": "Browse retro games by tag. Find games by genre, theme, mechanics, and more.",
+    "detailTitle": "Play {title} Online Free — RetroVault",
+    "detailDesc": "{description}",
     "ogTypeHome": "Home",
     "ogTypeCategory": "Category",
     "ogTypeDetail": "Detail",

@@ -44,13 +44,21 @@ const route = useRoute()
 const { t } = useAppI18n()
 const { localePath } = useLocalePath()
 
-useSeoMeta({
-  title: computed(() => t('platformPage.title', { platform: displayName.value })),
-  description: computed(() => t('platformPage.description', { platform: displayName.value })),
-  ogTitle: computed(() => t('platformPage.title', { platform: displayName.value })),
-  ogDescription: computed(() => t('platformPage.description', { platform: displayName.value })),
-  ogType: 'website',
-})
+const pageTitle = computed(() => t('platformPage.title', { platform: displayName.value }))
+const pageDesc = computed(() => t('platformPage.description', { platform: displayName.value }))
+
+usePageSeo(() => ({
+  title: pageTitle.value,
+  description: pageDesc.value,
+}))
+
+useSchemaOrg([
+  {
+    '@type': 'CollectionPage',
+    name: pageTitle,
+    description: pageDesc,
+  },
+])
 
 const breadcrumbItems = useBreadcrumb(computed(() => [
   { label: t('nav.home'), to: localePath('/') },

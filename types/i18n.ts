@@ -16,6 +16,6 @@ type TranslationKey =
   | `auth.${'login' | 'logout' | 'magicLink' | 'header' | 'desc' | 'emailPlaceholder' | 'sendLink' | 'sending' | 'linkSentTo' | 'checkInbox' | 'useDifferentEmail' | 'invalidEmail' | 'genericError' | 'username'}`
   | `theme.${'light' | 'dark'}`
   | `common.${'loading' | 'error' | 'notFound' | 'notFoundDesc'}`
-  | `seo.${'tagline' | 'homeTitle' | 'homeDesc' | 'gamesTitle' | 'gamesDesc' | 'privacyTitle' | 'privacyDesc' | 'aboutTitle' | 'aboutDesc' | 'newsTitle' | 'newsDesc' | 'tagsTitle' | 'tagsDesc' | 'ogTypeHome' | 'ogTypeCategory' | 'ogTypeDetail' | 'ogTypeBlog' | 'ogTypePage'}`
+  | `seo.${'tagline' | 'homeTitle' | 'homeDesc' | 'gamesTitle' | 'gamesDesc' | 'privacyTitle' | 'privacyDesc' | 'aboutTitle' | 'aboutDesc' | 'newsTitle' | 'newsDesc' | 'tagsTitle' | 'tagsDesc' | 'detailTitle' | 'detailDesc' | 'ogTypeHome' | 'ogTypeCategory' | 'ogTypeDetail' | 'ogTypeBlog' | 'ogTypePage'}`
 
 export type { TranslationKey }
