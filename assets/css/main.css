@@ -2992,7 +2992,7 @@ h1.hero-title em {
 }
 @media (max-width: 768px) {
   .footer-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 24px;
   }
 }
