@@ -21,7 +21,7 @@
       <NuxtLink class="nav-btn" :class="{ active: activePath === '/about' }" :to="localePath('/about')">{{ t('nav.about') }}</NuxtLink>
     </nav>
 
-    <div class="hidden md:flex items-center gap-2">
+    <div class="header-tools">
       <AuthStatus />
       <LocaleSwitcher />
       <ThemeToggle />

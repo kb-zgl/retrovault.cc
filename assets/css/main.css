@@ -2353,6 +2353,12 @@ h1.hero-title em {
   font-size: clamp(0.6rem, 1.8vw, 0.75rem);
 }
 
+.header-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* ═══════════════════════════════════════════════
    Marquee 标题（匹配 demo .cabinet-marquee）
 ═══════════════════════════════════════════════ */
@@ -2536,8 +2542,11 @@ h1.hero-title em {
   background: rgba(255,255,255,0.03);
 }
 
-@media (max-width: 639px) {
+@media (max-width: 959px) {
   .cabinet-header .pixel-nav.desktop-nav {
+    display: none;
+  }
+  .cabinet-header .header-tools {
     display: none;
   }
   .hamburger-btn {
