@@ -30,7 +30,7 @@
               :key="p.slug"
               :to="localePath(`/${p.slug}-games`)"
               class="footer-platform-link"
-            >{{ t(`footer.platform.${p.slug}`) }}</NuxtLink>
+            >{{ platformLabel(p.refKey) }}</NuxtLink>
           </div>
         </div>
 
@@ -66,7 +66,9 @@
 </template>
 
 <script setup lang="ts">
-const { t } = useAppI18n()
+import { getReferenceData } from '~/utils/reference-data'
+
+const { t, locale } = useAppI18n()
 const { localePath } = useLocalePath()
 const year = new Date().getFullYear()
 const { isLoggedIn, user, login, logout } = useAuth()
@@ -74,15 +76,22 @@ const { isLoggedIn, user, login, logout } = useAuth()
 const onlineCount = Math.floor(Math.random() * 50) + 32
 
 const platforms = [
-  { slug: 'nes', name: 'NES' },
-  { slug: 'snes', name: 'SNES' },
-  { slug: 'gba', name: 'Game Boy Advance' },
-  { slug: 'arcade', name: 'Arcade' },
-  { slug: 'n64', name: 'Nintendo 64' },
-  { slug: 'genesis', name: 'Sega Genesis' },
-  { slug: 'ps', name: 'PlayStation' },
-  { slug: 'gb', name: 'Game Boy' },
+  { slug: 'nes', refKey: 'nes' },
+  { slug: 'snes', refKey: 'snes' },
+  { slug: 'gba', refKey: 'game-boy-advance' },
+  { slug: 'arcade', refKey: 'arcade' },
+  { slug: 'n64', refKey: 'nintendo-64' },
+  { slug: 'genesis', refKey: 'sega-genesis' },
+  { slug: 'ps', refKey: 'playstation' },
+  { slug: 'gb', refKey: 'game-boy' },
 ]
+
+const refData = computed(() => getReferenceData(locale.value))
+
+function platformLabel(refKey: string): string {
+  const entry = refData.value.platforms.find(p => p.key === refKey)
+  return entry?.label || refKey
+}
 
 function authAction() {
   if (isLoggedIn.value) logout()
