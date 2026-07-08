@@ -1,9 +1,9 @@
 <template>
   <footer class="footer">
     <div class="footer-inner">
-      <!-- Grid: 4 columns -->
+      <!-- Grid: 3 columns -->
       <div class="footer-grid">
-        <!-- Column: Brand -->
+        <!-- Column: Brand + About -->
         <div class="footer-col">
           <div class="footer-brand-row">
             <span class="dot"></span>
@@ -11,6 +11,8 @@
           </div>
           <span class="footer-tagline">— {{ t('footer.tagline') }}</span>
           <span class="footer-stats-line">{{ t('footer.stats', { games: siteStats?.games?.toLocaleString() || '...', platforms: siteStats?.platforms || '...' }) }}</span>
+          <p class="footer-about-text" style="margin-top:16px">{{ t('about.para1') }}</p>
+          <p class="footer-powered">{{ t('footer.poweredBy', { tech: 'EmulatorJS, Nuxt & Cloudflare' }) }}</p>
         </div>
 
         <!-- Column: Platforms -->
@@ -35,13 +37,6 @@
             <NuxtLink :to="localePath('/tags')">{{ t('nav.tags') }}</NuxtLink>
             <NuxtLink :to="localePath('/privacy')">{{ t('footer.privacy') }}</NuxtLink>
           </div>
-        </div>
-
-        <!-- Column: About -->
-        <div class="footer-col">
-          <h4 class="footer-col-title">{{ t('nav.about') }}</h4>
-          <p class="footer-about-text">{{ t('about.para1') }}</p>
-          <p class="footer-powered">{{ t('footer.poweredBy', { tech: 'EmulatorJS, Nuxt & Cloudflare' }) }}</p>
         </div>
       </div>
 

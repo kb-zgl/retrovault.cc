@@ -2972,11 +2972,11 @@ h1.hero-title em {
   color: var(--color-text-secondary);
 }
 
-/* ── 4-column grid ───────────────────── */
+/* ── 3-column grid ───────────────────── */
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1.3fr 1fr;
   gap: 32px;
   padding: 24px 0;
 }
