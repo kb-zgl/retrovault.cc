@@ -48,7 +48,7 @@
       <!-- ════════════════════════════════════════════════
            PART 1: Public Fields (language-independent)
            ════════════════════════════════════════════════ -->
-      <div class="card-static" style="padding:24px;margin-bottom:24px">
+      <div class="card-static" style="padding:24px;margin-bottom:24px;overflow:visible">
         <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin-bottom:16px">基本信息</h3>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
           <FormField label="标识" :required="isNew">
@@ -148,12 +148,20 @@
           <FormField label="简短描述">
             <textarea v-model="localeForm.description" class="form-input" rows="3" :placeholder="activeLang === 'en' ? form.description : ''"></textarea>
           </FormField>
-          <FormField label="详细描述">
-            <div v-for="(para, i) in localeForm.longDesc" :key="i" style="display:flex;gap:8px;margin-bottom:8px">
-              <textarea v-model="localeForm.longDesc[i]" class="form-input" rows="2" style="flex:1"></textarea>
-              <button @click="localeForm.longDesc.splice(i, 1)" style="color:var(--color-accent);background:none;border:none;cursor:pointer;font-size:1rem">✕</button>
-            </div>
-            <button @click="localeForm.longDesc.push('')" class="btn-pixel" style="padding:4px 12px;font-size:0.65rem">+ 添加段落</button>
+          <FormField label="详细描述（Markdown）">
+            <textarea v-model="localeForm.longDesc" class="form-input" rows="8" style="font-family:var(--font-mono);font-size:0.75rem" placeholder="支持 Markdown 语法：
+
+## 标题
+
+**粗体** *斜体*
+
+- 列表项
+- 列表项
+
+[链接文字](url)
+
+```code```"></textarea>
+            <div style="font-size:0.6rem;color:var(--color-text-muted);margin-top:4px">支持 Markdown：标题、粗体、列表、链接、代码块、图片</div>
           </FormField>
           <FormField label="操作说明">
             <textarea v-model="controlsText" class="form-input" rows="5" placeholder="D-Pad: 方向&#10;A: 跳跃&#10;B: 攻击&#10;Start: 暂停"></textarea>
@@ -208,7 +216,7 @@ const form = reactive({
 
 // PART 2: Active language content
 const localeForm = reactive({
-  title: '', description: '', longDesc: []
+  title: '', description: '', longDesc: ''
 })
 const controlsText = ref('')
 
@@ -247,7 +255,7 @@ function switchLang(lang) {
   form.langs[activeLang.value] = {
     title: localeForm.title || undefined,
     description: localeForm.description || undefined,
-    longDesc: localeForm.longDesc.filter(p => p.trim()) || undefined,
+    longDesc: localeForm.longDesc.trim() || undefined,
     controls: textToControls(controlsText.value) || undefined,
   }
   activeLang.value = lang
@@ -258,7 +266,7 @@ function syncLocaleForm() {
   const l = form.langs[activeLang.value] || {}
   localeForm.title = l.title || ''
   localeForm.description = l.description || ''
-  localeForm.longDesc = Array.isArray(l.longDesc) ? l.longDesc : []
+  localeForm.longDesc = typeof l.longDesc === 'string' ? l.longDesc : Array.isArray(l.longDesc) ? l.longDesc.join('\n\n') : ''
   controlsText.value = controlsToText(l.controls)
 }
 
@@ -358,7 +366,7 @@ async function save() {
   form.langs[activeLang.value] = {
     title: localeForm.title || undefined,
     description: localeForm.description || undefined,
-    longDesc: localeForm.longDesc.filter(p => p.trim()) || undefined,
+    longDesc: localeForm.longDesc.trim() || undefined,
     controls: textToControls(controlsText.value) || undefined,
   }
 
