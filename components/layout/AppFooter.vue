@@ -1,15 +1,13 @@
 <template>
   <footer class="footer">
-    <div class="max-w-[1400px] mx-auto px-6">
+    <div class="footer-inner">
       <!-- Brand + Tagline + Online -->
       <div class="footer-top">
         <div class="pixel-counter">
           <span class="dot"></span>
-          <strong style="font-family:var(--font-pixel);font-size:clamp(0.7rem,1.8vw,0.85rem);color:var(--color-text-primary);letter-spacing:1px">
-            RETRO VAULT
-          </strong>
+          <strong class="footer-brand">RETRO VAULT</strong>
         </div>
-        <span style="color:var(--color-text-muted)">— {{ t('footer.tagline') }}</span>
+        <span>— {{ t('footer.tagline') }}</span>
         <span class="pixel-counter" style="margin-left:2px">
           <span class="dot"></span>
           {{ t('footer.playersOnline', { count: onlineCount }) }}
@@ -21,33 +19,47 @@
         {{ t('footer.stats', { games: '2,324', platforms: '23' }) }}
       </div>
 
-      <!-- Platform Quick Links -->
-      <div class="footer-platforms">
-        <div class="footer-platforms-label">{{ t('footer.platforms') }}</div>
-        <NuxtLink
-          v-for="p in platforms"
-          :key="p.slug"
-          :to="localePath(`/${p.slug}-games`)"
-          class="footer-platform-link"
-        >{{ p.name }}</NuxtLink>
+      <!-- Grid: 3 columns -->
+      <div class="footer-grid">
+        <!-- Column: Platforms -->
+        <div class="footer-col">
+          <h4 class="footer-col-title">{{ t('footer.platforms') }}</h4>
+          <div class="footer-platforms">
+            <NuxtLink
+              v-for="p in platforms"
+              :key="p.slug"
+              :to="localePath(`/${p.slug}-games`)"
+              class="footer-platform-link"
+            >{{ t(`footer.platform.${p.slug}`) }}</NuxtLink>
+          </div>
+        </div>
+
+        <!-- Column: Quick Links -->
+        <div class="footer-col">
+          <h4 class="footer-col-title">{{ t('footer.quickLinks') }}</h4>
+          <div class="footer-page-links">
+            <NuxtLink :to="localePath('/about')">{{ t('nav.about') }}</NuxtLink>
+            <NuxtLink :to="localePath('/games')">{{ t('nav.games') }}</NuxtLink>
+            <NuxtLink :to="localePath('/tags')">{{ t('nav.tags') }}</NuxtLink>
+            <NuxtLink :to="localePath('/privacy')">{{ t('footer.privacy') }}</NuxtLink>
+            <button class="link-btn" @click="authAction">
+              {{ isLoggedIn ? '👤 ' + user?.username : t('footer.login') }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Column: About -->
+        <div class="footer-col">
+          <h4 class="footer-col-title">{{ t('nav.about') }}</h4>
+          <p class="footer-about-text">{{ t('about.para1') }}</p>
+          <p class="footer-powered">{{ t('footer.poweredBy', { tech: 'EmulatorJS, Nuxt & Cloudflare' }) }}</p>
+        </div>
       </div>
 
-      <!-- Page Links + Login -->
-      <div class="footer-links">
-        <button class="link-btn" @click="authAction">
-          {{ isLoggedIn ? '👤 ' + user?.username : t('footer.login') }}
-        </button>
-        <NuxtLink :to="localePath('/about')">{{ t('nav.about') }}</NuxtLink>
-        <NuxtLink :to="localePath('/games')">{{ t('nav.games') }}</NuxtLink>
-        <NuxtLink :to="localePath('/tags')">{{ t('nav.tags') }}</NuxtLink>
-        <NuxtLink :to="localePath('/privacy')">{{ t('privacy.badge') }}</NuxtLink>
-      </div>
-
-      <!-- Legal + Tech -->
+      <!-- Bottom: Copyright + Disclaimer -->
       <div class="footer-bottom">
         <p class="footer-copyright">&copy; {{ year }} RetroVault</p>
         <p class="footer-disclaimer">{{ t('footer.disclaimer') }}</p>
-        <p class="footer-powered">{{ t('footer.poweredBy', { tech: 'EmulatorJS, Nuxt & Cloudflare' }) }}</p>
       </div>
     </div>
   </footer>

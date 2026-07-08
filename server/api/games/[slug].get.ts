@@ -20,7 +20,6 @@ export default defineEventHandler(async (event) => {
   game.localCover = game.coverUrl?.startsWith('covers/')
     ? game.coverUrl
     : `covers/${game.slug}.webp`
-  game.imageUrl = game.imageUrl || ''
   // EmulatorJS expects game.ejs.core / game.ejs.biosUrl
   game.ejs = {
     core: game.ejsCore || '',
