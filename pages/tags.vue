@@ -62,10 +62,10 @@ usePageSeo({
 })
 
 useSchemaOrg([
-  {
+  defineWebPage({
     '@type': 'CollectionPage',
     name: t('seo.tagsTitle'),
     description: t('seo.tagsDesc'),
-  },
+  }),
 ])
 </script>

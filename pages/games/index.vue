@@ -87,11 +87,15 @@ usePageSeo({
 })
 
 useSchemaOrg([
-  {
+  defineWebPage({
     '@type': 'CollectionPage',
     name: t('seo.gamesTitle'),
     description: t('seo.gamesDesc'),
-  },
+  }),
+  defineSearchAction({
+    target: '/games?q={search_term_string}',
+    queryInput: 'search_term_string',
+  }),
 ])
 
 const decades = [1980, 1990, 2000, 2010, 2020]

@@ -54,11 +54,11 @@ usePageSeo(() => ({
 }))
 
 useSchemaOrg([
-  {
+  defineWebPage({
     '@type': 'CollectionPage',
     name: pageTitle,
     description: pageDesc,
-  },
+  }),
 ])
 
 const breadcrumbItems = useBreadcrumb(computed(() => [

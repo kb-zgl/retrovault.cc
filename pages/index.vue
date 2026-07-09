@@ -351,15 +351,11 @@ const schemaFaq = computed(() => faqEntries.map(item => ({
 })))
 
 useSchemaOrg([
-  {
-    '@type': 'WebSite',
-    name: 'RetroVault',
-    url: 'https://retrovault.cc',
-    description: t('seo.tagline'),
-  },
-  {
+  defineWebPage({
     '@type': 'FAQPage',
+    name: t('seo.homeTitle'),
+    description: t('seo.homeDesc'),
     mainEntity: schemaFaq,
-  },
+  }),
 ])
 </script>

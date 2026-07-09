@@ -51,10 +51,10 @@ usePageSeo({
 })
 
 useSchemaOrg([
-  {
+  defineWebPage({
     '@type': 'AboutPage',
     name: t('seo.aboutTitle'),
     description: t('seo.aboutDesc'),
-  },
+  }),
 ])
 </script>

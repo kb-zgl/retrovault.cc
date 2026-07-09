@@ -55,6 +55,21 @@ useHead({
 
 useKeyboardShortcuts()
 
+const { t } = useAppI18n()
+
+useSchemaOrg([
+  defineWebSite({
+    name: 'RetroVault',
+    url: 'https://retrovault.cc',
+    description: t('seo.tagline'),
+  }),
+  defineOrganization({
+    name: 'RetroVault',
+    url: 'https://retrovault.cc',
+    description: t('seo.tagline'),
+  }),
+])
+
 const { handleUrlToken, showAuthModal } = useAuth()
 
 // 恢复 localStorage 中的认证令牌
