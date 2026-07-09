@@ -63,5 +63,5 @@ export function useGameHistory() {
     load()
   }
 
-  return { history, record, getRecent, getLastPlayed, saveSession, loadSession }
+  return { history, load, record, getRecent, getLastPlayed, saveSession, loadSession }
 }
