@@ -32,8 +32,8 @@
     "faqStuckA": "尝试刷新页面。如果问题仍然存在，可能是 ROM 暂时不可用——请尝试其他游戏并稍后再试。"
   },
   "section": {
-    "recent": "🔄 最近添加",
-    "featured": "⭐ 精选推荐",
+    "recent": "最近添加",
+    "featured": "精选推荐",
     "emulators": "🖥️ 模拟器",
     "viewAll": "查看全部 →"
   },

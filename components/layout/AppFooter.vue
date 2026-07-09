@@ -19,7 +19,7 @@
 
         <!-- Column: Platforms -->
         <div class="footer-col">
-          <h4 class="footer-col-title">{{ t('footer.platforms') }}</h4>
+          <strong class="footer-col-title">{{ t('footer.platforms') }}</strong>
           <div class="footer-platforms">
             <NuxtLink
               v-for="p in platforms"
@@ -32,7 +32,7 @@
 
         <!-- Column: Quick Links -->
         <div class="footer-col">
-          <h4 class="footer-col-title">{{ t('footer.quickLinks') }}</h4>
+          <strong class="footer-col-title">{{ t('footer.quickLinks') }}</strong>
           <div class="footer-page-links">
             <NuxtLink :to="localePath('/about')">{{ t('nav.about') }}</NuxtLink>
             <NuxtLink :to="localePath('/games')">{{ t('nav.games') }}</NuxtLink>

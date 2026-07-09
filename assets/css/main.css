@@ -2691,7 +2691,7 @@ h1.hero-title em {
 }
 .home-section .section-header .sec-title {
   font-family: var(--font-pixel);
-  font-size: 0.7rem;
+  font-size: 0.85rem;
   color: var(--color-text-primary);
   display: flex;
   align-items: center;
@@ -3090,11 +3090,12 @@ h1.hero-title em {
 }
 .footer-col-title {
   font-family: var(--font-pixel);
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   color: var(--color-text-muted);
   letter-spacing: 2px;
   text-transform: uppercase;
   margin: 0 0 12px 0;
+  display: block;
 }
 
 /* ── Column: Platforms ───────────────── */
