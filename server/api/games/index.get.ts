@@ -5,9 +5,17 @@ export default defineEventHandler(async (event) => {
   const { platform, genre, page: pageStr = '1', limit: limitStr = '48' } = query
   const tag = query.tag as string | undefined
   const year = query.year as string | undefined
+  const q = query.q as string | undefined
 
   let where = '1=1'
   const params: any[] = []
+
+  // Full-text search via LIKE
+  if (q && q.trim()) {
+    const term = `%${q.trim()}%`
+    where += ' AND (title LIKE ? OR description LIKE ? OR tags LIKE ?)'
+    params.push(term, term, term)
+  }
 
   if (platform) {
     where += ' AND platform = ?'

@@ -56,6 +56,10 @@
     "rating": "⭐ 评分评价",
     "related": "🎮 相关游戏推荐"
   },
+  "games": {
+    "subtitle": "探索 {count} 款经典复古游戏",
+    "searchPlaceholder": "搜索游戏名称或标签..."
+  },
   "comment": {
     "placeholderName": "您的昵称",
     "placeholderContent": "写评论...",
@@ -68,6 +72,7 @@
     "all": "全部",
     "clear": "清除筛选",
     "results": "{count} 款游戏",
+    "more": "更多",
     "emptyTitle": "未找到游戏",
     "emptyHint": "尝试其他筛选条件或浏览全部游戏"
   },

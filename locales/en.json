@@ -56,6 +56,10 @@
     "rating": "⭐ Reviews & Ratings",
     "related": "🎮 Related Games"
   },
+  "games": {
+    "subtitle": "Explore {count} classic retro games",
+    "searchPlaceholder": "Search games by name or tag..."
+  },
   "comment": {
     "placeholderName": "Your name",
     "placeholderContent": "Write a comment…",
@@ -68,6 +72,7 @@
     "all": "All",
     "clear": "Clear all",
     "results": "{count} games",
+    "more": "More",
     "emptyTitle": "No games found",
     "emptyHint": "Try different filter options or browse all games"
   },

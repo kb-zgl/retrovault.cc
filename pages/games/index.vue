@@ -9,74 +9,25 @@
     </div>
 
     <template v-else>
-      <h1 class="sr-only">{{ t('nav.games') }}</h1>
-      <!-- Filter bar (compact, two rows) -->
-      <div class="filter-bar-compact">
-        <div class="filter-group-scroll">
-          <span class="filter-label-pill">{{ t('filter.genre') }}</span>
-          <button
-            v-for="g in genres"
-            :key="g"
-            class="filter-btn"
-            :class="{ active: selectedGenre === g }"
-            @click="toggleGenre(g)"
-          >{{ g }}</button>
-        </div>
-        <div class="filter-group-scroll">
-          <span class="filter-label-pill">{{ t('filter.platform') }}</span>
-          <button
-            v-for="plat in platforms"
-            :key="plat"
-            class="filter-btn"
-            :class="{ active: selectedPlatform === plat }"
-            @click="togglePlatform(plat)"
-          >{{ plat }}</button>
-        </div>
-        <div class="filter-group-scroll">
-          <span class="filter-label-pill">{{ t('filter.year') }}</span>
-          <button
-            v-for="dec in decades"
-            :key="dec"
-            class="filter-btn"
-            :class="{ active: selectedDecade === dec }"
-            @click="toggleDecade(dec)"
-          >{{ dec }}s</button>
-        </div>
-
-        <!-- Active filters -->
-        <div v-if="selectedGenre || selectedPlatform || selectedDecade || selectedTag" class="filter-active">
-          <span
-            v-if="selectedGenre"
-            class="filter-active-chip"
-          >
-            {{ selectedGenre }}
-            <button @click="toggleGenre(selectedGenre)" aria-label="Remove genre filter">✕</button>
-          </span>
-          <span
-            v-if="selectedPlatform"
-            class="filter-active-chip"
-          >
-            {{ selectedPlatform }}
-            <button @click="togglePlatform(selectedPlatform)" aria-label="Remove platform filter">✕</button>
-          </span>
-          <span
-            v-if="selectedDecade"
-            class="filter-active-chip"
-          >
-            {{ selectedDecade }}s
-            <button @click="toggleDecade(selectedDecade)" aria-label="Remove decade filter">✕</button>
-          </span>
-          <span
-            v-if="selectedTag"
-            class="filter-active-chip"
-          >
-            {{ selectedTag }}
-            <button @click="selectedTag = ''; page = 1; updateUrl()" aria-label="Remove tag filter">✕</button>
-          </span>
-          <button class="filter-active-clear" @click="clearFilters">{{ t('filter.clear') }}</button>
-          <span class="filter-active-count">{{ t('filter.results', { count: total }) }}</span>
-        </div>
-      </div>
+      <!-- Filter bar: H1 + search + dropdowns + chips -->
+      <GameFilterBar
+        :selected-genre="selectedGenre"
+        :selected-platform="selectedPlatform"
+        :selected-decade="selectedDecade"
+        :selected-tag="selectedTag"
+        :search="searchQuery"
+        :genres="genres"
+        :platforms="platforms"
+        :total="total"
+        :total-all="totalAll"
+        :decade-years="decades"
+        @update:selected-genre="updateFilter('genre', $event)"
+        @update:selected-platform="updateFilter('platform', $event)"
+        @update:selected-decade="updateDecade"
+        @update:selected-tag="updateFilter('tag', $event)"
+        @update:search="updateSearch"
+        @clear="clearFilters"
+      />
 
       <!-- Empty state -->
       <div v-if="games.length === 0" class="empty-state">
@@ -143,24 +94,25 @@ useSchemaOrg([
   },
 ])
 
-// Decades
 const decades = [1980, 1990, 2000, 2010, 2020]
 
-// Filter state from URL query (shareable filters)
+// Filter state from URL query
 const selectedPlatform = ref(route.query.platform as string || '')
 const selectedGenre = ref(route.query.genre as string || '')
 const selectedDecade = ref(route.query.year ? parseInt(route.query.year as string) : 0)
 const selectedTag = ref(route.query.tag as string || '')
+const searchQuery = ref(route.query.q as string || '')
 const page = ref(parseInt(route.query.page as string) || 1)
 const limit = 48
 
 // Fetch games
-const { data, pending, refresh } = useFetch<GameListResponse>('/api/games', {
+const { data, pending } = useFetch<GameListResponse>('/api/games', {
   query: computed(() => ({
     platform: selectedPlatform.value || undefined,
     genre: selectedGenre.value || undefined,
     year: selectedDecade.value ? `${selectedDecade.value}s` : undefined,
     tag: selectedTag.value || undefined,
+    q: searchQuery.value || undefined,
     page: page.value,
     limit,
   })),
@@ -185,62 +137,56 @@ const pageRange = computed(() => {
   return [1, '...', cp - 1, cp, cp + 1, '...', tp]
 })
 
-// Result info text
-const resultInfo = computed(() => {
-  const totalVal = total.value
-  const allVal = totalAll.value
-  const plat = selectedPlatform.value
-  const genre = selectedGenre.value
-  if (!plat && !genre) return `Showing all games · ${allVal}`
-  let parts: string[] = []
-  if (plat) parts.push(`Platform "${plat}"`)
-  if (genre) parts.push(`Genre "${genre}"`)
-  return `${parts.join(' + ')} · ${totalVal} games`
-})
+function updateFilter(key: string, value: string) {
+  if (key === 'genre') selectedGenre.value = value
+  else if (key === 'platform') selectedPlatform.value = value
+  else if (key === 'tag') selectedTag.value = value
+  page.value = 1
+  updateUrl()
+}
 
-function togglePlatform(cat: string) {
-  selectedPlatform.value = selectedPlatform.value === cat ? '' : cat
+function updateDecade(dec: number) {
+  selectedDecade.value = dec
   page.value = 1
   updateUrl()
 }
-function toggleGenre(g: string) {
-  selectedGenre.value = selectedGenre.value === g ? '' : g
+
+function updateSearch(q: string) {
+  searchQuery.value = q
   page.value = 1
   updateUrl()
 }
-function toggleDecade(dec: number) {
-  selectedDecade.value = selectedDecade.value === dec ? 0 : dec
-  page.value = 1
-  updateUrl()
-}
+
 function clearFilters() {
   selectedPlatform.value = ''
   selectedGenre.value = ''
   selectedDecade.value = 0
   selectedTag.value = ''
+  searchQuery.value = ''
   page.value = 1
   updateUrl()
 }
 
-// Sync URL with filter state
 function updateUrl() {
   const q: Record<string, string> = {}
   if (selectedPlatform.value) q.platform = selectedPlatform.value
   if (selectedGenre.value) q.genre = selectedGenre.value
   if (selectedDecade.value) q.year = String(selectedDecade.value)
   if (selectedTag.value) q.tag = selectedTag.value
+  if (searchQuery.value) q.q = searchQuery.value
   if (page.value > 1) q.page = String(page.value)
   router.replace({ query: q })
 }
 
 watch(page, () => updateUrl())
 
-// Sync filter state from URL query changes (e.g., navigating from game card tags)
+// Sync from URL changes (browser nav)
 watch(() => route.query, (q) => {
   selectedPlatform.value = (q.platform as string) || ''
   selectedGenre.value = (q.genre as string) || ''
   selectedDecade.value = q.year ? parseInt(q.year as string) : 0
   selectedTag.value = (q.tag as string) || ''
+  searchQuery.value = (q.q as string) || ''
   page.value = parseInt((q.page as string) || '') || 1
 })
 </script>
