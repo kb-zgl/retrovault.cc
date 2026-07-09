@@ -32,8 +32,8 @@
     "faqStuckA": "Try refreshing the page. If the issue persists, the ROM may be temporarily unavailable — try another game and check back later."
   },
   "section": {
-    "recent": "🔄 Recent",
-    "featured": "⭐ Featured",
+    "recent": "Recent",
+    "featured": "Featured",
     "emulators": "🖥️ Emulators",
     "viewAll": "View all →"
   },
