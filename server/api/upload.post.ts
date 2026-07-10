@@ -48,11 +48,11 @@ export default defineEventHandler(async (event) => {
 
   // No R2 — fallback to local filesystem
   const { writeFile, mkdir } = await import('node:fs/promises')
-  const { join } = await import('node:path')
+  const { join, dirname } = await import('node:path')
   const uploadDir = join(process.cwd(), 'public', '_uploads')
-  await mkdir(uploadDir, { recursive: true })
   const safeKey = key.replace(/[^a-zA-Z0-9/._-]/g, '')
   const localPath = join(uploadDir, safeKey)
+  await mkdir(dirname(localPath), { recursive: true })
   await writeFile(localPath, Buffer.from(await file.arrayBuffer()))
   const url = `/_uploads/${safeKey}`
 

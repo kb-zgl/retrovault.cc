@@ -40,11 +40,12 @@ export default defineEventHandler(async (event) => {
 
   // No R2 — local filesystem fallback
   const { writeFile, mkdir } = await import('node:fs/promises')
-  const { join } = await import('node:path')
+  const { join, dirname } = await import('node:path')
   const uploadDir = join(process.cwd(), 'public', '_uploads')
-  await mkdir(uploadDir, { recursive: true })
   const safeKey = key.replace(/[^a-zA-Z0-9/._-]/g, '')
-  await writeFile(join(uploadDir, safeKey), Buffer.from(await file.arrayBuffer()))
+  const filePath = join(uploadDir, safeKey)
+  await mkdir(dirname(filePath), { recursive: true })
+  await writeFile(filePath, Buffer.from(await file.arrayBuffer()))
   const coverUrl = `/_uploads/${safeKey}`
 
   // Update game record with local URL
