@@ -821,33 +821,9 @@ async function runTestMode(filePath) {
     const html = await readFile(filePath, 'utf8');
     const slug = filePath.replace(/\.html$/i, '').split('/').pop();
 
-    const rscData      = parseDetailFromRSC(html);
-    const jsonLdData   = parseDetailFromJsonLd(html);
-    const htmlData     = parseDetailFromHTML(html, slug);
-    const merged       = mergeGameData(rscData, jsonLdData, htmlData);
-    const raw          = Object.keys(merged).length > 0 ? merged : null;
+		const raw = parseDetail(html, slug)
 
-    // 输出四个部分，用 === 分割
-    const sep = '='.repeat(60);
-    const sections = [];
-
-    sections.push(sep + '\n[1] RSC parsed\n' + sep);
-    sections.push(JSON.stringify(rscData, null, 2) || '(null)');
-
-    sections.push(sep + '\n[2] JSON-LD parsed\n' + sep);
-    sections.push(JSON.stringify(jsonLdData, null, 2) || '(null)');
-
-    sections.push(sep + '\n[3] HTML fallback parsed\n' + sep);
-    sections.push(JSON.stringify(htmlData, null, 2) || '(null)');
-
-    sections.push(sep + '\n[4] Merged result\n' + sep);
-    sections.push(JSON.stringify(raw, null, 2));
-
-    if (!raw || !raw.title) {
-      sections.push('\n[WARN] Merged result has no title — parser may need adjustment');
-    }
-
-    console.log(sections.join('\n\n'));
+    console.log(raw);
   } catch (err) {
     log.error(`测试模式失败: ${err.message}`);
     process.exit(1);
