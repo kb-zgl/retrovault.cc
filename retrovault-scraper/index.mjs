@@ -603,7 +603,6 @@ function resolveRomUrl(raw, platform) {
 function getRomEntries(game) {
   const { slug, platform, romUrl } = game;
   const entries = [];
-	console.info('romUrl:', romUrl, '--')
 
   // ── 无 romUrl：自动拼接 ──────────────────────────────────────────────────
   if (!romUrl || (Array.isArray(romUrl) && romUrl.length === 0)) {
