@@ -98,10 +98,15 @@
         <h3 style="font-size:0.85rem;font-weight:600;color:var(--color-text-primary);margin:20px 0 12px">模拟器与文件</h3>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
           <FormField label="ROM 路径">
-            <input v-model="form.defaultRom" class="form-input" placeholder="roms/nes/xxx.nes" />
+            <input v-model="form.defaultRom" class="form-input" :placeholder="autoDefaultRom || 'roms/nes/xxx.nes'" />
+            <div v-if="autoDefaultRom && form.defaultRom !== autoDefaultRom"
+              style="font-size:0.6rem;color:var(--color-text-muted);margin-top:2px;cursor:pointer"
+              @click="form.defaultRom = autoDefaultRom">
+              自动: {{ autoDefaultRom }} <span style="color:var(--color-accent)">点击恢复</span>
+            </div>
           </FormField>
           <FormField label="模拟器核心">
-            <input v-model="form.ejsCore" class="form-input" placeholder="nes / snes / gba" />
+            <SearchableSelect v-model="form.ejsCore" :options="coreOptions" placeholder="选核心..." />
           </FormField>
           <FormField label="BIOS">
             <select v-model="form.ejsBiosUrl" class="form-input">
@@ -195,6 +200,7 @@ const saveError = ref('')
 const showJsonImport = ref(false)
 const jsonImportText = ref('')
 const jsonError = ref('')
+const dataLoaded = ref(false)
 
 const refData = getReferenceData('zh')
 
@@ -202,6 +208,34 @@ const yearOptions = computed(() => {
   const years = []
   for (let y = new Date().getFullYear(); y >= 1970; y--) years.push(y)
   return years
+})
+
+// 平台 → 模拟器核心 / ROM 目录 / 扩展名映射
+const PLATFORM_CORE_MAP = {
+  'NES':               { core: 'nes',        romDir: 'nes',               ext: '.nes' },
+  'SNES':              { core: 'snes',       romDir: 'snes',              ext: '.smc' },
+  'Game Boy Advance':  { core: 'gba',        romDir: 'game-boy-advance',  ext: '.gba' },
+  'Nintendo 64':       { core: 'n64',        romDir: 'nintendo-64',       ext: '.n64' },
+  'Nintendo DS':       { core: 'nds',        romDir: 'nintendo-ds',       ext: '.nds' },
+  'Arcade':            { core: 'arcade',     romDir: 'arcade',            ext: '.zip' },
+  'MSX2':              { core: 'msx',        romDir: 'msx2',              ext: '.7z' },
+  'PlayStation':       { core: 'psx',        romDir: 'playstation',       ext: '.psx' },
+  'Sega Saturn':       { core: 'segaSaturn', romDir: 'sega-saturn',       ext: '.zip' },
+}
+
+const coreOptions = computed(() =>
+  Object.entries(PLATFORM_CORE_MAP).map(([platform, info]) => ({
+    key: info.core,
+    label: `${info.core}  (${platform})`,
+  })),
+)
+
+const autoDefaultRom = computed(() => {
+  const p = form.platform
+  const s = form.slug
+  if (!p || !s || !PLATFORM_CORE_MAP[p]) return ''
+  const info = PLATFORM_CORE_MAP[p]
+  return `roms/${info.romDir}/${s}${info.ext}`
 })
 
 // core → BIOS 映射（同步 GameEmulator.vue 里的 BIOS_MAP）
@@ -263,6 +297,7 @@ watch(game, (g) => {
   form.source = g.source || ''
   form.status = g.status || 'draft'
   form.langs = (g.langs && typeof g.langs === 'object') ? g.langs : {}
+  dataLoaded.value = true
   syncLocaleForm()
 }, { immediate: true })
 
@@ -318,6 +353,27 @@ watch(() => form.ejsCore, (core, oldCore) => {
     ) {
       form.ejsBiosUrl = BIOS_MAP[core]
     }
+  }
+})
+
+// 平台 / slug → 自动填充核心和 ROM 路径
+// dataLoaded 确保不覆盖已有游戏的已存值
+watch([() => form.platform, () => form.slug], ([platform, slug], [oldPlatform, oldSlug]) => {
+  if (!dataLoaded.value && !isNew.value) return
+  // 平台变了 → 更新核心
+  if (platform && platform !== oldPlatform && PLATFORM_CORE_MAP[platform]) {
+    form.ejsCore = PLATFORM_CORE_MAP[platform].core
+  }
+  // ROM 路径自动生成（仅当字段为空或匹配旧自动路径时覆盖）
+  const oldAuto = oldPlatform && oldSlug && PLATFORM_CORE_MAP[oldPlatform]
+    ? `roms/${PLATFORM_CORE_MAP[oldPlatform].romDir}/${oldSlug}${PLATFORM_CORE_MAP[oldPlatform].ext}`
+    : undefined
+  if (
+    platform && slug && PLATFORM_CORE_MAP[platform] &&
+    (!form.defaultRom || (oldAuto && form.defaultRom === oldAuto))
+  ) {
+    const info = PLATFORM_CORE_MAP[platform]
+    form.defaultRom = `roms/${info.romDir}/${slug}${info.ext}`
   }
 })
 
