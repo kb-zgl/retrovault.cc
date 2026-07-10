@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.mjs --resume ",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+		"testSingle": "node index.mjs --test test.html"
   },
   "keywords": [],
   "author": "",
