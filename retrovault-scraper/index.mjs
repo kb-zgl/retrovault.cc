@@ -436,9 +436,33 @@ async function scrapeAllListPages() {
 // ─── Step 2: 详情页解析 ───────────────────────────────────────────────────────
 
 function parseDetailFromRSC(html) {
-  const text = decodeRSC(html);
-  const game = extractJsonValue(text, '"game":', '{');
-  if (game?.title) return { ...game, _method: 'rsc' };
+  // 在原始 HTML 中找含 $L29 的 RSC chunk
+  // 结构: self.__next_f.push([1, "...20:[\"$\",\"$L29\",null,{\"game\":{...}}]\n"])
+  // 内容解码后: 20:["$","$L29",null,{"game":{...}}]\n
+  const re = /self\.__next_f\.push\(\[1,\s*"((?:[^"\\]|\\.)*)"\]\)/g;
+  let m;
+  while ((m = re.exec(html)) !== null) {
+    if (!m[1].includes('$L29')) continue;
+
+    const decoded = m[1]
+      .replace(/\\n/g, '\n')
+      .replace(/\\t/g, '\t')
+      .replace(/\\r/g, '\r')
+      .replace(/\\\\/g, '\x00BS\x00')
+      .replace(/\\"/g, '"')
+      .replace(/\x00BS\x00/g, '\\');
+
+    // 去掉行号前缀 "20:"，剩 ["$","$L29",null,{"game":{...}}]
+    const colonIdx = decoded.indexOf(':');
+    if (colonIdx === -1) return null;
+
+    try {
+      const arr = JSON.parse(decoded.slice(colonIdx + 1));
+      if (Array.isArray(arr) && arr.length >= 4 && arr[3]?.game) {
+        return { ...arr[3].game, _method: 'rsc' };
+      }
+    } catch { return null; }
+  }
   return null;
 }
 
