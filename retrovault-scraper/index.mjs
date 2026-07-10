@@ -696,6 +696,7 @@ async function downloadGameRoms(game, romBaseDir) {
     }
 
     log.info(`  ROM ↓ [${slug}] ${lang}: ${filename}`);
+		log.info(`  下载地址：${url}`)
     const result = await downloadFile(url, localPath);
 
     if (result.ok) {
