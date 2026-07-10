@@ -300,44 +300,28 @@ function decodeRSC(html) {
 
 /**
  * 括号计数法提取 key 后的第一个完整 JSON 对象或数组
- * 如果 key 出现多次，轮询每个匹配位置，返回第一个能成功 parse 的值
  */
 function extractJsonValue(text, key, openChar = '{') {
   const closeChar = openChar === '{' ? '}' : ']';
-  let searchFrom = 0;
+  const keyIdx    = text.indexOf(key);
+  if (keyIdx === -1) return null;
 
-  for (;;) {
-    const keyIdx = text.indexOf(key, searchFrom);
-    if (keyIdx === -1) return null;
-
-    // key 后第一个非空字符必须是 openChar，否则跳到下个匹配
-    // 防止 "game":"Game Not Found" 这类字符串值误匹配
-    let skip = keyIdx + key.length;
-    while (skip < text.length && (text[skip] === ' ' || text[skip] === '\n' || text[skip] === '\t' || text[skip] === '\r')) skip++;
-    if (text[skip] !== openChar) {
-      searchFrom = keyIdx + 1;
-      continue;
-    }
-
-    let depth = 0, inStr = false, escaped = false, start = -1;
-    for (let i = keyIdx + key.length; i < text.length; i++) {
-      const c = text[i];
-      if (escaped)             { escaped = false; continue; }
-      if (c === '\\' && inStr) { escaped = true;  continue; }
-      if (c === '"')           { inStr = !inStr;  continue; }
-      if (inStr)               continue;
-      if (c === openChar)      { if (depth++ === 0) start = i; }
-      else if (c === closeChar) {
-        if (--depth === 0 && start !== -1) {
-          try   { return JSON.parse(text.substring(start, i + 1)); }
-          catch { /* fall through to next occurrence */ }
-          break; // not valid JSON, try next key occurrence
-        }
+  let depth = 0, inStr = false, escaped = false, start = -1;
+  for (let i = keyIdx + key.length; i < text.length; i++) {
+    const c = text[i];
+    if (escaped)             { escaped = false; continue; }
+    if (c === '\\' && inStr) { escaped = true;  continue; }
+    if (c === '"')           { inStr = !inStr;  continue; }
+    if (inStr)               continue;
+    if (c === openChar)      { if (depth++ === 0) start = i; }
+    else if (c === closeChar) {
+      if (--depth === 0 && start !== -1) {
+        try   { return JSON.parse(text.substring(start, i + 1)); }
+        catch { return null; }
       }
     }
-    // Move past this key and retry
-    searchFrom = keyIdx + 1;
   }
+  return null;
 }
 
 // ─── Step 1: 列表页抓取 ───────────────────────────────────────────────────────
