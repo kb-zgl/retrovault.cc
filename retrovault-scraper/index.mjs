@@ -819,34 +819,13 @@ async function runTestMode(filePath) {
   try {
     const html = await readFile(filePath, 'utf8');
     const slug = filePath.replace(/\.html$/i, '').split('/').pop();
-
-    const rscData      = parseDetailFromRSC(html);
-    const jsonLdData   = parseDetailFromJsonLd(html);
-    const htmlData     = parseDetailFromHTML(html, slug);
-    const merged       = mergeGameData(rscData, jsonLdData, htmlData);
-    const raw          = Object.keys(merged).length > 0 ? merged : null;
-
-    // 输出四个部分，用 === 分割
-    const sep = '='.repeat(60);
-    const sections = [];
-
-    sections.push(sep + '\n[1] RSC parsed\n' + sep);
-    sections.push(JSON.stringify(rscData, null, 2) || '(null)');
-
-    sections.push(sep + '\n[2] JSON-LD parsed\n' + sep);
-    sections.push(JSON.stringify(jsonLdData, null, 2) || '(null)');
-
-    sections.push(sep + '\n[3] HTML fallback parsed\n' + sep);
-    sections.push(JSON.stringify(htmlData, null, 2) || '(null)');
-
-    sections.push(sep + '\n[4] Merged result\n' + sep);
-    sections.push(JSON.stringify(raw, null, 2));
+    const raw  = parseDetail(html, slug);
 
     if (!raw || !raw.title) {
-      sections.push('\n[WARN] Merged result has no title — parser may need adjustment');
+      console.warn('[WARN] parseDetail returned no valid data');
     }
 
-    console.log(sections.join('\n\n'));
+    console.log(JSON.stringify(raw, null, 2));
   } catch (err) {
     log.error(`测试模式失败: ${err.message}`);
     process.exit(1);
