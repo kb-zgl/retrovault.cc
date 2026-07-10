@@ -281,7 +281,7 @@ async function safeUnlink(p) {
 
 function decodeRSC(html) {
   const chunks = [];
-  const re = /self\.__next_f\.push\(\[1,\s*"((?:[^"\\]|\\.)*)"\]\)/g;
+  const re = /self\.__next_f\.push\(\[1,"((?:[^"\\]|\\.)*)"\]\)/g;
   let m;
   while ((m = re.exec(html)) !== null) {
     try {
@@ -821,38 +821,9 @@ async function runTestMode(filePath) {
     const html = await readFile(filePath, 'utf8');
     const slug = filePath.replace(/\.html$/i, '').split('/').pop();
 
-    const rscRaw        = decodeRSC(html);
-    const rscData       = parseDetailFromRSC(html);
-    const jsonLdData    = parseDetailFromJsonLd(html);
-    const htmlData      = parseDetailFromHTML(html, slug);
-    const merged        = mergeGameData(rscData, jsonLdData, htmlData);
-    const raw           = Object.keys(merged).length > 0 ? merged : null;
+		const raw = parseDetail(html, slug)
 
-    const sep = '='.repeat(60);
-    const sections = [];
-
-    sections.push(sep + '\n[0] RSC raw (decoded)\n' + sep);
-    sections.push(rscRaw.slice(0, 2000) || '(empty \xe2\x80\x94 regex may need adjustment)');
-    if (rscRaw.length > 2000)
-      sections.push(`\n... (${rscRaw.length} chars total, truncated to 2000)`);
-
-    sections.push(sep + '\n[1] RSC parsed\n' + sep);
-    sections.push(JSON.stringify(rscData, null, 2) || '(null)');
-
-    sections.push(sep + '\n[2] JSON-LD parsed\n' + sep);
-    sections.push(JSON.stringify(jsonLdData, null, 2) || '(null)');
-
-    sections.push(sep + '\n[3] HTML fallback parsed\n' + sep);
-    sections.push(JSON.stringify(htmlData, null, 2) || '(null)');
-
-    sections.push(sep + '\n[4] Merged result\n' + sep);
-    sections.push(JSON.stringify(raw, null, 2));
-
-    if (!raw || !raw.title) {
-      sections.push('\n[WARN] Merged result has no title \xe2\x80\x94 parser may need adjustment');
-    }
-
-    console.log(sections.join('\n\n'));
+    console.log(raw);
   } catch (err) {
     log.error(`测试模式失败: ${err.message}`);
     process.exit(1);
