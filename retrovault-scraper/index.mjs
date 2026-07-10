@@ -23,9 +23,14 @@ import { pipeline }                                           from 'node:stream/
 
 // ─── CLI 参数 ─────────────────────────────────────────────────────────────────
 
-const ARGS        = new Set(process.argv.slice(2));
+const RAW_ARGS    = process.argv.slice(2);
+const ARGS        = new Set(RAW_ARGS);
 const SKIP_ROMS   = ARGS.has('--skip-roms');
 const SKIP_COVERS = ARGS.has('--skip-covers');
+
+// --test <path> : 本地调试模式，解析单个 HTML 文件后退出
+const TEST_FILE_IDX = RAW_ARGS.indexOf('--test');
+const TEST_FILE     = TEST_FILE_IDX !== -1 ? RAW_ARGS[TEST_FILE_IDX + 1] : null;
 
 // ─── 配置 ─────────────────────────────────────────────────────────────────────
 
@@ -808,9 +813,35 @@ function normalizeGame(raw, slug, card = {}, romResult = null, coverPath = null)
   };
 }
 
+// ─── 本地调试模式 ──────────────────────────────────────────────────────────────
+
+async function runTestMode(filePath) {
+  try {
+    const html = await readFile(filePath, 'utf8');
+    const slug = filePath.replace(/\.html$/i, '').split('/').pop();
+    const raw  = parseDetail(html, slug);
+
+    if (!raw || !raw.title) {
+      console.warn('[WARN] parseDetail returned no valid data');
+    }
+
+    console.log(JSON.stringify(raw, null, 2));
+  } catch (err) {
+    log.error(`测试模式失败: ${err.message}`);
+    process.exit(1);
+  }
+}
+
 // ─── 主流程 ───────────────────────────────────────────────────────────────────
 
 async function main() {
+  // 本地测试模式：读取本地 HTML → 解析 → 输出 JSON → 退出
+  if (TEST_FILE) {
+    log.info(`测试模式: ${TEST_FILE}`);
+    await runTestMode(TEST_FILE);
+    log.ok('解析完成');
+    return;
+  }
   const outDir    = CONFIG.outputDir;
   const gamesDir  = join(outDir, 'games');
   const romsDir   = join(outDir, 'roms');
