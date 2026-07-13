@@ -21,8 +21,8 @@ binding = "RETROVAULT"
 id = "1ed00bf28c264f9dae2a7bf858a48af5"
 
 # [[r2_buckets]]
-binding = "CDN"
-bucket_name = "retrovault"
+#binding = "CDN"
+#bucket_name = "retrovault"
 
 [vars]
 API_BASE = "https://retrovault.online"
