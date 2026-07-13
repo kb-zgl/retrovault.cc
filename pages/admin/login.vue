@@ -43,10 +43,8 @@ async function login() {
   sent.value = false
   error.value = ''
   try {
-    await $fetch('/api/auth/magic-link', {
-      method: 'POST',
-      body: { email: email.value },
-    })
+    const { post } = useApi()
+    await post('/api/auth/magic-link', { email: email.value })
     sent.value = true
   } catch (e) {
     error.value = e.message || '发送登录链接失败'
