@@ -199,7 +199,8 @@ async function ensurePool() {
 
 async function fetchPool() {
   try {
-    const res: any = await $fetch('/api/games', { query: { limit: 200 } })
+    const { get } = useApi()
+    const res: any = await get('/api/games', { query: { limit: 200 } })
     gamePool.value = res.games || []
   } catch {
     // silent

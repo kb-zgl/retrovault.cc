@@ -12,14 +12,31 @@ export function useApi() {
 
   // SSR 用 useRequestFetch()，进程内直接调用，不走网络，避免 Workers 自调用 522
   // CSR 用 $fetch，行为与之前完全一致
-  const fetch = import.meta.server ? useRequestFetch() : $fetch
+  const fetcher = import.meta.server ? useRequestFetch() : $fetch
 
-  function get<T>(path: string, opts?: Parameters<typeof $fetch>[1]) {
-    return fetch<T>(path, { baseURL: base, ...opts })
+  function authHeaders(): Record<string, string> {
+    if (import.meta.server) return {}
+    const token = localStorage.getItem('app-token')
+    return token ? { Authorization: `Bearer ${token}` } : {}
   }
 
-  function post<T>(path: string, body: any, opts?: Parameters<typeof $fetch>[1]) {
-    return fetch<T>(path, { method: 'POST', body, baseURL: base, ...opts })
+  function get<T>(path: string, opts?: Parameters<typeof $fetch>[1]) {
+		console.info('----->', base)
+    return fetcher<T>(path, {
+      baseURL: base,
+      ...opts,
+      headers: { ...authHeaders(), ...(opts?.headers as Record<string, string> | undefined) },
+    })
+  }
+
+  function post<T>(path: string, body?: any, opts?: Parameters<typeof $fetch>[1]) {
+    return fetcher<T>(path, {
+      method: 'POST',
+      baseURL: base,
+      ...opts,
+      headers: { ...authHeaders(), ...(opts?.headers as Record<string, string> | undefined) },
+      ...(body !== undefined ? { body } : {}),
+    })
   }
 
   return { get, post }

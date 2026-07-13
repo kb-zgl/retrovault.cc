@@ -429,11 +429,8 @@ async function uploadCover(event) {
   try {
     const formData = new FormData()
     formData.append('file', file)
-    const token = localStorage.getItem('app-token')
-    const res = await $fetch(`/api/admin/upload/cover?slug=${rawSlug}`, {
-      method: 'POST', body: formData,
-      headers: { authorization: token ? `Bearer ${token}` : '' },
-    })
+    const { post } = useApi()
+    const res = await post(`/api/admin/upload/cover?slug=${rawSlug}`, formData)
     coverPreview.value = res.coverUrl
     saveSuccess.value = true
     setTimeout(() => { saveSuccess.value = false }, 3000)

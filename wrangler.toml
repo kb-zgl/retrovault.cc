@@ -25,7 +25,7 @@ id = "1ed00bf28c264f9dae2a7bf858a48af5"
 #bucket_name = "retrovault"
 
 [vars]
-API_BASE = "https://retrovault.online"
+API_BASE = "https://retrovault.solomaker282.workers.dev"
 # md5(retrovault.online) = 1fe51af3f664090d386e77f624862466
 NUXT_OG_IMAGE_SECRET = "1fe51af3f664090d386e77f624862466"
 JWT_SECRET="retrovault_jwt_secret"
