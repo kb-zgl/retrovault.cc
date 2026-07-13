@@ -41,6 +41,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     apiBase: '',
+    r2PublicUrl: process.env.NUXT_R2_PUBLIC_URL || 'https://cdn.retrovault.cc/',
   },
 
   content: {},

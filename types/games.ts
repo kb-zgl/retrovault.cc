@@ -26,11 +26,16 @@ export interface GameData {
   slug: string
   title: string
   platform: string
+  platformName?: string
   year: number
   genre: string
+  genreName?: string
   developer: string
+  developerName?: string
   publisher: string
+  publisherName?: string
   series: string
+  seriesName?: string
   isHack: string | boolean
   language?: string
   tags: string[]
@@ -52,8 +57,10 @@ export interface GameSummary {
   slug: string
   title: string
   platform: string
+  platformKey?: string
   year: number
   genre: string
+  genreKey?: string
   series: string
   coverImg: string
   description: string

@@ -15,6 +15,7 @@
  *   node scraper.mjs --resume         断点续跑（默认已支持）
  */
 
+import 'dotenv/config';
 import { readdir, readFile, writeFile, mkdir, access, stat } from 'node:fs/promises';
 import { createWriteStream }                                  from 'node:fs';
 import { join, extname }                                      from 'node:path';
@@ -27,10 +28,15 @@ const RAW_ARGS    = process.argv.slice(2);
 const ARGS        = new Set(RAW_ARGS);
 const SKIP_ROMS   = ARGS.has('--skip-roms');
 const SKIP_COVERS = ARGS.has('--skip-covers');
+const SKIP_R2     = ARGS.has('--skip-r2');
 
 // --test <path> : 本地调试模式，解析单个 HTML 文件后退出
 const TEST_FILE_IDX = RAW_ARGS.indexOf('--test');
 const TEST_FILE     = TEST_FILE_IDX !== -1 ? RAW_ARGS[TEST_FILE_IDX + 1] : null;
+
+// --slug <slug> : 只处理单个游戏（测试用）
+const SLUG_FILTER_IDX = RAW_ARGS.indexOf('--slug');
+const SLUG_FILTER     = SLUG_FILTER_IDX !== -1 ? RAW_ARGS[SLUG_FILTER_IDX + 1] : null;
 
 // ─── 配置 ─────────────────────────────────────────────────────────────────────
 
@@ -77,6 +83,21 @@ const CONFIG = {
     'Accept':  '*/*',
   },
 };
+
+// ─── 环境变量 ─────────────────────────────────────────────────────────────────
+
+const ENV = {
+  accountId:   process.env.CLOUDFLARE_ACCOUNT_ID       || '',
+  d1Token:     process.env.CLOUDFLARE_D1_TOKEN         || '',
+  d1DbId:      process.env.CLOUDFLARE_D1_DATABASE_ID   || process.env.CLOUDFLARE_D1_DB_ID || '',
+  r2AccessKey: process.env.R2_ACCESS_KEY_ID            || '',
+  r2SecretKey: process.env.R2_SECRET_ACCESS_KEY        || '',
+  r2Bucket:    process.env.R2_BUCKET_NAME              || '',
+};
+
+// 环境变量不完整时自动降级
+const HAS_D1 = ENV.accountId && ENV.d1Token && ENV.d1DbId;
+const HAS_R2 = ENV.r2AccessKey && ENV.r2SecretKey && ENV.r2Bucket;
 
 // ─── 平台映射（来自 classicgamezone 源码）────────────────────────────────────
 
@@ -181,6 +202,13 @@ const PLATFORM_URL_SLUG = {
   'Commodore 64':        'c64',
 };
 
+// 平台映射注入小写键（兼容 key 化后的平台值）
+for (const map of [PLATFORM_CORE, PLATFORM_EXT, CDN_MAP, PLATFORM_BIOS, PLATFORM_URL_SLUG]) {
+  for (const [key, val] of Object.entries(map)) {
+    map[key.toLowerCase()] = val;
+  }
+}
+
 // ─── 日志 ─────────────────────────────────────────────────────────────────────
 
 const ts  = () => new Date().toISOString();
@@ -277,7 +305,163 @@ async function safeUnlink(p) {
   try { await import('node:fs').then(m => m.promises.unlink(p)); } catch { /* ignore */ }
 }
 
-// ─── RSC payload 解码 ─────────────────────────────────────────────────────────
+// ─── D1 HTTP API ──────────────────────────────────────────────────────────────
+
+async function queryD1(sql, params = []) {
+  const url = `https://api.cloudflare.com/client/v4/accounts/${ENV.accountId}/d1/database/${ENV.d1DbId}/query`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${ENV.d1Token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ sql, params }),
+  });
+  if (!res.ok) throw new Error(`D1 HTTP ${res.status}`);
+  const body = await res.json();
+  if (!body.success) throw new Error(`D1 API 失败: ${JSON.stringify(body.errors)}`);
+  return body.result;
+}
+
+/** 查 D1 获取已有游戏状态，返回 Map<slug, status> */
+async function fetchGameStatusMap() {
+  if (!HAS_D1) {
+    log.info('D1 未配置，跳过云端检查');
+    return new Map();
+  }
+  try {
+    const result = await queryD1("SELECT slug, status FROM games WHERE status IN ('success','failed')");
+    const map = new Map();
+    for (const row of (result[0]?.results || [])) {
+      map.set(row.slug, row.status);
+    }
+    log.ok(`D1 已有: ${map.size} 条记录（${[...map.values()].filter(s => s === 'success').length} 成功）`);
+    return map;
+  } catch (err) {
+    log.warn(`D1 查询失败，继续本地模式: ${err.message}`);
+    return new Map();
+  }
+}
+
+/** 单游戏写入/更新 D1 */
+async function writeGameToD1(game, status, failReason = '') {
+  if (!HAS_D1) return;
+  const now = new Date().toISOString();
+  const tags = JSON.stringify(game.tags || []);
+  const roms = JSON.stringify(game.localRoms?.map(r => ({ lang: r.lang, path: r.r2Key || r.relPath, size: r.size })) || []);
+  try {
+    await queryD1(
+      `INSERT OR REPLACE INTO games
+       (slug, title, platform, year, genre, developer, publisher, series,
+        isHack, language, imageUrl, coverUrl, defaultRom, ejsCore, ejsBiosUrl,
+        tags, description, roms, status, source, createdAt, updatedAt)
+       VALUES (?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?, ?,?,?,?,?,?,?)`,
+      [game.slug, game.title, game.platform, game.year, game.genre,
+       game.developer || '', game.publisher || '', game.series || '',
+       game.isHack ? 1 : 0, game.language || 'English',
+       game.imageUrl || '', game.localCover || '',
+       game.defaultRom || '', game.ejs?.core || '', game.ejs?.biosUrl || '',
+       tags, game.description || '', roms,
+       status, game._source || 'scraped', now, now]
+    );
+  } catch (err) {
+    log.warn(`D1 写入失败 [${game.slug}]: ${err.message}`);
+  }
+}
+
+// ─── R2 S3 上传 ────────────────────────────────────────────────────────────────
+
+let _r2Client = null;
+
+async function getR2Client() {
+  if (_r2Client) return _r2Client;
+  if (!HAS_R2) return null;
+  try {
+    const { S3Client, PutObjectCommand } = await import('@aws-sdk/client-s3');
+    const client = new S3Client({
+      region: 'auto',
+      endpoint: `https://${ENV.accountId}.r2.cloudflarestorage.com`,
+      credentials: { accessKeyId: ENV.r2AccessKey, secretAccessKey: ENV.r2SecretKey },
+    });
+    _r2Client = { client, bucket: ENV.r2Bucket, PutObjectCommand };
+    return _r2Client;
+  } catch (err) {
+    log.warn(`R2 SDK 加载失败（需安装 @aws-sdk/client-s3）: ${err.message}`);
+    return null;
+  }
+}
+
+async function uploadToR2(key, body, contentType) {
+  const r2 = await getR2Client();
+  if (!r2) return false;
+  try {
+    const cmd = new r2.PutObjectCommand({
+      Bucket: r2.bucket, Key: key, Body: body, ContentType: contentType,
+    });
+    await r2.client.send(cmd);
+    return true;
+  } catch (err) {
+    log.warn(`R2 上传失败 [${key}]: ${err.message}`);
+    return false;
+  }
+}
+
+// ─── Taxonomy 工具 ────────────────────────────────────────────────────────────
+
+const TAXONOMY_DIR = join(process.cwd(), '..', 'data');
+const TAXONOMY_FILES = ['platforms', 'genres', 'developers', 'publishers', 'series'];
+
+/** 加载 taxonomy JSON 并构建反向映射（显示名 → key） */
+async function loadReverseMaps() {
+  const reverseMaps = {};
+  for (const name of TAXONOMY_FILES) {
+    const map = {};
+    try {
+      const data = await readJson(join(TAXONOMY_DIR, `${name}.json`));
+      for (const locale of Object.keys(data)) {
+        for (const [key, display] of Object.entries(data[locale] || {})) {
+          map[String(display).toLowerCase().trim()] = key;
+        }
+      }
+    } catch { log.warn(`加载 ${name}.json 失败，使用空映射`); }
+    reverseMaps[name] = map;
+  }
+  return reverseMaps;
+}
+
+/** 显示名 → key。未找到时自动 slugify */
+function nameToKey(raw, reverseMap) {
+  if (!raw) return '';
+  return reverseMap[String(raw).toLowerCase().trim()]
+    || String(raw).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+/** 收集新增 taxonomy 条目，Step 5 时回写 JSON */
+function collectNewEntry(acc, type, key, display) {
+  if (!key || !display) return;
+  if (!acc[type]) acc[type] = {};
+  if (!acc[type][key]) acc[type][key] = display;
+}
+
+/** 合并新增 taxonomy → 写回 JSON */
+async function flushTaxonomies(acc) {
+  if (!acc || !Object.keys(acc).length) return;
+  for (const name of TAXONOMY_FILES) {
+    const additions = acc[name];
+    if (!additions || !Object.keys(additions).length) continue;
+    try {
+      const fp = join(TAXONOMY_DIR, `${name}.json`);
+      let data = {};
+      try { data = await readJson(fp); } catch { data = { en: {} }; }
+      if (!data.en) data.en = {};
+      let changed = false;
+      for (const [key, display] of Object.entries(additions)) {
+        if (!data.en[key]) { data.en[key] = display; changed = true; }
+      }
+      if (changed) await writeJson(fp, data);
+    } catch (err) { log.warn(`写回 ${name}.json 失败: ${err.message}`); }
+  }
+}
 
 function decodeRSC(html) {
   const chunks = [];
@@ -695,16 +879,14 @@ function romFilename(url, slug, lang) {
  * 下载一个游戏的所有ROM版本
  * @returns { files: [{lang, filename, localPath, relPath, url, size}], defaultRom }
  */
-async function downloadGameRoms(game, romBaseDir) {
+async function downloadGameRoms(game, gamesDir) {
   const { slug, platform } = game;
   const entries = getRomEntries(game);
 
   if (entries.length === 0) return { files: [], defaultRom: null };
 
-  // 平台子目录
-  const platDir = (platform || 'unknown').toLowerCase().replace(/[\s/]+/g, '-');
-  const destDir = join(romBaseDir, platDir);
-  await ensureDir(destDir);
+  const gameDir = join(gamesDir, slug);
+  await ensureDir(gameDir);
 
   const files = [];
 
@@ -712,41 +894,41 @@ async function downloadGameRoms(game, romBaseDir) {
     if (!url) continue;
 
     const filename  = romFilename(url, slug, lang);
-    const localPath = join(destDir, filename);
-    const relPath   = `roms/${platDir}/${filename}`;
+    const localPath = join(gameDir, filename);
+    const r2Key     = `${slug}/${filename}`;
 
     // 已存在且非空 → 跳过
     if (await pathExists(localPath)) {
       const info = await stat(localPath);
       if (info.size > 0) {
-        files.push({ lang, filename, localPath, relPath, url, size: info.size, status: 'cached' });
+        files.push({ lang, filename, localPath, r2Key, url, size: info.size, status: 'cached' });
         continue;
       }
     }
 
     log.info(`  ROM ↓ [${slug}] ${lang}: ${filename}`);
-		log.info(`  下载地址：${url}`)
+    log.info(`  下载地址：${url}`)
     const result = await downloadFile(url, localPath);
 
     if (result.ok) {
-      files.push({ lang, filename, localPath, relPath, url, size: result.size, status: 'downloaded' });
+      files.push({ lang, filename, localPath, r2Key, url, size: result.size, status: 'downloaded' });
       log.ok(`  ROM ✓ [${slug}] ${lang}: ${(result.size / 1024 / 1024).toFixed(2)}MB`);
     } else {
       log.warn(`  ROM ✗ [${slug}] ${lang}: ${result.reason}`);
-      files.push({ lang, filename, localPath: null, relPath: null, url, size: 0, status: result.reason });
+      files.push({ lang, filename, localPath: null, r2Key: null, url, size: 0, status: result.reason });
     }
   }
 
-  // defaultRom：优先级最高的成功文件
+  // defaultRom：优先级最高的成功文件（R2 key）
   const successful = files.filter(f => f.localPath);
-  const defaultRom = successful.length > 0 ? successful[0].relPath : null;
+  const defaultRom = successful.length > 0 ? successful[0].r2Key : null;
 
   return { files, defaultRom };
 }
 
 // ─── Step 4: 封面下载 ─────────────────────────────────────────────────────────
 
-async function downloadCover(imageUrl, slug, coverDir) {
+async function downloadCover(imageUrl, slug, gamesDir) {
   if (!imageUrl) return null;
 
   const fullUrl = imageUrl.startsWith('http')
@@ -755,12 +937,14 @@ async function downloadCover(imageUrl, slug, coverDir) {
 
   const ext       = fullUrl.split('.').pop().split('?')[0] || 'webp';
   const filename  = `${slug}.${ext}`;
-  const localPath = join(coverDir, filename);
-  const relPath   = `covers/${filename}`;
+  const gameDir   = join(gamesDir, slug);
+  await ensureDir(gameDir);
+  const localPath = join(gameDir, filename);
+  const r2Key     = `${slug}/${filename}`;
 
   if (await pathExists(localPath)) {
     const info = await stat(localPath);
-    if (info.size > 0) return relPath;
+    if (info.size > 0) return r2Key;
   }
 
   try {
@@ -772,7 +956,7 @@ async function downloadCover(imageUrl, slug, coverDir) {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const buf = await res.arrayBuffer();
     await writeFile(localPath, Buffer.from(buf));
-    return relPath;
+    return r2Key;
   } catch (err) {
     log.warn(`封面下载失败 [${slug}]: ${err.message}`);
     return null;
@@ -866,16 +1050,12 @@ async function main() {
     log.ok('解析完成');
     return;
   }
-  const outDir    = CONFIG.outputDir;
-  const gamesDir  = join(outDir, 'games');
-  const romsDir   = join(outDir, 'roms');
-  const coversDir = join(outDir, 'covers');
-  const indexDir  = join(outDir, 'indexes');
+  const outDir   = CONFIG.outputDir;
+  const gamesDir = join(outDir, 'games');
+  const indexDir = join(outDir, 'indexes');
 
   await ensureDir(outDir);
   await ensureDir(gamesDir);
-  await ensureDir(romsDir);
-  await ensureDir(coversDir);
   await ensureDir(indexDir);
 
   // ── 进度文件（支持断点续跑）─────────────────────────────────────────────
@@ -922,16 +1102,48 @@ async function main() {
   const allSlugs = Object.keys(progress.slugCardMap);
 
   // ══════════════════════════════════════════════════════════════════════════
-  // Step 2 + 3 + 4: 详情页 + ROM下载 + 封面下载（合并为一次遍历）
+  // Step 2 + 3 + 4: 详情页 + ROM下载 + 封面下载 + R2上传 + D1写入（合并为一次遍历）
   // ══════════════════════════════════════════════════════════════════════════
 
-  log.info('=== Step 2/3/4: 详情 + ROM + 封面 ===');
+  log.info('=== Step 2/3/4: 详情 + ROM + 封面 + R2 + D1 ===');
   if (SKIP_ROMS)   log.info('  [--skip-roms] ROM下载已跳过');
   if (SKIP_COVERS) log.info('  [--skip-covers] 封面下载已跳过');
+  if (SKIP_R2)     log.info('  [--skip-r2] R2上传已跳过');
 
-  const pending = allSlugs.filter(
+  // 本地进度过滤
+  let pending = allSlugs.filter(
     s => !progress.completedSlugs.includes(s) && !progress.failedSlugs.includes(s)
   );
+
+  // D1 云端状态过滤（增量断点）
+  if (HAS_D1) {
+    const d1StatusMap = await fetchGameStatusMap();
+    if (d1StatusMap.size > 0) {
+      const before = pending.length;
+      pending = pending.filter(s => {
+        const st = d1StatusMap.get(s);
+        return !st || st === 'failed';
+      });
+      const skipped = before - pending.length;
+      if (skipped > 0) log.ok(`D1 跳过 ${skipped} 个已成功游戏`);
+    }
+  }
+
+  // --slug 单游戏过滤
+  if (SLUG_FILTER) {
+    pending = pending.filter(s => s === SLUG_FILTER);
+    if (pending.length === 0) {
+      log.error(`--slug ${SLUG_FILTER} 未找到，检查拼写`);
+      return;
+    }
+    log.info(`单游戏模式: ${SLUG_FILTER}`);
+  }
+
+  // 加载 taxonomy 反向映射（显示名 → key）
+  log.info('加载 taxonomy 映射...');
+  const reverseMaps = await loadReverseMaps();
+  const newTaxonomyEntries = {};  // 收集新增条目，Step 5 回写
+
   log.info(`待处理: ${pending.length} / ${allSlugs.length}`);
 
   const limit    = pLimit(CONFIG.detailConcurrency);
@@ -940,57 +1152,105 @@ async function main() {
 
   await Promise.all(pending.map(slug => limit(async () => {
     const card = progress.slugCardMap[slug] || {};
+    let game = null;
 
-    // ── 2a: 抓取详情页 ──────────────────────────────────────────────────
-    let html;
     try {
-      html = await fetchText(`${CONFIG.baseUrl}/games/${slug}`);
+      // ── 2a: 抓取详情页 ──────────────────────────────────────────────────
+      let html;
+      try {
+        html = await fetchText(`${CONFIG.baseUrl}/games/${slug}`);
+      } catch (err) {
+        throw new Error(`详情页请求失败: ${err.message}`);
+      }
+
+      const raw = parseDetail(html, slug);
+      if (!raw || !raw.title) throw new Error('详情解析失败');
+
+      // ── 2b: 下载ROM ─────────────────────────────────────────────────────
+      let romResult = null;
+      if (!SKIP_ROMS) {
+        romResult = await romLimit(() => downloadGameRoms(
+          { ...raw, slug, platform: raw.platform || card.platform },
+          gamesDir
+        ));
+        progress.romMap[slug] = {
+          files:      romResult.files,
+          defaultRom: romResult.defaultRom,
+        };
+      }
+
+      // ── 2b1: 转换 5 个分类字段为 key ────────────────────────────────────
+      const rawPlat  = raw.platform   || card.platform   || '';
+      const rawGenre = raw.genre      || card.genre      || '';
+      const rawDev   = raw.developer  || '';
+      const rawPub   = raw.publisher  || '';
+      const rawSer   = raw.enSeries || raw.series || card.series || card.enSeries || '';
+      raw.platform   = nameToKey(rawPlat,  reverseMaps.platforms);
+      raw.genre      = nameToKey(rawGenre, reverseMaps.genres);
+      raw.developer  = nameToKey(rawDev,   reverseMaps.developers);
+      raw.publisher  = nameToKey(rawPub,   reverseMaps.publishers);
+      raw.series     = nameToKey(rawSer,   reverseMaps.series);
+      raw.enSeries   = raw.series;     // 同步 enSeries，防止 normalizeGame 取旧值
+      // 收集新增条目，Step 5 回写 JSON（保留原始显示名）
+      collectNewEntry(newTaxonomyEntries, 'platforms',  raw.platform,  rawPlat);
+      collectNewEntry(newTaxonomyEntries, 'genres',     raw.genre,    rawGenre);
+      collectNewEntry(newTaxonomyEntries, 'developers', raw.developer, rawDev);
+      collectNewEntry(newTaxonomyEntries, 'publishers', raw.publisher, rawPub);
+      collectNewEntry(newTaxonomyEntries, 'series',     raw.series,   rawSer);
+
+      // ── 2c: 下载封面 ─────────────────────────────────────────────────────
+      let coverPath = null;
+      if (!SKIP_COVERS) {
+        const imgUrl = raw.imageUrl || card.coverImg;
+        if (imgUrl) coverPath = await downloadCover(imgUrl, slug, gamesDir);
+      }
+
+      // ── 2d: 上传至 R2 ───────────────────────────────────────────────────
+      if (!SKIP_R2 && HAS_R2) {
+        // 上传 ROM
+        if (romResult?.files) {
+          for (const f of romResult.files) {
+            if (f.localPath && f.r2Key) {
+              const buf = await readFile(f.localPath);
+              const ct = f.filename.endsWith('.zip') ? 'application/zip' : 'application/octet-stream';
+              await uploadToR2(f.r2Key, buf, ct);
+            }
+          }
+        }
+        // 上传封面
+        if (coverPath) {
+          const coverFile = coverPath.split('/').pop();
+          const coverLocal = join(gamesDir, slug, coverFile);
+          if (await pathExists(coverLocal)) {
+            const buf = await readFile(coverLocal);
+            await uploadToR2(coverPath, buf, 'image/webp');
+          }
+        }
+      }
+
+      // ── 2e: 标准化 & 写入 game.json 到 slug 目录 ──────────────────────
+      game = normalizeGame(raw, slug, card, romResult, coverPath);
+      const gameDir = join(gamesDir, slug);
+      await ensureDir(gameDir);
+      await writeJson(join(gameDir, 'game.json'), game);
+
+      // ── 2f: 写入 D1（成功）─────────────────────────────────────────────
+      await writeGameToD1(game, 'success');
+
+      progress.completedSlugs.push(slug);
+      doneCount++;
+
+      if (doneCount % 20 === 0) {
+        await saveProgress();
+        log.ok(`进度: ${doneCount}/${pending.length}  失败: ${progress.failedSlugs.length}`);
+      }
+
     } catch (err) {
-      log.error(`详情页请求失败 [${slug}]: ${err.message}`);
+      log.warn(`处理失败 [${slug}]: ${err.message}`);
       progress.failedSlugs.push(slug);
+      // 尽量写入 D1 失败状态
+      if (game) await writeGameToD1(game, 'failed', err.message);
       await saveProgress();
-      return;
-    }
-
-    const raw = parseDetail(html, slug);
-    if (!raw || !raw.title) {
-      log.warn(`详情解析失败 [${slug}]`);
-      progress.failedSlugs.push(slug);
-      await saveProgress();
-      return;
-    }
-
-    // ── 2b: 下载ROM ─────────────────────────────────────────────────────
-    let romResult = null;
-    if (!SKIP_ROMS) {
-      romResult = await romLimit(() => downloadGameRoms(
-        { ...raw, slug, platform: raw.platform || card.platform },
-        romsDir
-      ));
-      // 记录romMap
-      progress.romMap[slug] = {
-        files:      romResult.files,
-        defaultRom: romResult.defaultRom,
-      };
-    }
-
-    // ── 2c: 下载封面 ─────────────────────────────────────────────────────
-    let coverPath = null;
-    if (!SKIP_COVERS) {
-      const imgUrl = raw.imageUrl || card.coverImg;
-      if (imgUrl) coverPath = await downloadCover(imgUrl, slug, coversDir);
-    }
-
-    // ── 2d: 标准化 & 写入单文件 ─────────────────────────────────────────
-    const game = normalizeGame(raw, slug, card, romResult, coverPath);
-    await writeJson(join(gamesDir, `${slug}.json`), game);
-
-    progress.completedSlugs.push(slug);
-    doneCount++;
-
-    if (doneCount % 20 === 0) {
-      await saveProgress();
-      log.ok(`进度: ${doneCount}/${pending.length}  失败: ${progress.failedSlugs.length}`);
     }
   })));
 
@@ -1003,10 +1263,25 @@ async function main() {
 
   log.info('=== Step 5: 合并 & 构建索引 ===');
 
-  const gameFiles = (await readdir(gamesDir)).filter(f => f.endsWith('.json'));
-  const allGames  = await Promise.all(
-    gameFiles.map(f => readJson(join(gamesDir, f)))
-  );
+  // 回写新增的 taxonomy 条目到 JSON
+  const nTax = Object.keys(newTaxonomyEntries).reduce((n, k) => n + Object.keys(newTaxonomyEntries[k] || {}).length, 0);
+  if (nTax > 0) {
+    log.info(`回写 ${nTax} 个新增 taxonomy 条目`);
+    await flushTaxonomies(newTaxonomyEntries);
+  }
+
+  // 兼容新旧格式：旧 = *.json 散放，新 = {slug}/game.json
+  const gameEntries = await readdir(gamesDir, { withFileTypes: true });
+  const allGames = [];
+  for (const entry of gameEntries) {
+    if (entry.isFile() && entry.name.endsWith('.json')) {
+      allGames.push(await readJson(join(gamesDir, entry.name)));
+    } else if (entry.isDirectory()) {
+      try {
+        allGames.push(await readJson(join(gamesDir, entry.name, 'game.json')));
+      } catch { /* skip */ }
+    }
+  }
 
   // ── 索引 ────────────────────────────────────────────────────────────────
 
@@ -1075,7 +1350,7 @@ async function main() {
       platform: g.platform,
       ejs: {
         gameUrl:    g.defaultRom,
-        allVersions: (g.localRoms || []).map(r => ({ lang: r.lang, path: r.relPath })),
+        allVersions: (g.localRoms || []).map(r => ({ lang: r.lang, path: r.r2Key || r.relPath })),
         core:       g.ejs?.core    || 'nes',
         biosUrl:    g.ejs?.biosUrl || '',
         gameName:   g.title,
@@ -1140,9 +1415,8 @@ async function main() {
   log.ok(`  ${outDir}/game_list.json      列表页数据（轻量）`);
   log.ok(`  ${outDir}/rom_map.json        ROM路径映射`);
   log.ok(`  ${outDir}/ejs_config.json     EmulatorJS配置（Nuxt直接用）`);
-  log.ok(`  ${outDir}/games/*.json        单游戏文件`);
-  log.ok(`  ${outDir}/roms/**             ROM文件（按平台分目录）`);
-  log.ok(`  ${outDir}/covers/*            封面图片`);
+  log.ok(`  ${outDir}/games/*/game.json   单游戏元数据`);
+  log.ok(`  ${outDir}/games/*/             ROM + 封面（按 slug 目录）`);
   log.ok(`  ${outDir}/indexes/*.json      各维度索引`);
   log.ok('');
   log.ok('索引维度：');

@@ -22,7 +22,10 @@
     "nintendo-famicom-disk-system": "Nintendo Famicom Disk System",
     "msx2": "MSX2",
     "commodore-64": "Commodore 64",
-    "colecovision": "ColecoVision"
+    "colecovision": "ColecoVision",
+    "genesis": "Genesis",
+    "game-gear": "Game Gear",
+    "famicom-disk-system": "Famicom Disk System"
   },
   "zh": {
     "nes": "红白机",

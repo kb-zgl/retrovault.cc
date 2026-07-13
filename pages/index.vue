@@ -108,7 +108,7 @@
           <NuxtLink
             v-for="p in topPlatforms"
             :key="p.name"
-            :to="localePath(`/${slugFor(p.name)}-games`)"
+            :to="{ path: localePath('/games'), query: { platform: p.key } }"
             class="category-card"
           >
             <span class="emoji-big">{{ emojiFor(p.name) }}</span>
@@ -128,7 +128,7 @@
           <NuxtLink
             v-for="g in topGenres"
             :key="g.name"
-            :to="localePath(`/games?genre=${encodeURIComponent(g.name)}`)"
+            :to="{ path: localePath('/games'), query: { genre: g.key } }"
             class="category-card"
           >
             <span class="emoji-big">{{ genreEmoji(g.name) }}</span>
@@ -208,12 +208,13 @@ const featured = computed(() => allGames.value.slice(0, 12))
 // ── H2: Platforms（前8 + View All）────────────────
 
 const platformStats = computed(() => {
-  const counts: Record<string, number> = {}
+  const counts: Record<string, { count: number; key: string }> = {}
   allGames.value.forEach((g: GameSummary) => {
-    counts[g.platform] = (counts[g.platform] || 0) + 1
+    if (!counts[g.platform]) counts[g.platform] = { count: 0, key: g.platformKey || g.platform }
+    counts[g.platform]!.count++
   })
   return Object.entries(counts)
-    .map(([name, count]) => ({ name, count }))
+    .map(([name, info]) => ({ name, key: info.key, count: info.count }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 8)
 })
@@ -223,12 +224,15 @@ const topPlatforms = computed(() => platformStats.value)
 // ── H2: Genres（前8 + View All）──────────────────
 
 const genreStats = computed(() => {
-  const counts: Record<string, number> = {}
+  const counts: Record<string, { count: number; key: string }> = {}
   allGames.value.forEach((g: GameSummary) => {
-    if (g.genre) counts[g.genre] = (counts[g.genre] || 0) + 1
+    if (g.genre) {
+      if (!counts[g.genre]) counts[g.genre] = { count: 0, key: g.genreKey || g.genre }
+      counts[g.genre]!.count++
+    }
   })
   return Object.entries(counts)
-    .map(([name, count]) => ({ name, count }))
+    .map(([name, info]) => ({ name, key: info.key, count: info.count }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 8)
 })

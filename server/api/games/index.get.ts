@@ -1,6 +1,21 @@
 import { defineEventHandler, getQuery } from 'h3'
 
+import platforms from '../../../data/platforms.json' with { type: 'json' }
+import genres from '../../../data/genres.json' with { type: 'json' }
+import series from '../../../data/series.json' with { type: 'json' }
+
+function taxName(tax: Record<string, Record<string, string>>, key: string, locale: string): string {
+  if (!key) return ''
+  return tax[locale]?.[key] || tax['en']?.[key] || key
+}
+
 export default defineEventHandler(async (event) => {
+  const path = event.path || event.req?.url || ''
+  const locale = path.startsWith('/zh') ? 'zh-CN' : 'en'
+
+  const config = useRuntimeConfig(event)
+  const r2Url = config.r2PublicUrl?.replace(/\/+$/, '') || 'https://cdn.retrovault.cc'
+
   const query = getQuery(event)
   const { platform, genre, page: pageStr = '1', limit: limitStr = '48' } = query
   const tag = query.tag as string | undefined
@@ -60,8 +75,8 @@ export default defineEventHandler(async (event) => {
     params.push(...tagSlugs)
   }
 
-  const pageNum = Math.max(1, parseInt(pageStr) || 1)
-  const limitNum = Math.min(200, Math.max(1, parseInt(limitStr) || 48))
+  const pageNum = Math.max(1, parseInt(String(pageStr)) || 1)
+  const limitNum = Math.min(200, Math.max(1, parseInt(String(limitStr)) || 48))
   const offset = (pageNum - 1) * limitNum
 
   const games = await sqlAll<any>(event,
@@ -75,9 +90,9 @@ export default defineEventHandler(async (event) => {
     ...params
   )
 
-  // Get filter options
-  const platformRows = await sqlAll<any>(event, 'SELECT DISTINCT platform FROM games ORDER BY platform')
-  const genreRows = await sqlAll<any>(event, 'SELECT DISTINCT genre FROM games WHERE genre IS NOT NULL AND genre != "" ORDER BY genre')
+  // Filter options from taxonomy JSON (keys for URL params, display names shown by frontend)
+  const platformKeys = Object.keys(platforms.en || {}).sort()
+  const genreKeys = Object.keys(genres.en || {}).sort()
 
   return {
     total: total,
@@ -85,11 +100,19 @@ export default defineEventHandler(async (event) => {
     page: pageNum,
     limit: limitNum,
     hasMore: offset + limitNum < total,
-    platforms: platformRows.map((r: any) => r.platform),
-    genres: genreRows.map((r: any) => r.genre),
+    platforms: platformKeys,
+    genres: genreKeys,
     games: games.map((g: any) => ({
-      ...g,
-      coverImg: g.coverImg || `/covers/${g.slug}.webp`,
+      slug: g.slug,
+      title: g.title,
+      platform: taxName(platforms, g.platform, locale),
+      platformKey: g.platform,
+      genre: taxName(genres, g.genre, locale),
+      genreKey: g.genre,
+      year: g.year,
+      series: taxName(series, g.series, locale),
+      coverImg: g.coverImg ? `${r2Url}/${g.coverImg}` : `${r2Url}/${g.slug}/${g.slug}.webp`,
+      description: g.description,
       isHack: g.isHack ? 'true' : '$undefined',
       langs: typeof g.langs === 'string' ? JSON.parse(g.langs) : (g.langs || {}),
     })),

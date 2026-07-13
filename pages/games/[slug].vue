@@ -39,7 +39,7 @@
         <div class="detail-icon">
           <img
             v-if="coverLoaded"
-            :src="`/${game.localCover}`"
+            :src="game.localCover"
             :alt="loc.title"
             @error="coverLoaded = false"
           />
@@ -53,14 +53,14 @@
             <NuxtLink
               :to="{ path: localePath('/games'), query: { genre: game.genre } }"
               class="detail-meta-link"
-            >🏷️ {{ game.genre }}</NuxtLink>
+            >🏷️ {{ game.genreName || game.genre }}</NuxtLink>
             <span>📅 {{ game.year }}</span>
-            <span v-if="game.developer">🏢 {{ game.developer }}</span>
+            <span v-if="game.developer">🏢 {{ game.developerName || game.developer }}</span>
             <NuxtLink
               v-if="game.platform"
               :to="{ path: localePath('/games'), query: { platform: game.platform } }"
               class="detail-meta-link"
-            >🖥️ {{ game.platform }}</NuxtLink>
+            >🖥️ {{ game.platformName || game.platform }}</NuxtLink>
           </div>
 
           <div class="detail-actions">
@@ -218,14 +218,14 @@ usePageSeo(() => ({
 }))
 
 // Satori OG image (text-focused with cover thumbnail) + canonical URL
-const coverUrl = computed(() => game.value?.localCover ? `https://retrovault.cc/${game.value.localCover}` : null)
+const coverUrl = computed(() => game.value?.localCover || null)
 
 defineOgImage('GameOgImage', () => ({
   title: loc.value.title || game.value?.title || 'Retro Game',
   description: (loc.value.description || game.value?.description || '').slice(0, 120),
   cover: coverUrl.value || undefined,
-  platform: game.value?.platform || undefined,
-  genre: game.value?.genre || undefined,
+  platform: game.value?.platformName || game.value?.platform || undefined,
+  genre: game.value?.genreName || game.value?.genre || undefined,
 }))
 
 useHead({
@@ -245,11 +245,11 @@ useSchemaOrg([
     '@type': 'VideoGame',
     name: computed(() => loc.value.title || game.value?.title || ''),
     description: computed(() => loc.value.description || game.value?.description || ''),
-    genre: computed(() => game.value?.genre ? [game.value.genre] : []),
-    platform: computed(() => game.value?.platform ? [game.value.platform] : []),
+    genre: computed(() => game.value?.genreName ? [game.value.genreName] : game.value?.genre ? [game.value.genre] : []),
+    platform: computed(() => game.value?.platformName ? [game.value.platformName] : game.value?.platform ? [game.value.platform] : []),
     datePublished: computed(() => game.value?.year ? String(game.value.year) : undefined),
-    author: computed(() => game.value?.developer ? { '@type': 'Organization', name: game.value.developer } : undefined),
-    publisher: computed(() => game.value?.publisher ? { '@type': 'Organization', name: game.value.publisher } : undefined),
+    author: computed(() => game.value?.developerName ? { '@type': 'Organization', name: game.value.developerName } : undefined),
+    publisher: computed(() => game.value?.publisherName ? { '@type': 'Organization', name: game.value.publisherName } : undefined),
     offers: {
       '@type': 'Offer',
       price: '0',

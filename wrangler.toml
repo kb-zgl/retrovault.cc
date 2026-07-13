@@ -30,6 +30,7 @@ API_BASE = "https://retrovault.cc"
 NUXT_OG_IMAGE_SECRET = "273be4be4de0339309f670bee6789807"
 JWT_SECRET="retrovault_jwt_secret"
 ADMIN_EMAIL="kbmjj123@gmail.com"
+NUXT_R2_PUBLIC_URL = "https://cdn.retrovault.cc/"
 
 # [triggers]
 # crons = ["0 9 * * *"]

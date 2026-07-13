@@ -66,8 +66,8 @@
 
     <!-- Tags: platform + genre (inside card wrapper but outside link, prevents nav) -->
     <div class="mini-tags">
-      <span class="mini-tag mini-tag-link" @click.stop="goToGames('platform', game.platform)">{{ game.platform }}</span>
-      <span class="mini-tag mini-tag-link" @click.stop="goToGames('genre', game.genre)">{{ game.genre }}</span>
+      <span class="mini-tag mini-tag-link" @click.stop="goToGames('platform', game.platformKey || game.platform)">{{ game.platform }}</span>
+      <span class="mini-tag mini-tag-link" @click.stop="goToGames('genre', game.genreKey || game.genre)">{{ game.genre }}</span>
     </div>
   </div>
 </template>
