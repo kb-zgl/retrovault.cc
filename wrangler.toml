@@ -18,7 +18,7 @@ database_id = "ab882efe-a603-47c1-87fa-7f80b960756b"
 
 [[kv_namespaces]]
 binding = "RETROVAULT"
-id = "6c000acaef05427eab3eefd994db15ac"
+id = "1ed00bf28c264f9dae2a7bf858a48af5"
 
 # [[r2_buckets]]
 binding = "CDN"
