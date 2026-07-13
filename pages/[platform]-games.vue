@@ -107,10 +107,14 @@ const platformName = computed(() => {
 const displayName = platformName
 
 // Fetch games for this platform
-const { data, pending } = useFetch<GameListResponse>('/api/games', {
-  query: { platform: platformName.value, limit: 200 },
-  key: `platform-${platformSlug.value}`,
-})
+const { data, pending } = await useAsyncData(
+  `platform-${platformSlug.value}`,
+  async () => {
+    const { get } = useApi()
+    return get<GameListResponse>('/api/games', { query: { platform: platformName.value, limit: 200 } })
+  },
+  { watch: [platformSlug] }
+)
 
 const games = computed(() => data.value?.games || [])
 const total = computed(() => data.value?.total || 0)
