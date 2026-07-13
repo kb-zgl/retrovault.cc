@@ -110,18 +110,24 @@ const page = ref(parseInt(route.query.page as string) || 1)
 const limit = 48
 
 // Fetch games
-const { data, pending } = useFetch<GameListResponse>('/api/games', {
-  query: computed(() => ({
-    platform: selectedPlatform.value || undefined,
-    genre: selectedGenre.value || undefined,
-    year: selectedDecade.value ? `${selectedDecade.value}s` : undefined,
-    tag: selectedTag.value || undefined,
-    q: searchQuery.value || undefined,
-    page: page.value,
-    limit,
-  })),
-  key: 'game-list',
-})
+const { data, pending } = await useAsyncData(
+  'game-list',
+  async () => {
+    const { get } = useApi()
+    return get<GameListResponse>('/api/games', {
+      query: {
+        platform: selectedPlatform.value || undefined,
+        genre: selectedGenre.value || undefined,
+        year: selectedDecade.value ? `${selectedDecade.value}s` : undefined,
+        tag: selectedTag.value || undefined,
+        q: searchQuery.value || undefined,
+        page: page.value,
+        limit,
+      },
+    })
+  },
+  { watch: [selectedPlatform, selectedGenre, selectedDecade, selectedTag, searchQuery, page] }
+)
 
 const games = computed(() => data.value?.games || [])
 const total = computed(() => data.value?.total || 0)
