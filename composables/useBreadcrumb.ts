@@ -44,7 +44,7 @@ export function useBreadcrumb(items: MaybeRefOrGetter<BreadcrumbItem[]>) {
         position: i + 1,
         name: item.label,
         ...(item.to
-          ? { item: new URL(item.to, 'https://retrovault.cc').href }
+          ? { item: new URL(item.to, 'https://retrovault.online').href }
           : {}),
       })),
     }

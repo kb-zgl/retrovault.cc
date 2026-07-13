@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'RetroVault <noreply@retrovault.cc>',
+        from: 'RetroVault <noreply@retrovault.online>',
         to: normalized,
         subject: '🎮 Sign in to RetroVault',
         text: `Hi!\n\nClick the link below to sign in to RetroVault:\n\n${verifyUrl}\n\nThis link expires in 15 minutes.\n\n— RetroVault`,

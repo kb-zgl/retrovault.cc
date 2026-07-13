@@ -53,7 +53,7 @@
 直接在浏览器中体验           首页 / 关于             English / 简体中文
 经典复古游戏                 隐私政策 / 服务条款
 
-© 2025 RetroVault.cc
+© 2025 retrovault.online
 ```
 
 ---

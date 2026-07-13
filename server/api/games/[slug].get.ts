@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
   const locale = path.startsWith('/zh') ? 'zh-CN' : 'en'
 
   const config = useRuntimeConfig(event)
-  const r2Url = config.r2PublicUrl?.replace(/\/+$/, '') || 'https://cdn.retrovault.cc'
+  const r2Url = config.r2PublicUrl?.replace(/\/+$/, '') || 'https://cdn.retrovault.online'
 
   const game = await sqlOne<any>(event, 'SELECT * FROM games WHERE slug = ?', slug)
   if (!game) {

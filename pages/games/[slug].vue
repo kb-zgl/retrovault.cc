@@ -230,7 +230,7 @@ defineOgImage('GameOgImage', () => ({
 
 useHead({
   link: computed(() => [
-    { rel: 'canonical', href: `https://retrovault.cc/games/${slug.value}` },
+    { rel: 'canonical', href: `https://retrovault.online/games/${slug.value}` },
   ]),
 })
 

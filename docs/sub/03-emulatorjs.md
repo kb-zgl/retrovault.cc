@@ -158,16 +158,16 @@ const EJS_LOCALE_MAP = {
 ROM 文件存储在 Cloudflare R2，通过自定义域名访问：
 
 ```
-https://roms.retrovault.cc/roms/nes/super-mario-bros.nes
-https://roms.retrovault.cc/roms/gba/pokemon-ruby.gba
-https://roms.retrovault.cc/roms/arcade/mslug.zip
+https://roms.retrovault.online/roms/nes/super-mario-bros.nes
+https://roms.retrovault.online/roms/gba/pokemon-ruby.gba
+https://roms.retrovault.online/roms/arcade/mslug.zip
 ```
 
 Nuxt 服务端 API 提供 ROM URL，不在前端直接暴露 R2 路径：
 
 ```
 GET /api/games/[slug]/rom-url
-→ { url: "https://roms.retrovault.cc/roms/..." }
+→ { url: "https://roms.retrovault.online/roms/..." }
 ```
 
 ---

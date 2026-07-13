@@ -55,9 +55,9 @@ export function usePageSeo(opts: MaybeRefOrGetter<PageSeoOptions>) {
       { property: 'og:locale', content: ogLocaleMap[locale.value] || 'en_US' },
     ]),
     link: computed(() => [
-      { rel: 'alternate', hreflang: 'en', href: `https://retrovault.cc${cleanPath.value}` },
-      { rel: 'alternate', hreflang: 'zh', href: `https://retrovault.cc/zh${cleanPath.value}` },
-      { rel: 'alternate', hreflang: 'x-default', href: `https://retrovault.cc${cleanPath.value}` },
+      { rel: 'alternate', hreflang: 'en', href: `https://retrovault.online${cleanPath.value}` },
+      { rel: 'alternate', hreflang: 'zh', href: `https://retrovault.online/zh${cleanPath.value}` },
+      { rel: 'alternate', hreflang: 'x-default', href: `https://retrovault.online${cleanPath.value}` },
     ]),
   })
 

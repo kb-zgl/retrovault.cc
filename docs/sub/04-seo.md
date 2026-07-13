@@ -152,10 +152,10 @@ description: Play 2000+ classic retro games online for free. NES, SNES, GBA, Arc
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "RetroVault",
-  "url": "https://retrovault.cc",
+  "url": "https://retrovault.online",
   "potentialAction": {
     "@type": "SearchAction",
-    "target": "https://retrovault.cc/games?q={search_term_string}",
+    "target": "https://retrovault.online/games?q={search_term_string}",
     "query-input": "required name=search_term_string"
   }
 }
@@ -172,7 +172,7 @@ description: Play 2000+ classic retro games online for free. NES, SNES, GBA, Arc
     {
       "@type": "ListItem",
       "position": 1,
-      "url": "https://retrovault.cc/games/mslug",
+      "url": "https://retrovault.online/games/mslug",
       "name": "Metal Slug"
     }
   ]
@@ -200,9 +200,9 @@ description: Play 2000+ classic retro games online for free. NES, SNES, GBA, Arc
 {
   "@type": "BreadcrumbList",
   "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://retrovault.cc" },
-    { "@type": "ListItem", "position": 2, "name": "Games", "item": "https://retrovault.cc/games" },
-    { "@type": "ListItem", "position": 3, "name": "NES", "item": "https://retrovault.cc/nes-games" },
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://retrovault.online" },
+    { "@type": "ListItem", "position": 2, "name": "Games", "item": "https://retrovault.online/games" },
+    { "@type": "ListItem", "position": 3, "name": "NES", "item": "https://retrovault.online/nes-games" },
     { "@type": "ListItem", "position": 4, "name": "Super Mario Bros." }
   ]
 }
@@ -233,9 +233,9 @@ sitemap-index.xml
 每个页面在 `<head>` 中输出：
 
 ```html
-<link rel="alternate" hreflang="en"    href="https://retrovault.cc/games/slug" />
-<link rel="alternate" hreflang="zh-CN" href="https://retrovault.cc/zh-cn/games/slug" />
-<link rel="alternate" hreflang="x-default" href="https://retrovault.cc/games/slug" />
+<link rel="alternate" hreflang="en"    href="https://retrovault.online/games/slug" />
+<link rel="alternate" hreflang="zh-CN" href="https://retrovault.online/zh-cn/games/slug" />
+<link rel="alternate" hreflang="x-default" href="https://retrovault.online/games/slug" />
 ```
 
 ---
@@ -246,7 +246,7 @@ sitemap-index.xml
 User-agent: *
 Allow: /
 
-Sitemap: https://retrovault.cc/sitemap.xml
+Sitemap: https://retrovault.online/sitemap.xml
 
 # 不收录管理后台（如有）
 Disallow: /admin/

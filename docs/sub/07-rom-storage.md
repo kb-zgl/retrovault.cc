@@ -1,7 +1,7 @@
 # 07 — ROM 存储方案
 
 > 存储：Cloudflare R2  
-> 访问：自定义域名 roms.retrovault.cc  
+> 访问：自定义域名 roms.retrovault.online  
 > 原则：ROM文件与前端完全分离，前端只拿URL不直接暴露R2路径
 
 ---
@@ -62,20 +62,20 @@ retrovault-roms/                     ← R2 Bucket名称
 ## 访问域名配置
 
 ```
-roms.retrovault.cc  →  R2 Bucket（公开读取）
+roms.retrovault.online  →  R2 Bucket（公开读取）
 ```
 
 ### Cloudflare R2 自定义域名配置
 
 1. R2 Bucket 设置 → 公开访问
-2. 添加自定义域名 `roms.retrovault.cc`
+2. 添加自定义域名 `roms.retrovault.online`
 3. Cloudflare DNS 自动创建 CNAME 记录
 
 访问示例：
 ```
-https://roms.retrovault.cc/roms/nes/super-mario-bros.nes
-https://roms.retrovault.cc/roms/gba/pokemon-ruby.gba
-https://roms.retrovault.cc/covers/super-mario-bros.webp
+https://roms.retrovault.online/roms/nes/super-mario-bros.nes
+https://roms.retrovault.online/roms/gba/pokemon-ruby.gba
+https://roms.retrovault.online/covers/super-mario-bros.webp
 ```
 
 ---
@@ -122,7 +122,7 @@ export default defineEventHandler(async (event) => {
   }
 
   return {
-    url:  `https://roms.retrovault.cc/${rom.rel_path}`,
+    url:  `https://roms.retrovault.online/${rom.rel_path}`,
     lang: rom.lang,
     ext:  rom.file_ext,
   }
@@ -147,7 +147,7 @@ export default defineEventHandler(async (event) => {
 
   return results.map(rom => ({
     lang:      rom.lang,
-    url:       `https://roms.retrovault.cc/${rom.rel_path}`,
+    url:       `https://roms.retrovault.online/${rom.rel_path}`,
     ext:       rom.file_ext,
     sizeMB:    rom.file_size ? (rom.file_size / 1024 / 1024).toFixed(1) : null,
     isDefault: rom.is_default === 1,
@@ -165,8 +165,8 @@ R2 Bucket 需要配置 CORS，允许游戏站域名加载 ROM：
 [
   {
     "AllowedOrigins": [
-      "https://retrovault.cc",
-      "https://www.retrovault.cc",
+      "https://retrovault.online",
+      "https://www.retrovault.online",
       "http://localhost:3000"
     ],
     "AllowedMethods": ["GET", "HEAD"],
@@ -181,13 +181,13 @@ R2 Bucket 需要配置 CORS，允许游戏站域名加载 ROM：
 
 ## 封面图访问
 
-封面图同样存储在 R2，通过 `roms.retrovault.cc/covers/` 访问。
+封面图同样存储在 R2，通过 `roms.retrovault.online/covers/` 访问。
 
 Nuxt 中使用：
 
 ```vue
 <img
-  :src="`https://roms.retrovault.cc/covers/${game.slug}.webp`"
+  :src="`https://roms.retrovault.online/covers/${game.slug}.webp`"
   :alt="game.title"
   loading="lazy"
 />
@@ -197,7 +197,7 @@ Nuxt 中使用：
 
 ```vue
 <img
-  :src="`https://roms.retrovault.cc/covers/${game.slug}.webp`"
+  :src="`https://roms.retrovault.online/covers/${game.slug}.webp`"
   :alt="game.title"
   loading="lazy"
   @error="onImageError"

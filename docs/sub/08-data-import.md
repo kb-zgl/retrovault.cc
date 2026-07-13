@@ -791,7 +791,7 @@ binding     = "ROMS"
 bucket_name = "retrovault-roms"
 
 [vars]
-ROMS_BASE_URL = "https://roms.retrovault.cc"
+ROMS_BASE_URL = "https://roms.retrovault.online"
 ```
 
 ---

@@ -1,4 +1,4 @@
-name = "retrovault-cc"
+name = "retrovault"
 keep_vars = true
 main = ".output/server/index.mjs"
 compatibility_date = "2026-05-07"
@@ -7,30 +7,30 @@ compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 assets = { directory = ".output/public" }
 
 routes = [
-  { pattern = "retrovault.cc", zone_name = "retrovault.cc", custom_domain = true },
-  { pattern = "www.retrovault.cc", zone_name = "retrovault.cc", custom_domain = true }
+  { pattern = "retrovault.online", zone_name = "retrovault.online", custom_domain = true },
+  { pattern = "www.retrovault.online", zone_name = "retrovault.online", custom_domain = true }
 ]
 
 [[d1_databases]]
 binding = "DB"
 database_name = "retro-vault"
-database_id = "24086795-335c-4fbc-92dc-6e5d5350ecea"
+database_id = "ab882efe-a603-47c1-87fa-7f80b960756b"
 
 [[kv_namespaces]]
 binding = "RETROVAULT"
 id = "6c000acaef05427eab3eefd994db15ac"
 
 # [[r2_buckets]]
-# binding = "CDN"
-# bucket_name = "aifindr-cdn"
+binding = "CDN"
+bucket_name = "retrovault"
 
 [vars]
-API_BASE = "https://retrovault.cc"
-# md5(retrovault.cc) = 273be4be4de0339309f670bee6789807
-NUXT_OG_IMAGE_SECRET = "273be4be4de0339309f670bee6789807"
+API_BASE = "https://retrovault.online"
+# md5(retrovault.online) = 1fe51af3f664090d386e77f624862466
+NUXT_OG_IMAGE_SECRET = "1fe51af3f664090d386e77f624862466"
 JWT_SECRET="retrovault_jwt_secret"
 ADMIN_EMAIL="kbmjj123@gmail.com"
-NUXT_R2_PUBLIC_URL = "https://cdn.retrovault.cc/"
+NUXT_R2_PUBLIC_URL = "https://cdn.retrovault.online/"
 
 # [triggers]
 # crons = ["0 9 * * *"]

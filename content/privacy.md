@@ -11,7 +11,7 @@ lang: en
 
 ## Introduction
 
-RetroVault ("we", "our", "us") respects your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website **retrovault.cc**.
+RetroVault ("we", "our", "us") respects your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website **retrovault.online**.
 
 ## Information We Collect
 

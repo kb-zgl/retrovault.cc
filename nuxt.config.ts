@@ -2,7 +2,7 @@ export default defineNuxtConfig({
   modules: ['@nuxt/content', '@nuxtjs/seo'],
 
   site: {
-    url: 'https://retrovault.cc',
+    url: 'https://retrovault.online',
     name: 'RetroVault',
   },
 
@@ -41,7 +41,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     apiBase: '',
-    r2PublicUrl: process.env.NUXT_R2_PUBLIC_URL || 'https://cdn.retrovault.cc/',
+    r2PublicUrl: process.env.NUXT_R2_PUBLIC_URL || 'https://cdn.retrovault.online/',
   },
 
   content: {},

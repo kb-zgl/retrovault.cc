@@ -60,12 +60,12 @@ const { t } = useAppI18n()
 useSchemaOrg([
   defineWebSite({
     name: 'RetroVault',
-    url: 'https://retrovault.cc',
+    url: 'https://retrovault.online',
     description: t('seo.tagline'),
   }),
   defineOrganization({
     name: 'RetroVault',
-    url: 'https://retrovault.cc',
+    url: 'https://retrovault.online',
     description: t('seo.tagline'),
   }),
 ])
