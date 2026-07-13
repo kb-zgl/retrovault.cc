@@ -37,16 +37,10 @@ export default defineNuxtConfig({
     cloudflare: {
       nodeCompat: true,
     },
-    devProxy: {
-      '/api': {
-        target: 'https://retrovault.solomaker282.workers.dev',
-        changeOrigin: true,
-      },
-    },
   },
 
   runtimeConfig: {
-    apiBase: '',
+    apiBase: process.env.NUXT_API_BASE || '',
     r2PublicUrl: process.env.NUXT_R2_PUBLIC_URL || 'https://cdn.retrovault.online/',
   },
 
