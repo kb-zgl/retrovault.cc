@@ -31,6 +31,3 @@ NUXT_OG_IMAGE_SECRET = "1fe51af3f664090d386e77f624862466"
 JWT_SECRET="retrovault_jwt_secret"
 ADMIN_EMAIL="kbmjj123@gmail.com"
 NUXT_R2_PUBLIC_URL = "https://cdn.retrovault.online/"
-
-# [triggers]
-# crons = ["0 9 * * *"]
