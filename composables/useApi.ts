@@ -21,6 +21,7 @@ export function useApi() {
   }
 
   function get<T>(path: string, opts?: Parameters<typeof $fetch>[1]) {
+		console.info('----->', base)
     return fetcher<T>(path, {
       baseURL: base,
       ...opts,
