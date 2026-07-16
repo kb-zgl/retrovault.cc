@@ -1,4 +1,4 @@
-import { defineEventHandler, getRouterParam, createError } from 'h3'
+import { defineEventHandler, getRouterParam, getQuery, createError } from 'h3'
 
 import platforms from '../../../data/platforms.json' with { type: 'json' }
 import genres from '../../../data/genres.json' with { type: 'json' }
@@ -62,6 +62,9 @@ export default defineEventHandler(async (event) => {
     gameUrl: game.defaultRom,
   }
 
+  // Store raw tags before deleting for related scoring
+  const rawTags: string[] = Array.isArray(game.tags) ? game.tags.filter((t: any) => typeof t === 'string') : []
+
   // Remove internal fields
   delete game.coverUrl
   delete game.ejsCore
@@ -71,6 +74,59 @@ export default defineEventHandler(async (event) => {
   delete game.source
   delete game.createdAt
   delete game.updatedAt
+
+  // ── Related games (?related=true) ──────────────────────────
+  const query = getQuery(event)
+  if (query.related === 'true') {
+    // Build parameterised query — at minimum exclude self
+    const relatedParams: any[] = [slug]
+    const relatedClauses: string[] = ['slug != ?']
+    if (game.genre) { relatedClauses.push('genre = ?'); relatedParams.push(game.genre) }
+    if (game.platform) { relatedClauses.push('platform = ?'); relatedParams.push(game.platform) }
+    if (game.series) { relatedClauses.push('series = ?'); relatedParams.push(game.series) }
+
+    const candidates = await sqlAll<any>(event,
+      `SELECT slug, title, platform, genre, year, series, coverImg, description, tags FROM games WHERE ${relatedClauses.join(' OR ')} LIMIT 60`,
+      ...relatedParams
+    )
+
+    // Weighted scoring
+    function relatedScore(c: any): number {
+      let s = 0
+      if (game.series && c.series === game.series) s += 100
+      if (c.genre === game.genre && c.platform === game.platform) s += 50
+      else if (c.genre === game.genre) s += 30
+      else if (c.platform === game.platform) s += 20
+      // Tag overlap
+      if (rawTags.length) {
+        const cTags: string[] = typeof c.tags === 'string'
+          ? JSON.parse(c.tags).filter((t: any) => typeof t === 'string')
+          : Array.isArray(c.tags) ? c.tags.filter((t: any) => typeof t === 'string') : []
+        s += cTags.filter((t: string) => rawTags.includes(t)).length * 5
+      }
+      // Year proximity
+      const yearDiff = Math.abs(c.year - game.year)
+      if (yearDiff < 5) s += 3
+      return s
+    }
+
+    game.related = candidates
+      .map((c: any) => ({ ...c, score: relatedScore(c) }))
+      .filter((c: any) => c.score > 0)
+      .sort((a: any, b: any) => b.score - a.score)
+      .slice(0, 8)
+      .map((c: any) => ({
+        slug: c.slug,
+        title: c.title,
+        platform: c.platform,
+        genre: c.genre,
+        year: c.year,
+        series: c.series,
+        description: c.description,
+        coverImg: c.coverImg ? `${r2Url}/${c.coverImg}` : `${r2Url}/${c.slug}/${c.slug}.webp`,
+        isHack: c.isHack ? 'true' : '$undefined',
+      }))
+  }
 
   return game
 })

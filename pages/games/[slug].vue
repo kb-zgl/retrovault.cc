@@ -184,7 +184,7 @@ const { data: game, pending, error } = await useAsyncData(
   `game-${slug.value}`,
   async () => {
     const { get } = useApi()
-    return get<GameData>(`/api/games/${slug.value}`)
+    return get<GameData>(`/api/games/${slug.value}?related=true`)
   },
   { watch: [slug] }
 )
@@ -213,8 +213,8 @@ const longDescHtml = computed(() => renderMd(longDescSource.value))
 const controlsMap = computed(() => game.value?.controls || {})
 const controlsKeys = computed(() => Object.keys(controlsMap.value))
 
-// Related games (placeholder - slugs from game.relatedGames)
-const related = computed(() => [])
+// Related games (from API ?related=true weighted scoring)
+const related = computed(() => game.value?.related || [])
 
 usePageSeo(() => ({
   title: pageTitle.value,

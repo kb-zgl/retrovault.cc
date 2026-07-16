@@ -50,6 +50,7 @@ export interface GameData {
   controls: Controls
   translations?: Record<string, any>
   relatedGames: string[]
+  related?: GameSummary[]
 }
 
 /** 游戏列表条目（来自 /api/games） */
