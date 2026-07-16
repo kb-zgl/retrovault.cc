@@ -2,7 +2,7 @@
 //
 // 用法:
 //   node scripts/seed-dev.mjs                          # 生成 scripts/seed-dev.sql
-//   cat scripts/seed-dev.sql | wrangler d1 execute retro-vault --remote
+//   cat scripts/seed-dev.sql | wrangler d1 execute retrovault --remote
 //
 // 抽取策略: 按 platform 均匀覆盖, 每种平台 2~3 个
 // 覆盖: nes, snes, game-boy-advance, genesis, arcade, n64, psx

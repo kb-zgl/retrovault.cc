@@ -23,8 +23,9 @@
           <div class="footer-platforms">
             <NuxtLink
               v-for="p in platforms"
+							:title="p.slug"
               :key="p.slug"
-              :to="localePath(`/${p.slug}-games`)"
+              :to="localePath(`/games?platform=${p.slug}`)"
               class="footer-platform-link"
             >{{ platformLabel(p.refKey) }}</NuxtLink>
           </div>

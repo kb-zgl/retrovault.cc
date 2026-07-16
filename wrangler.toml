@@ -13,7 +13,7 @@ routes = [
 
 [[d1_databases]]
 binding = "DB"
-database_name = "retro-vault"
+database_name = "retrovault"
 database_id = "ab882efe-a603-47c1-87fa-7f80b960756b"
 
 [[kv_namespaces]]

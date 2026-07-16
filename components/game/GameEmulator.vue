@@ -63,7 +63,7 @@ const iframeSrc = computed(() => {
   const biosUrl = BIOS_MAP[props.game.ejs.core]
   const params = new URLSearchParams({
     core: props.game.ejs.core,
-    gameUrl: '/' + props.game.defaultRom,
+    gameUrl: props.game.defaultRom,
     gameName: props.game.title,
     gameId: props.game.slug,
     pathtodata: 'https://cdn.emulatorjs.org/stable/data/',

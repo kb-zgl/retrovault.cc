@@ -99,9 +99,9 @@
   "fab": {
     "nowPlaying": "● 正在播放",
     "playing": "▶ 游戏中",
-    "random": "🎲 随机游戏",
-    "queue": "⏭ 队列 ({count})",
-    "history": "🕹️ 历史记录",
+    "random": "随机游戏",
+    "queue": "队列 ({count})",
+    "history": "历史记录",
     "resume": "继续",
     "pause": "暂停",
     "quickPlay": "快速游戏",

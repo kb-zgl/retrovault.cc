@@ -10,17 +10,17 @@
       class="game-card-link"
     >
       <!-- Play button -->
-      <button
+      <!-- <button
         :class="size === 'grid' ? 'card-play-btn' : 'mini-play-btn'"
         @click.stop="$emit('play')"
         :aria-label="`Play ${loc.title}`"
-      >▶</button>
+      >▶</button> -->
 
       <!-- Cover -->
       <div :class="size === 'grid' ? 'pixel-icon' : 'mini-cover'">
         <img
           v-if="coverOk"
-          :src="`/covers/${game.slug}.webp`"
+          :src="game.coverImg"
           :alt="loc.title"
           loading="lazy"
           @error="coverOk = false"
@@ -39,17 +39,17 @@
       class="game-card-link"
     >
       <!-- Play button -->
-      <button
+      <!-- <button
         :class="size === 'grid' ? 'card-play-btn' : 'mini-play-btn'"
         @click.stop="$emit('play')"
         :aria-label="`Play ${loc.title}`"
-      >▶</button>
+      >▶</button> -->
 
       <!-- Cover -->
       <div :class="size === 'grid' ? 'pixel-icon' : 'mini-cover'">
         <img
           v-if="coverOk"
-          :src="`/covers/${game.slug}.webp`"
+          :src="game.coverImg"
           :alt="loc.title"
           loading="lazy"
           @error="coverOk = false"
