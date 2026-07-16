@@ -9,7 +9,7 @@
     "generate": "nuxi generate",
     "preview": "nuxi preview",
     "typecheck": "nuxi typecheck",
-    "db:seed": "wrangler d1 execute retro-vault --local --file=scripts/seed-dev.sql"
+    "db:seed": "wrangler d1 execute retrovault --local --file=scripts/seed-dev.sql"
   },
   "dependencies": {
     "@nuxt/content": "^3.0.0",
