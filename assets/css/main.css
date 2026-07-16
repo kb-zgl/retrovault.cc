@@ -110,18 +110,18 @@
 ═══════════════════════════════════════════════ */
 [data-theme="light"] {
 
-  --color-bg-base:        #f5f3f7;
-  --color-bg-surface:     #ffffff;
-  --color-bg-elevated:    #f0eef4;
-  --color-bg-input:       #ffffff;
-  --color-header-bg:      rgba(245, 243, 247, 0.92);
+  --color-bg-base:        #f2efe8;
+  --color-bg-surface:     #faf8f4;
+  --color-bg-elevated:    #e8e4dc;
+  --color-bg-input:       #faf8f4;
+  --color-header-bg:      rgba(242, 239, 232, 0.92);
 
-  --color-border:         #dcd8e4;
-  --color-border-hover:   #c8c2d4;
+  --color-border:         #d4cec4;
+  --color-border-hover:   #c8c0b4;
   --color-border-active:  #e02d7a;
 
   --color-text-primary:   #1a1722;
-  --color-text-secondary: #4a4560;
+  --color-text-secondary: #5c5568;
   --color-text-muted:     #8a8498;
   --color-text-link:      #c0296a;
 
@@ -135,32 +135,32 @@
   --color-warning:        #d97706;
   --color-danger:         #dc2626;
 
-  --color-badge-1-bg:      rgba(217, 119, 6, 0.08);
-  --color-badge-1-text:    #d97706;
-  --color-badge-1-border:  rgba(217, 119, 6, 0.20);
-  --color-badge-2-bg:      rgba(22, 163, 74, 0.08);
-  --color-badge-2-text:    #16a34a;
-  --color-badge-2-border:  rgba(22, 163, 74, 0.20);
-  --color-badge-3-bg:      rgba(15, 157, 184, 0.08);
-  --color-badge-3-text:    #0f9db8;
-  --color-badge-3-border:  rgba(15, 157, 184, 0.20);
+  --color-badge-1-bg:      rgba(217, 119, 6, 0.10);
+  --color-badge-1-text:    #b86a08;
+  --color-badge-1-border:  rgba(217, 119, 6, 0.22);
+  --color-badge-2-bg:      rgba(22, 163, 74, 0.10);
+  --color-badge-2-text:    #15803d;
+  --color-badge-2-border:  rgba(22, 163, 74, 0.22);
+  --color-badge-3-bg:      rgba(15, 157, 184, 0.10);
+  --color-badge-3-text:    #0e7f96;
+  --color-badge-3-border:  rgba(15, 157, 184, 0.22);
 
-  --color-tag-1-bg:       rgba(22, 163, 74, 0.08);
-  --color-tag-1-text:     #16a34a;
-  --color-tag-1-border:   rgba(22, 163, 74, 0.20);
-  --color-tag-2-bg:       rgba(15, 157, 184, 0.08);
-  --color-tag-2-text:     #0f9db8;
-  --color-tag-2-border:   rgba(15, 157, 184, 0.20);
-  --color-tag-3-bg:       rgba(224, 45, 122, 0.08);
+  --color-tag-1-bg:       rgba(22, 163, 74, 0.10);
+  --color-tag-1-text:     #15803d;
+  --color-tag-1-border:   rgba(22, 163, 74, 0.22);
+  --color-tag-2-bg:       rgba(15, 157, 184, 0.10);
+  --color-tag-2-text:     #0e7f96;
+  --color-tag-2-border:   rgba(15, 157, 184, 0.22);
+  --color-tag-3-bg:       rgba(224, 45, 122, 0.10);
   --color-tag-3-text:     #c0296a;
-  --color-tag-3-border:   rgba(224, 45, 122, 0.20);
+  --color-tag-3-border:   rgba(224, 45, 122, 0.22);
 
-  --shadow-card:   0 8px 40px rgba(0,0,0,0.15);
+  --shadow-card:   0 8px 40px rgba(0,0,0,0.08);
   --shadow-hover:  0 0 0 1px var(--color-accent-border);
   --shadow-active: 0 0 0 2px var(--color-accent-glow), 0 0 0 1px var(--color-accent);
-  --shadow-modal:  0 25px 60px rgba(0,0,0,0.20);
-  --shadow-fab:    0 6px 24px rgba(0,0,0,0.20);
-  --shadow-float:  0 10px 40px rgba(0,0,0,0.25);
+  --shadow-modal:  0 25px 60px rgba(0,0,0,0.10);
+  --shadow-fab:    0 6px 24px rgba(0,0,0,0.10);
+  --shadow-float:  0 10px 40px rgba(0,0,0,0.12);
 }
 
 /* ═══════════════════════════════════════════════
@@ -183,6 +183,16 @@ body::after {
   );
   z-index: 9999;
   mix-blend-mode: overlay;
+}
+
+[data-theme="light"] body::after {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.015) 0px,
+    rgba(0,0,0,0.015) 1px,
+    transparent 1px,
+    transparent 3px
+  );
 }
 
 /* ═══════════════════════════════════════════════
@@ -1190,7 +1200,7 @@ h1.hero-title em {
 .featured-grid .game-card .pixel-icon {
   width: 100%;
   aspect-ratio: 1/1;
-  background: #1e1b26;
+  background: var(--color-bg-elevated);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1272,7 +1282,7 @@ h1.hero-title em {
 .game-card-mini .mini-cover {
   width: 100%;
   aspect-ratio: 1/1;
-  background: #1e1b26;
+  background: var(--color-bg-elevated);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1440,7 +1450,7 @@ h1.hero-title em {
 .game-list-full .game-card .pixel-icon {
   width: 100%;
   aspect-ratio: 1/1;
-  background: #1e1b26;
+  background: var(--color-bg-elevated);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2251,7 +2261,7 @@ h1.hero-title em {
 .detail-icon {
   width: 120px;
   aspect-ratio: 375/515;
-  background: #1e1b26;
+  background: var(--color-bg-elevated);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   display: flex;
