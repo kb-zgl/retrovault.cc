@@ -184,7 +184,7 @@ const { data: game, pending, error } = await useAsyncData(
   `game-${slug.value}`,
   async () => {
     const { get } = useApi()
-    return get<GameData>(`/api/games/${slug.value}?related=true`)
+    return get<GameData>(`/api/games/${slug.value}`, { query: { related: 'true' } })
   },
   { watch: [slug] }
 )
