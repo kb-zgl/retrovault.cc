@@ -55,11 +55,11 @@
     <!-- Active chips -->
     <div v-if="hasActiveFilters" class="gfb-chips">
       <span v-if="selectedGenre" class="gfb-chip">
-        {{ selectedGenre }}
+        {{ chipGenre }}
         <button @click="emit('update:selectedGenre', '')" aria-label="Remove">✕</button>
       </span>
       <span v-if="selectedPlatform" class="gfb-chip">
-        {{ selectedPlatform }}
+        {{ chipPlatform }}
         <button @click="emit('update:selectedPlatform', '')" aria-label="Remove">✕</button>
       </span>
       <span v-if="selectedDecade" class="gfb-chip">
@@ -87,8 +87,8 @@ const props = defineProps<{
   selectedDecade: number
   selectedTag: string
   search: string
-  genres: string[]
-  platforms: string[]
+  genres: (string | { label: string; value: string })[]
+  platforms: (string | { label: string; value: string })[]
   total: number
   totalAll: number
   decadeYears: number[]
@@ -139,6 +139,14 @@ function clearSearch() {
   emit('update:search', '')
   searchInput.value?.focus()
 }
+
+function optionLabel(opts: (string | { label: string; value: string })[], val: string): string {
+  const found = opts.find(o => (typeof o === 'string' ? o : o.value) === val)
+  return found ? (typeof found === 'string' ? found : found.label) : val
+}
+
+const chipGenre = computed(() => optionLabel(props.genres, props.selectedGenre))
+const chipPlatform = computed(() => optionLabel(props.platforms, props.selectedPlatform))
 
 const hasActiveFilters = computed(() =>
   !!props.selectedGenre || !!props.selectedPlatform || !!props.selectedDecade ||

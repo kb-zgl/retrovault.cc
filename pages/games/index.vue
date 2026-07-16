@@ -75,10 +75,11 @@
 
 <script setup lang="ts">
 import type { GameListResponse } from '~/types/games'
+import { getReferenceData } from '~/utils/reference-data'
 
 const route = useRoute()
 const router = useRouter()
-const { t } = useAppI18n()
+const { t, locale } = useAppI18n()
 const { localePath } = useLocalePath()
 
 usePageSeo({
@@ -132,8 +133,24 @@ const { data, pending } = await useAsyncData(
 const games = computed(() => data.value?.games || [])
 const total = computed(() => data.value?.total || 0)
 const totalAll = computed(() => data.value?.totalAll || 0)
-const platforms = computed(() => data.value?.platforms || [])
-const genres = computed(() => data.value?.genres || [])
+const rawPlatforms = computed(() => data.value?.platforms || [])
+const rawGenres = computed(() => data.value?.genres || [])
+
+const refData = computed(() => getReferenceData(locale.value))
+
+const platforms = computed(() =>
+  rawPlatforms.value.map(key => {
+    const entry = refData.value.platforms.find(p => p.key === key)
+    return { label: entry?.label || key, value: key }
+  })
+)
+
+const genres = computed(() =>
+  rawGenres.value.map(key => {
+    const entry = refData.value.genres.find(p => p.key === key)
+    return { label: entry?.label || key, value: key }
+  })
+)
 
 const totalPages = computed(() => Math.ceil(total.value / limit))
 
