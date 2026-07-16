@@ -3,15 +3,15 @@
   <div class="cabinet-header">
     <div class="cabinet-header-inner">
       <!-- Marquee -->
-      <div class="cabinet-marquee">
-        <div class="marquee-lamp">
-          <span class="lamp"></span><span class="lamp"></span><span class="lamp"></span><span class="lamp"></span><span class="lamp"></span>
-        </div>
-        <div class="marquee-title">
+      <NuxtLink href="/" class="cabinet-marquee">
+				<div class="marquee-title">
           <img src="/logo.svg" alt="RetroVault" class="header-logo" />
           <span>RETRO</span> VAULT
         </div>
-      </div>
+        <div class="marquee-lamp">
+          <span class="lamp"></span><span class="lamp"></span><span class="lamp"></span><span class="lamp"></span><span class="lamp"></span>
+        </div>
+      </NuxtLink>
 
       <!-- Desktop nav -->
       <nav class="pixel-nav desktop-nav">
