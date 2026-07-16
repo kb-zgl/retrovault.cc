@@ -8,12 +8,11 @@
           <div class="footer-brand-row">
             <span class="dot"></span>
             <strong class="footer-brand">RETRO VAULT</strong>
-						<span class="footer-tagline">— {{ t('footer.tagline') }}</span>
+            <span class="footer-tagline">— {{ t('footer.tagline') }}</span>
           </div>
-          
-					<p class="footer-about-text">{{ t('about.para1') }}</p>
-          <!-- <span class="footer-stats-line">{{ t('footer.stats', { games: siteStats?.games?.toLocaleString() || '...', platforms: siteStats?.platforms || '...' }) }}</span> -->
-          
+
+          <p class="footer-about-text">{{ t('about.para1') }}</p>
+
           <p class="footer-powered">{{ t('footer.poweredBy', { tech: 'EmulatorJS, Nuxt & Cloudflare' }) }}</p>
         </div>
 
@@ -23,11 +22,10 @@
           <div class="footer-platforms">
             <NuxtLink
               v-for="p in platforms"
-							:title="p.slug"
-              :key="p.slug"
-              :to="localePath(`/games?platform=${p.slug}`)"
+              :key="p.key"
+              :to="localePath(`/games?platform=${p.key}`)"
               class="footer-platform-link"
-            >{{ platformLabel(p.refKey) }}</NuxtLink>
+            >{{ p.label }}</NuxtLink>
           </div>
         </div>
 
@@ -58,21 +56,20 @@ const { t, locale } = useAppI18n()
 const { localePath } = useLocalePath()
 const year = new Date().getFullYear()
 
-const platforms = [
-  { slug: 'nes', refKey: 'nes' },
-  { slug: 'snes', refKey: 'snes' },
-  { slug: 'gba', refKey: 'game-boy-advance' },
-  { slug: 'arcade', refKey: 'arcade' },
-  { slug: 'n64', refKey: 'nintendo-64' },
-  { slug: 'genesis', refKey: 'sega-genesis' },
-  { slug: 'ps', refKey: 'playstation' },
-  { slug: 'gb', refKey: 'game-boy' },
+// Curated platform subset — refKeys match platforms.json keys
+const PLATFORM_KEYS = [
+  'nes',
+  'snes',
+  'game-boy-advance',
+  'arcade',
+  'nintendo-64',
+  'sega-genesis',
+  'playstation',
+  'game-boy',
 ]
 
-const refData = computed(() => getReferenceData(locale.value))
-
-function platformLabel(refKey: string): string {
-  const entry = refData.value.platforms.find(p => p.key === refKey)
-  return entry?.label || refKey
-}
+const platforms = computed(() => {
+  const all = getReferenceData(locale.value).platforms
+  return all.filter(p => PLATFORM_KEYS.includes(p.key))
+})
 </script>
