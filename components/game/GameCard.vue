@@ -20,7 +20,7 @@
       <div :class="size === 'grid' ? 'pixel-icon' : 'mini-cover'">
         <img
           v-if="coverOk"
-          :src="`/covers/${game.slug}.webp`"
+          :src="game.coverImg"
           :alt="loc.title"
           loading="lazy"
           @error="coverOk = false"
@@ -49,7 +49,7 @@
       <div :class="size === 'grid' ? 'pixel-icon' : 'mini-cover'">
         <img
           v-if="coverOk"
-          :src="`/covers/${game.slug}.webp`"
+          :src="game.coverImg"
           :alt="loc.title"
           loading="lazy"
           @error="coverOk = false"
