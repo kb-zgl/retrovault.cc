@@ -11,7 +11,9 @@ export default defineEventHandler(async (event) => {
       const parsed = typeof row.tags === 'string' ? JSON.parse(row.tags) : (row.tags || [])
       if (Array.isArray(parsed)) {
         for (const t of parsed) {
-          const tag = String(t).trim().toLowerCase()
+          // Handle both string tags and {"name": "tag", "count": N} objects
+          const raw = typeof t === 'string' ? t : (t?.name || String(t))
+          const tag = String(raw).trim().toLowerCase()
           if (tag) tagMap.set(tag, (tagMap.get(tag) || 0) + 1)
         }
       }
