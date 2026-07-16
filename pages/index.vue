@@ -160,10 +160,7 @@ const { localePath } = useLocalePath()
 const router = useRouter()
 
 // Fetch games for homepage sections
-const { data, pending } = await useAsyncData('homepage', async () => {
-  const { get } = useApi()
-  return get<GameListResponse>('/api/games', { query: { limit: 200 } })
-})
+const { data, pending } = await useFetch<GameListResponse>('/api/games', { query: { limit: 200 }, key: 'homepage' })
 
 const allGames = computed(() => data.value?.games || [])
 const totalAll = computed(() => data.value?.totalAll || 0)

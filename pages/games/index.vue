@@ -75,10 +75,11 @@
 
 <script setup lang="ts">
 import type { GameListResponse } from '~/types/games'
+import { getReferenceData } from '~/utils/reference-data'
 
 const route = useRoute()
 const router = useRouter()
-const { t } = useAppI18n()
+const { t, locale } = useAppI18n()
 const { localePath } = useLocalePath()
 
 usePageSeo({
@@ -110,24 +111,46 @@ const page = ref(parseInt(route.query.page as string) || 1)
 const limit = 48
 
 // Fetch games
-const { data, pending } = useFetch<GameListResponse>('/api/games', {
-  query: computed(() => ({
-    platform: selectedPlatform.value || undefined,
-    genre: selectedGenre.value || undefined,
-    year: selectedDecade.value ? `${selectedDecade.value}s` : undefined,
-    tag: selectedTag.value || undefined,
-    q: searchQuery.value || undefined,
-    page: page.value,
-    limit,
-  })),
-  key: 'game-list',
-})
+const { data, pending } = await useAsyncData(
+  'game-list',
+  async () => {
+    const { get } = useApi()
+    return get<GameListResponse>('/api/games', {
+      query: {
+        platform: selectedPlatform.value || undefined,
+        genre: selectedGenre.value || undefined,
+        year: selectedDecade.value ? `${selectedDecade.value}s` : undefined,
+        tag: selectedTag.value || undefined,
+        q: searchQuery.value || undefined,
+        page: page.value,
+        limit,
+      },
+    })
+  },
+  { watch: [selectedPlatform, selectedGenre, selectedDecade, selectedTag, searchQuery, page] }
+)
 
 const games = computed(() => data.value?.games || [])
 const total = computed(() => data.value?.total || 0)
 const totalAll = computed(() => data.value?.totalAll || 0)
-const platforms = computed(() => data.value?.platforms || [])
-const genres = computed(() => data.value?.genres || [])
+const rawPlatforms = computed(() => data.value?.platforms || [])
+const rawGenres = computed(() => data.value?.genres || [])
+
+const refData = computed(() => getReferenceData(locale.value))
+
+const platforms = computed(() =>
+  rawPlatforms.value.map(key => {
+    const entry = refData.value.platforms.find(p => p.key === key)
+    return { label: entry?.label || key, value: key }
+  })
+)
+
+const genres = computed(() =>
+  rawGenres.value.map(key => {
+    const entry = refData.value.genres.find(p => p.key === key)
+    return { label: entry?.label || key, value: key }
+  })
+)
 
 const totalPages = computed(() => Math.ceil(total.value / limit))
 

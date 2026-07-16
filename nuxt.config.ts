@@ -36,13 +36,7 @@ export default defineNuxtConfig({
     preset: 'cloudflare_module',
     cloudflare: {
       nodeCompat: true,
-    },
-    devProxy: {
-      '/api': {
-        target: 'https://retrovault.solomaker282.workers.dev',
-        changeOrigin: true,
-      },
-    },
+    }
   },
 
   runtimeConfig: {

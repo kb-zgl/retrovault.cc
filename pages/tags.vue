@@ -47,7 +47,10 @@ interface TagsResponse {
 const { t } = useAppI18n()
 const { localePath } = useLocalePath()
 
-const { data, pending } = useFetch<TagsResponse>('/api/tags', { key: 'tags' })
+const { data, pending } = await useAsyncData('tags', async () => {
+  const { get } = useApi()
+  return get<TagsResponse>('/api/tags')
+})
 
 const tags = computed(() => data.value?.tags || [])
 const total = computed(() => data.value?.total || 0)

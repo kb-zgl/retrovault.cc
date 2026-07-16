@@ -11,7 +11,7 @@
           <div class="fab-now-label">{{ t('fab.nowPlaying') }}</div>
           <button class="fab-now-card" @click="selectGame(engine.currentGame.value)">
             <img
-              :src="`/covers/${engine.currentGame.value.slug}.webp`"
+              :src="$engine.currentGame.value.coverImg"
               :alt="engine.currentGame.value.title"
               class="fab-now-cover"
               @error="($event.target as HTMLImageElement).style.display = 'none'"
@@ -33,7 +33,7 @@
             @click="selectGame(g)"
           >
             <img
-              :src="`/covers/${g.slug}.webp`"
+              :src="g.coverImg"
               :alt="g.title"
               class="fab-cover-img"
               loading="lazy"

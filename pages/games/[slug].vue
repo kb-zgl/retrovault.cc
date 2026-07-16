@@ -180,9 +180,14 @@ const loc = computed(() => localized(game.value))
 const { render: renderMd } = useMarkdown()
 
 // Fetch game data
-const { data: game, pending, error } = useFetch<GameData>(`/api/games/${slug.value}`, {
-  key: `game-${slug.value}`,
-})
+const { data: game, pending, error } = await useAsyncData(
+  `game-${slug.value}`,
+  async () => {
+    const { get } = useApi()
+    return get<GameData>(`/api/games/${slug.value}`, { query: { related: 'true' } })
+  },
+  { watch: [slug] }
+)
 
 // SEO: title + description + VideoGame Schema.org
 const pageTitle = computed(() => {
@@ -208,8 +213,8 @@ const longDescHtml = computed(() => renderMd(longDescSource.value))
 const controlsMap = computed(() => game.value?.controls || {})
 const controlsKeys = computed(() => Object.keys(controlsMap.value))
 
-// Related games (placeholder - slugs from game.relatedGames)
-const related = computed(() => [])
+// Related games (from API ?related=true weighted scoring)
+const related = computed(() => game.value?.related || [])
 
 usePageSeo(() => ({
   title: pageTitle.value,
