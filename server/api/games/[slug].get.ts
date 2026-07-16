@@ -86,7 +86,7 @@ export default defineEventHandler(async (event) => {
     if (game.series) { relatedClauses.push('series = ?'); relatedParams.push(game.series) }
 
     const candidates = await sqlAll<any>(event,
-      `SELECT slug, title, platform, genre, year, series, coverImg, description, tags FROM games WHERE ${relatedClauses.join(' OR ')} LIMIT 60`,
+      `SELECT slug, title, platform, genre, year, series, coverUrl, description, tags, isHack FROM games WHERE ${relatedClauses.join(' OR ')} LIMIT 60`,
       ...relatedParams
     )
 
@@ -123,7 +123,7 @@ export default defineEventHandler(async (event) => {
         year: c.year,
         series: c.series,
         description: c.description,
-        coverImg: c.coverImg ? `${r2Url}/${c.coverImg}` : `${r2Url}/${c.slug}/${c.slug}.webp`,
+        coverImg: c.coverUrl ? `${r2Url}/${c.coverUrl}` : `${r2Url}/${c.slug}/${c.slug}.webp`,
         isHack: c.isHack ? 'true' : '$undefined',
       }))
   }
