@@ -10,11 +10,11 @@
       class="game-card-link"
     >
       <!-- Play button -->
-      <button
+      <!-- <button
         :class="size === 'grid' ? 'card-play-btn' : 'mini-play-btn'"
         @click.stop="$emit('play')"
         :aria-label="`Play ${loc.title}`"
-      >▶</button>
+      >▶</button> -->
 
       <!-- Cover -->
       <div :class="size === 'grid' ? 'pixel-icon' : 'mini-cover'">
@@ -39,11 +39,11 @@
       class="game-card-link"
     >
       <!-- Play button -->
-      <button
+      <!-- <button
         :class="size === 'grid' ? 'card-play-btn' : 'mini-play-btn'"
         @click.stop="$emit('play')"
         :aria-label="`Play ${loc.title}`"
-      >▶</button>
+      >▶</button> -->
 
       <!-- Cover -->
       <div :class="size === 'grid' ? 'pixel-icon' : 'mini-cover'">
