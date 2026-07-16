@@ -4,15 +4,13 @@
       <!-- Separator (skip first) -->
       <span v-if="i > 0" class="sep">›</span>
 
-      <!-- Last item: plain text -->
-      <span v-if="!item.to && i === items.length - 1" class="current">
-        {{ item.label }}
-      </span>
-
-      <!-- Link item (not last, or optional last with to) -->
-      <NuxtLink v-else-if="item.to" :to="item.to">
+      <!-- Link item (if has to) -->
+      <NuxtLink v-if="item.to" :to="item.to" :class="{ current: i === items.length - 1 }">
         {{ item.label }}
       </NuxtLink>
+
+      <!-- Plain text item -->
+      <span v-else class="current">{{ item.label }}</span>
     </template>
   </div>
 </template>

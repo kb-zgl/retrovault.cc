@@ -3,7 +3,7 @@
   <div class="cabinet-header">
     <div class="cabinet-header-inner">
       <!-- Marquee -->
-      <NuxtLink href="/" class="cabinet-marquee">
+      <NuxtLink :to="localePath('/')" class="cabinet-marquee">
 				<div class="marquee-title">
           <img src="/logo.svg" alt="RetroVault" class="header-logo" />
           <span>RETRO</span> VAULT
