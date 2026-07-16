@@ -99,9 +99,9 @@
   "fab": {
     "nowPlaying": "● Now Playing",
     "playing": "▶ PLAYING",
-    "random": "🎲 Random",
-    "queue": "⏭ Queue ({count})",
-    "history": "🕹️ History",
+    "random": "Random",
+    "queue": "Queue ({count})",
+    "history": "History",
     "resume": "Resume",
     "pause": "Pause",
     "quickPlay": "Quick play",
